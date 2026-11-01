@@ -30,6 +30,19 @@
     .desk .who b { color: var(--onyx); }
     .desk .open { display: inline-block; margin-top: 14px; color: var(--teal); font-weight: 700; text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 1px; }
     .desk .open:hover { color: var(--onyx); }
+    .acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: 16px; }
+    .acts .open { margin-top: 0; }
+    .watch { display: inline-flex; align-items: center; gap: 10px; font: 700 16px/1 Lato, system-ui, sans-serif; color: #fff; background: var(--teal); border: 0; border-radius: 999px; padding: 12px 20px 12px 16px; cursor: pointer; }
+    .watch:hover { background: #00565e; }
+    .watch:focus-visible, .open:focus-visible { outline: 3px solid var(--onyx); outline-offset: 3px; }
+    .watch .tri { width: 0; height: 0; border-left: 11px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+    .watch .dur { font-weight: 400; opacity: .85; }
+    .hero-watch { margin-top: 28px; }
+    dialog.player { border: 0; padding: 0; background: transparent; width: min(1120px, 94vw); max-width: none; margin: auto; }
+    dialog.player::backdrop { background: rgba(17,17,17,.82); }
+    dialog.player video { display: block; width: 100%; height: auto; border-radius: 12px; background: #000; }
+    dialog.player .bar { display: flex; justify-content: space-between; align-items: center; color: #f3f5ee; font-size: 16px; padding: 0 2px 10px; }
+    dialog.player .close { background: none; border: 0; color: #f3f5ee; font: 700 16px Lato, system-ui, sans-serif; cursor: pointer; padding: 6px 4px; }
     footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink2); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
     footer a { color: var(--teal); }
     @media (max-width: 760px) { .wrap { padding: 36px 16px 56px; } .grid { grid-template-columns: 1fr; gap: 36px; } h1 { margin-top: 32px; } }
@@ -50,34 +63,36 @@
       <span><b>A person</b> approves the rest, and every step is logged</span>
     </div>
 
+    <button class="watch hero-watch" type="button" data-film="credit" data-title="Credit Desk" data-playall="1"><span class="tri" aria-hidden="true"></span>Watch all four films <span class="dur">5 min</span></button>
+
     <div class="grid">
       <section class="desk">
         <a class="shot" href="credit-desk/"><img src="screens/credit.jpg" alt="Credit Desk overview: what customers owe, by age, and the decisions waiting"></a>
         <h2>Credit Desk</h2>
         <p>Credit applications checked against GST filings, payment history and the balance sheet. The limit is set by your policy, orders are checked before they ship, and collections are chased daily.</p>
         <p class="who"><b>Who decides:</b> the finance controller up to ₹50 lakh, the CFO above that.</p>
-        <a class="open" href="credit-desk/">Open the Credit Desk</a>
+        <div class="acts"><button class="watch" type="button" data-film="credit" data-title="Credit Desk"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:23</span></button><a class="open" href="credit-desk/">Open the Credit Desk</a></div>
       </section>
       <section class="desk">
         <a class="shot" href="gst-desk/"><img src="screens/gst.jpg" alt="GST Desk summary: input credit claimable now and held up"></a>
         <h2>GST Desk</h2>
         <p>The purchase register is matched with GSTR-2B, invoice by invoice. Our own errors land on a worklist, each supplier gets one email, and the ITC figure is signed before filing.</p>
         <p class="who"><b>Who decides:</b> the accounts executive prepares, the finance controller signs.</p>
-        <a class="open" href="gst-desk/">Open the GST Desk</a>
+        <div class="acts"><button class="watch" type="button" data-film="gst" data-title="GST Desk"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:21</span></button><a class="open" href="gst-desk/">Open the GST Desk</a></div>
       </section>
       <section class="desk">
         <a class="shot" href="ipo-room/"><img src="screens/ipo.jpg" alt="IPO Room readiness by workstream"></a>
         <h2>IPO Room</h2>
         <p>The DRHP data room. Every request has an owner and a date, every upload is checked for document, year and signature, and the ledger is scanned weekly for related parties.</p>
         <p class="who"><b>Who decides:</b> the company secretary decides every related-party flag; nobody accepts their own upload.</p>
-        <a class="open" href="ipo-room/">Open the IPO Room</a>
+        <div class="acts"><button class="watch" type="button" data-film="ipo" data-title="IPO Room"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:22</span></button><a class="open" href="ipo-room/">Open the IPO Room</a></div>
       </section>
       <section class="desk">
         <a class="shot" href="ap-desk/"><img src="screens/ap.jpg" alt="AP Desk invoices: ready to post, exceptions and MSME dates"></a>
         <h2>AP Desk</h2>
         <p>Supplier invoices are read and matched with the PO and goods receipt. Duplicates are caught, short deliveries held, and MSME payment dates tracked.</p>
         <p class="who"><b>Who decides:</b> the finance controller decides every exception, with a reason on record.</p>
-        <a class="open" href="ap-desk/">Open the AP Desk</a>
+        <div class="acts"><button class="watch" type="button" data-film="ap" data-title="AP Desk"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:25</span></button><a class="open" href="ap-desk/">Open the AP Desk</a></div>
       </section>
     </div>
 
@@ -86,5 +101,38 @@
       <a href="https://www.gavira.co.in">gavira.co.in</a>
     </footer>
   </div>
+
+  <dialog class="player" id="player" aria-label="Film">
+    <div class="bar"><span id="player-title"></span><button class="close" type="button" id="player-close">Close ✕</button></div>
+    <video id="player-video" controls playsinline preload="none"></video>
+  </dialog>
+  <script>
+    (() => {
+      const order = ['credit', 'gst', 'ipo', 'ap'];
+      const names = { credit: 'Credit Desk', gst: 'GST Desk', ipo: 'IPO Room', ap: 'AP Desk' };
+      const dlg = document.getElementById('player'), vid = document.getElementById('player-video'), title = document.getElementById('player-title');
+      let playAll = false;
+      const play = (k) => {
+        vid.poster = `films/${k}-poster.jpg`;
+        vid.src = `films/${k}.mp4`;
+        vid.dataset.film = k;
+        title.textContent = names[k] + (playAll ? ` · film ${order.indexOf(k) + 1} of 4` : '');
+        vid.play().catch(() => {});
+      };
+      document.querySelectorAll('.watch').forEach((b) => b.addEventListener('click', () => {
+        playAll = !!b.dataset.playall;
+        if (!dlg.open) dlg.showModal();
+        play(b.dataset.film);
+      }));
+      vid.addEventListener('ended', () => {
+        const i = order.indexOf(vid.dataset.film);
+        if (playAll && i < order.length - 1) play(order[i + 1]);
+      });
+      const close = () => { vid.pause(); vid.removeAttribute('src'); vid.load(); if (dlg.open) dlg.close(); };
+      document.getElementById('player-close').addEventListener('click', close);
+      dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
+      dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+    })();
+  </script>
 </body>
 </html>

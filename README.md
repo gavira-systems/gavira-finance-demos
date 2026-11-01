@@ -2,6 +2,9 @@
 
 **[Live demo → gavira-systems.github.io/gavira-finance-demos](https://gavira-systems.github.io/gavira-finance-demos/)**
 
+Each desk also has a short film, about 80 seconds, that walks through one real example. On the live page, **Watch the film** plays it,
+and **Watch all four films** plays all four back to back (5 minutes). The film files are in [`films/`](films/).
+
 Four finance systems you can click through, all running on one fictional company, Sarvam Polymers, with sample data.
 Switch people at the top right of any desk to see who can approve what. Nothing here sends a real message or touches a real ledger.
 
