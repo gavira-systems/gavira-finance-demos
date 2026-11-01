@@ -63,7 +63,7 @@
       <span><b>A person</b> approves the rest, and every step is logged</span>
     </div>
 
-    <button class="watch hero-watch" type="button" data-film="credit" data-title="Credit Desk" data-playall="1"><span class="tri" aria-hidden="true"></span>Watch all four films <span class="dur">5 min</span></button>
+    <button class="watch hero-watch" type="button" data-film="credit" data-title="Credit Desk" data-playall="1"><span class="tri" aria-hidden="true"></span>Watch all four demos <span class="dur">5 min</span></button>
 
     <div class="grid">
       <section class="desk">
@@ -71,28 +71,28 @@
         <h2>Credit Desk</h2>
         <p>Credit applications checked against GST filings, payment history and the balance sheet. The limit is set by your policy, orders are checked before they ship, and collections are chased daily.</p>
         <p class="who"><b>Who decides:</b> the finance controller up to ₹50 lakh, the CFO above that.</p>
-        <div class="acts"><button class="watch" type="button" data-film="credit" data-title="Credit Desk"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:23</span></button><a class="open" href="credit-desk/">Open the Credit Desk</a></div>
+        <div class="acts"><button class="watch" type="button" data-film="credit" data-title="Credit Desk"><span class="tri" aria-hidden="true"></span>Watch the demo <span class="dur">1:23</span></button><a class="open" href="credit-desk/">Open the Credit Desk</a></div>
       </section>
       <section class="desk">
         <a class="shot" href="gst-desk/"><img src="screens/gst.jpg" alt="GST Desk summary: input credit claimable now and held up"></a>
         <h2>GST Desk</h2>
         <p>The purchase register is matched with GSTR-2B, invoice by invoice. Our own errors land on a worklist, each supplier gets one email, and the ITC figure is signed before filing.</p>
         <p class="who"><b>Who decides:</b> the accounts executive prepares, the finance controller signs.</p>
-        <div class="acts"><button class="watch" type="button" data-film="gst" data-title="GST Desk"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:21</span></button><a class="open" href="gst-desk/">Open the GST Desk</a></div>
+        <div class="acts"><button class="watch" type="button" data-film="gst" data-title="GST Desk"><span class="tri" aria-hidden="true"></span>Watch the demo <span class="dur">1:21</span></button><a class="open" href="gst-desk/">Open the GST Desk</a></div>
       </section>
       <section class="desk">
         <a class="shot" href="ipo-room/"><img src="screens/ipo.jpg" alt="IPO Room readiness by workstream"></a>
         <h2>IPO Room</h2>
         <p>The DRHP data room. Every request has an owner and a date, every upload is checked for document, year and signature, and the ledger is scanned weekly for related parties.</p>
         <p class="who"><b>Who decides:</b> the company secretary decides every related-party flag; nobody accepts their own upload.</p>
-        <div class="acts"><button class="watch" type="button" data-film="ipo" data-title="IPO Room"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:22</span></button><a class="open" href="ipo-room/">Open the IPO Room</a></div>
+        <div class="acts"><button class="watch" type="button" data-film="ipo" data-title="IPO Room"><span class="tri" aria-hidden="true"></span>Watch the demo <span class="dur">1:22</span></button><a class="open" href="ipo-room/">Open the IPO Room</a></div>
       </section>
       <section class="desk">
         <a class="shot" href="ap-desk/"><img src="screens/ap.jpg" alt="AP Desk invoices: ready to post, exceptions and MSME dates"></a>
         <h2>AP Desk</h2>
         <p>Supplier invoices are read and matched with the PO and goods receipt. Duplicates are caught, short deliveries held, and MSME payment dates tracked.</p>
         <p class="who"><b>Who decides:</b> the finance controller decides every exception, with a reason on record.</p>
-        <div class="acts"><button class="watch" type="button" data-film="ap" data-title="AP Desk"><span class="tri" aria-hidden="true"></span>Watch the film <span class="dur">1:25</span></button><a class="open" href="ap-desk/">Open the AP Desk</a></div>
+        <div class="acts"><button class="watch" type="button" data-film="ap" data-title="AP Desk"><span class="tri" aria-hidden="true"></span>Watch the demo <span class="dur">1:25</span></button><a class="open" href="ap-desk/">Open the AP Desk</a></div>
       </section>
     </div>
 
@@ -102,7 +102,7 @@
     </footer>
   </div>
 
-  <dialog class="player" id="player" aria-label="Film">
+  <dialog class="player" id="player" aria-label="Demo video">
     <div class="bar"><span id="player-title"></span><button class="close" type="button" id="player-close">Close ✕</button></div>
     <video id="player-video" controls playsinline preload="none"></video>
   </dialog>
@@ -116,7 +116,7 @@
         vid.poster = `films/${k}-poster.jpg`;
         vid.src = `films/${k}.mp4`;
         vid.dataset.film = k;
-        title.textContent = names[k] + (playAll ? ` · film ${order.indexOf(k) + 1} of 4` : '');
+        title.textContent = names[k] + (playAll ? ` · demo ${order.indexOf(k) + 1} of 4` : '');
         vid.play().catch(() => {});
       };
       document.querySelectorAll('.watch').forEach((b) => b.addEventListener('click', () => {
