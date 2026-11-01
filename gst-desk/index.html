@@ -1,0 +1,1966 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GST Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap">
+<style>
+
+/* Layout: a working desk — header with role switch, tab bar, then list-and-detail panes. Gold marks only buttons where a person decides. */
+:root {
+  --bg: #f3f5f1; --surface: #ffffff; --surface-2: #eef2ee; --line: #d9e1db; --line-2: #c6d0c9;
+  --ink: #111a19; --ink-2: #45524f; --ink-3: #66746f;
+  --teal: #006d77; --teal-ink: #005c65; --teal-soft: #e0eeee; --on-teal: #ffffff;
+  --sage: #899670; --sage-soft: #a3b18a;
+  --gold: #ffd166; --gold-ink: #2b2100; --gold-line: #e9b53a;
+  --good: #2e7744; --good-soft: #e2f0e5; --warn: #8f5600; --warn-soft: #f7ead3; --bad: #a93224; --bad-soft: #f7e0dc;
+  --age0: #a3b18a; --age1: #6fa6ab; --age2: #e0ad45; --age3: #d4774e; --age4: #a93224;
+  --shadow: 0 1px 2px rgb(17 26 25 / .06), 0 4px 16px rgb(17 26 25 / .05);
+  --f-display: 'Playfair Display', Georgia, serif;
+  --f-body: 'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--teal-ink); outline-offset: 2px; border-radius: 6px; }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.muted { color: var(--ink-3); }
+.small { font-size: 13px; }
+.label { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+
+.demo { margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 8px max(16px, env(safe-area-inset-left, 0px)); background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--ink-2); text-align: center; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-block: 18px 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-right: auto; }
+.brand h1 { font-family: var(--f-display); font-weight: 600; font-size: 26px; letter-spacing: -.01em; }
+.brand .co { color: var(--ink-2); font-size: 13.5px; }
+.roles { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); padding: 4px; border-radius: 12px; flex-wrap: wrap; }
+.roles button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; text-align: left; line-height: 1.25; }
+.roles button span { display: block; font-size: 11px; color: var(--ink-3); }
+.roles button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); }
+.roles .as { align-self: center; padding: 0 6px 0 8px; font-size: 11.5px; color: var(--ink-3); }
+nav.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+nav.tabs a { padding: 10px 14px; text-decoration: none; color: var(--ink-2); border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 700; font-size: 14px; }
+nav.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--teal); }
+nav.tabs .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 10px; background: var(--teal-soft); color: var(--teal-ink); font-size: 12px; text-align: center; }
+main { padding-top: 22px; display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+main > *, .panel, .split > *, .grid2 > * { min-width: 0; }
+.pagehead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.pagehead h2 { font-family: var(--f-display); font-weight: 600; font-size: 24px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.pad { padding: 18px 20px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kpi .big { font-size: 26px; font-weight: 500; }
+.kpi .sub { font-size: 13px; color: var(--ink-2); }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; }
+.split { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+
+.ageing { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 12px 0 10px; background: var(--surface-2); }
+.ageing span { display: block; height: 100%; }
+.legend { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.legend div { display: grid; gap: 2px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+.legend b { font-weight: 500; color: var(--ink); font-size: 14px; }
+
+.list { display: grid; }
+.row { display: grid; gap: 4px; padding: 12px 16px; border-top: 1px solid var(--line); text-align: left; background: transparent; border-left: 3px solid transparent; border-right: 0; border-bottom: 0; cursor: pointer; width: 100%; }
+.row:first-child { border-top: 0; }
+.row:hover { background: var(--surface-2); }
+.row[aria-selected="true"] { background: var(--teal-soft); border-left-color: var(--teal); }
+.row .r1 { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.row .name { font-weight: 700; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+.chip.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.chip.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.chip.teal { background: var(--teal-soft); color: var(--teal-ink); border-color: transparent; }
+.grade { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; font-weight: 900; font-size: 13px; }
+.grade.A { background: var(--good-soft); color: var(--good); } .grade.B { background: var(--teal-soft); color: var(--teal-ink); }
+.grade.C { background: var(--warn-soft); color: var(--warn); } .grade.D { background: var(--bad-soft); color: var(--bad); }
+
+.btn { border: 1px solid var(--line-2); background: var(--surface); padding: 9px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { background: var(--surface-2); }
+.btn.teal { background: var(--teal); color: var(--on-teal); border-color: var(--teal); }
+.btn.teal:hover { filter: brightness(1.08); }
+.btn.gold { background: var(--gold); color: var(--gold-ink); border-color: var(--gold-line); }
+.btn.gold:hover { filter: brightness(.97); }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.btn.link { border: 0; background: transparent; padding: 4px 2px; color: var(--teal-ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gate { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--surface-2); color: var(--ink-2); font-size: 13.5px; }
+
+.detail { display: grid; gap: 18px; padding: 20px 22px; }
+.dhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: start; }
+.dhead h3 { font-size: 20px; font-weight: 900; }
+.amounts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.amounts div { padding: 12px 14px; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.amounts div:first-child { border-left: 0; }
+.amounts .v { font-size: 20px; font-weight: 500; }
+.amounts .hl { background: var(--teal-soft); }
+.steps { display: flex; flex-wrap: wrap; gap: 6px 4px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; }
+.steps li { display: flex; align-items: center; gap: 6px; color: var(--ink-3); }
+.steps li::after { content: ''; width: 18px; height: 1px; background: var(--line-2); margin-left: 4px; }
+.steps li:last-child::after { display: none; }
+.steps li.done { color: var(--ink-2); }
+.steps li.now { color: var(--ink); font-weight: 700; }
+.steps .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); }
+.steps .done .dot { background: var(--sage); }
+.steps .now .dot { background: var(--gold); box-shadow: 0 0 0 3px rgb(255 209 102 / .35); }
+
+table { border-collapse: collapse; width: 100%; }
+.tablewrap { overflow-x: auto; }
+th { text-align: left; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; }
+.pts { font-family: var(--f-mono); font-weight: 500; }
+.pts.pos { color: var(--good); } .pts.neg { color: var(--bad); }
+.src { display: block; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.ceil { display: grid; gap: 6px; font-size: 13.5px; }
+.ceil div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: 6px; }
+.ceil .bind { background: var(--teal-soft); font-weight: 700; }
+.note { white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; background: var(--surface-2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--line); }
+.usage { position: relative; height: 8px; border-radius: 4px; background: var(--surface-2); min-width: 90px; overflow: hidden; }
+.usage span { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.usage::after { content: ''; position: absolute; top: -2px; bottom: -2px; left: calc(100% / 1.2); width: 2px; background: var(--ink-3); opacity: .5; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 13px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.form { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface-2); }
+.form label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+.form input, .form textarea { border: 1px solid var(--line-2); background: var(--surface); border-radius: 6px; padding: 8px 10px; font-weight: 400; }
+.form .err { color: var(--bad); font-size: 13px; }
+textarea.draft { width: 100%; min-height: 180px; border: 1px solid var(--line-2); border-radius: 8px; padding: 12px 14px; background: var(--surface); line-height: 1.55; resize: vertical; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 6px 12px; cursor: pointer; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--teal-soft); color: var(--teal-ink); font-weight: 700; }
+.wa { background: #e7f1e4; color: #0b141a; border-radius: 10px; padding: 14px; display: grid; gap: 8px; }
+.wa .bubble { background: #ffffff; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; font-size: 14px; box-shadow: 0 1px 1px rgb(0 0 0 / .08); max-width: 520px; }
+.wa .meta { font-size: 11.5px; color: #54656f; }
+
+.decide { display: grid; gap: 2px; }
+.decide a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 4px; border-top: 1px solid var(--line); text-decoration: none; color: inherit; align-items: center; }
+.decide a:first-child { border-top: 0; }
+.decide a:hover .go { text-decoration: underline; }
+.decide .go { color: var(--teal-ink); font-weight: 700; font-size: 13px; white-space: nowrap; }
+.guide { border-color: var(--gold-line); }
+.guide ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+.guide a { color: var(--teal-ink); font-weight: 700; }
+.how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.how div { padding: 14px 16px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); display: grid; gap: 6px; align-content: start; }
+.how div.person { border-color: var(--gold-line); background: color-mix(in srgb, var(--gold) 14%, var(--surface)); }
+.how b { font-size: 15px; }
+.spark { width: 100%; height: 64px; display: block; }
+.months { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+.months span { display: grid; justify-items: center; gap: 1px; }
+.months b { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+.conn td:first-child { font-weight: 700; }
+.ok { color: var(--good); font-weight: 700; } .cfg { color: var(--warn); font-weight: 700; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow); z-index: 20; max-width: min(560px, calc(100vw - 32px)); }
+.legend-gold { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+.legend-gold i { width: 12px; height: 12px; border-radius: 3px; background: var(--gold); border: 1px solid var(--gold-line); }
+.empty { padding: 28px; text-align: center; color: var(--ink-3); }
+@media (max-width: 980px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid2, .split { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; } .roles .as { grid-column: 1 / -1; padding: 2px 6px; } .roles button { padding: 6px 8px; font-size: 13.5px; } .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); } .how { grid-template-columns: minmax(0, 1fr); } .amounts { grid-template-columns: minmax(0, 1fr); } .amounts div { border-left: 0; border-top: 1px solid var(--line); } .amounts div:first-child { border-top: 0; } .brand h1 { font-size: 22px; } .detail { padding: 16px; } }
+@media (prefers-reduced-motion: no-preference) { .row, .btn, nav.tabs a { transition: background-color .15s, border-color .15s, filter .15s; } }
+
+/* GST Desk additions: two roles, the ITC split bar, the month's steps and the sign-off sheet. */
+@media (max-width: 560px) { .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.split3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.split3 div { display: grid; gap: 2px; font-size: 12.5px; color: var(--ink-2); }
+.split3 i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+.split3 b { font-weight: 500; color: var(--ink); font-size: 14px; }
+.month { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.month li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.month li:first-child { border-top: 0; }
+.month .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line-2); justify-self: center; }
+.month .done .dot { background: var(--sage); }
+.month .now .dot { background: var(--gold); box-shadow: 0 0 0 3px rgb(255 209 102 / .35); }
+.month .now { font-weight: 700; }
+.month .when { font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.sheet { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.sheet div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); font-size: 14px; }
+.sheet div:first-child { border-top: 0; }
+.sheet .total { background: var(--teal-soft); font-weight: 700; }
+.sheet .total .num { font-size: 18px; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.checks li { display: flex; gap: 10px; align-items: baseline; }
+.checks .y { color: var(--good); font-weight: 900; } .checks .n { color: var(--warn); font-weight: 900; }
+.inv2 { display: block; font-size: 12px; color: var(--ink-3); }
+.rowacts { display: flex; flex-wrap: wrap; gap: 6px; }
+.rowacts .btn { padding: 5px 10px; font-size: 13px; }
+td .chip + .src { margin-top: 4px; }
+.detail > * { min-width: 0; }
+.detail .label { overflow-wrap: anywhere; }
+</style>
+
+<div class="wrap">
+  <div class="demo">Demo · Sarvam Polymers is a fictional company · sample data · nothing here sends a real message or files a real return</div>
+  <header class="top">
+    <div class="brand"><h1>GST Desk</h1><span class="co">Sarvam Polymers Pvt Ltd · GSTIN <span class="num" id="gstin"></span> · GaVira Systems</span></div>
+    <div class="roles" role="group" aria-label="Viewing as" id="roles"></div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// Reading amounts and dates as Indian ledgers and Excel exports write them.
+(function (root) {
+  const MONTHS = { JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8, SEP: 9, OCT: 10, NOV: 11, DEC: 12 };
+
+  function parseAmount(v) {
+    if (typeof v === 'number') return v;
+    let s = String(v == null ? '' : v).trim();
+    const negative = /^\(.*\)$/.test(s) || /^-/.test(s);
+    s = s.replace(/[()₹\s-]/g, '').replace(/^Rs\.?/i, '');
+    let mult = 1;
+    if (/cr(ore)?s?$/i.test(s)) { mult = 1e7; s = s.replace(/cr(ore)?s?$/i, ''); }
+    else if (/(l|lakh|lakhs|lac|lacs)$/i.test(s)) { mult = 1e5; s = s.replace(/(lakhs|lakh|lacs|lac|l)$/i, ''); }
+    const n = Number(s.replace(/,/g, ''));
+    if (!Number.isFinite(n)) return NaN;
+    return Math.round(n * mult * 100) / 100 * (negative ? -1 : 1);
+  }
+
+  function iso(y, m, d) {
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) return null;
+    return dt.toISOString().slice(0, 10);
+  }
+
+  // Excel serial 25569 = 1970-01-01.
+  function fromSerial(n) {
+    return new Date(Math.round((n - 25569) * 86400000)).toISOString().slice(0, 10);
+  }
+
+  function parseDate(v) {
+    if (typeof v === 'number') return fromSerial(v);
+    const s = String(v == null ? '' : v).trim();
+    if (/^\d{5}(\.\d+)?$/.test(s)) return fromSerial(Number(s));
+    let m;
+    if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return iso(+m[1], +m[2], +m[3]);
+    if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/))) return iso(+m[3], +m[2], +m[1]);
+    if ((m = s.match(/^(\d{1,2})[\s\-]([A-Za-z]{3})[A-Za-z]*[\s\-,]+(\d{4})$/))) {
+      const mon = MONTHS[m[2].toUpperCase()];
+      return mon ? iso(+m[3], mon, +m[1]) : null;
+    }
+    return null;
+  }
+
+  const api = { parseAmount, parseDate };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// GST reconciliation: purchase register against GSTR-2B, invoice by invoice.
+// Input tax credit can be claimed only for invoices in GSTR-2B (Section 16(2)(aa)), so every
+// unmatched rupee of tax is either at risk or needs the books fixed. Needs parse.js loaded first.
+(function (root) {
+  const TOL = 1; // ₹1 tolerance per invoice on tax and taxable value
+
+  function normaliseInvoiceNo(s) {
+    const tokens = String(s == null ? '' : s).toUpperCase().match(/[A-Z]+|\d+/g) || [];
+    return tokens.map((t) => (/^\d+$/.test(t) ? String(Number(t)) : t)).join('|');
+  }
+  const lastNumber = (s) => { const m = String(s || '').match(/\d+/g); return m ? Number(m[m.length - 1]) : null; };
+  const panOf = (gstin) => String(gstin || '').toUpperCase().slice(2, 12);
+  const tax = (r) => (r.igst || 0) + (r.cgst || 0) + (r.sgst || 0) + (r.cess || 0);
+  const close = (a, b) => Math.abs(a - b) <= TOL;
+  const round2 = (v) => Math.round(v * 100) / 100;
+
+  const keyOf = (row, test) => Object.keys(row).find((k) => test(k.toLowerCase()));
+  const amt = (v) => { const n = root.Credit.parseAmount(v); return Number.isFinite(n) ? n : 0; };
+  function pick(row) {
+    const k = {
+      gstin: keyOf(row, (h) => h.includes('gstin')),
+      name: keyOf(row, (h) => /party|supplier name|vendor|trade|legal/.test(h)),
+      inv: keyOf(row, (h) => /(invoice|bill|voucher|doc)/.test(h) && /(no|num|#)/.test(h) && !/(value|date|type)/.test(h)),
+      date: keyOf(row, (h) => h.includes('date') && !h.includes('filing')),
+      taxable: keyOf(row, (h) => h.includes('taxable')),
+      igst: keyOf(row, (h) => h.includes('igst') || h.includes('integrated')),
+      cgst: keyOf(row, (h) => h.includes('cgst') || h.includes('central')),
+      sgst: keyOf(row, (h) => h.includes('sgst') || h.includes('state/ut') || h.includes('utgst') || h === 'state tax'),
+      cess: keyOf(row, (h) => h.includes('cess')),
+      itc: keyOf(row, (h) => h.includes('itc avail')),
+      reason: keyOf(row, (h) => h === 'reason' || h.includes('reason')),
+    };
+    const v = (key) => (key ? row[key] : '');
+    return {
+      gstin: String(v(k.gstin)).replace(/\s+/g, '').toUpperCase(),
+      supplierName: String(v(k.name) || '').trim(),
+      invoiceNo: String(v(k.inv) || '').trim(),
+      date: root.Credit.parseDate(v(k.date)),
+      taxable: amt(v(k.taxable)),
+      igst: amt(v(k.igst)), cgst: amt(v(k.cgst)), sgst: amt(v(k.sgst)), cess: amt(v(k.cess)),
+      _itc: v(k.itc), _reason: v(k.reason),
+    };
+  }
+  function mapBooksRow(row) { const r = pick(row); delete r._itc; delete r._reason; return r; }
+  function map2bRow(row) {
+    const r = pick(row);
+    const itc = String(r._itc == null ? '' : r._itc).trim().toLowerCase();
+    r.itcAvailable = !(itc === 'no' || itc === 'n' || itc === 'false');
+    r.reason = String(r._reason || '');
+    delete r._itc; delete r._reason;
+    return r;
+  }
+
+  const ACTION = {
+    matched: 'Accept in IMS. Claim in GSTR-3B.',
+    format: 'Accept in IMS. Same invoice, the supplier writes the number differently.',
+    amount: 'Keep pending in IMS. Ask the supplier to amend the invoice in GSTR-1; claim only the lower tax until then.',
+    taxType: 'Keep pending in IMS. The supplier reported a different tax type (IGST vs CGST+SGST); ask for a corrected invoice.',
+    notIn2b: 'Ask the supplier to report this invoice in GSTR-1. No credit until it appears in GSTR-2B.',
+    notInBooks: 'Check with stores: book the purchase if the goods or service came in, otherwise reject in IMS.',
+    wrongGstin: 'Correct the supplier GSTIN in the books: the supplier billed from another state registration.',
+    itcBlocked: 'Do not claim: GSTR-2B marks this credit as not available.',
+    duplicate: 'Delete the duplicate entry in the purchase register.',
+  };
+
+  function reconcile({ books, gstr2b }) {
+    const rows = [];
+    const bookList = books.map((b, i) => ({ ...b, _i: i, _key: b.gstin + '|' + normaliseInvoiceNo(b.invoiceNo) }));
+    const twoB = gstr2b.map((t, i) => ({ ...t, _i: i, _key: t.gstin + '|' + normaliseInvoiceNo(t.invoiceNo), _used: false }));
+
+    // 1. Duplicates in the purchase register
+    const seen = new Map();
+    const live = [];
+    for (const b of bookList) {
+      const prior = seen.get(b._key);
+      if (prior && close(prior.taxable, b.taxable)) { rows.push(row('duplicate', b, null)); continue; }
+      seen.set(b._key, b);
+      live.push(b);
+    }
+
+    const pending = [];
+    // 2. Exact key
+    for (const b of live) {
+      const t = twoB.find((x) => !x._used && x._key === b._key);
+      if (!t) { pending.push(b); continue; }
+      t._used = true;
+      rows.push(row(classify(b, t), b, t));
+    }
+    // 3. Same GSTIN, same final number, same taxable value → format difference
+    const pending2 = [];
+    for (const b of pending) {
+      const t = twoB.find((x) => !x._used && x.gstin === b.gstin && lastNumber(x.invoiceNo) === lastNumber(b.invoiceNo) && close(x.taxable, b.taxable));
+      if (!t) { pending2.push(b); continue; }
+      t._used = true;
+      const c = classify(b, t);
+      rows.push(row(c === 'matched' ? 'format' : c, b, t));
+    }
+    // 4. Same PAN (the supplier's other registration), same invoice, same value → wrong GSTIN
+    for (const b of pending2) {
+      const t = twoB.find((x) => !x._used && x.gstin !== b.gstin && panOf(x.gstin) === panOf(b.gstin)
+        && (normaliseInvoiceNo(x.invoiceNo) === normaliseInvoiceNo(b.invoiceNo) || lastNumber(x.invoiceNo) === lastNumber(b.invoiceNo))
+        && close(x.taxable, b.taxable));
+      if (t) { t._used = true; rows.push(row('wrongGstin', b, t)); } else rows.push(row('notIn2b', b, null));
+    }
+    for (const t of twoB) if (!t._used) rows.push(row('notInBooks', null, t));
+
+    const sum = (f) => round2(rows.reduce((s, r) => s + f(r), 0));
+    const counts = {};
+    for (const r of rows) counts[r.category] = (counts[r.category] || 0) + 1;
+    const summary = {
+      itcBooks: sum((r) => (r.category === 'duplicate' ? 0 : r.taxBooks)),
+      itc2b: sum((r) => r.tax2b),
+      claimable: sum((r) => r.claimable),
+      atRisk: sum((r) => r.itcAtRisk),
+      counts, invoicesBooks: live.length, invoices2b: twoB.length,
+    };
+    const bySupplier = {};
+    for (const r of rows) {
+      const s = (bySupplier[r.gstin] = bySupplier[r.gstin] || { gstin: r.gstin, supplierName: r.supplierName, rows: [], atRisk: 0, needsSupplier: false });
+      s.rows.push(r);
+      s.atRisk = round2(s.atRisk + r.itcAtRisk);
+      if (['notIn2b', 'amount', 'taxType'].includes(r.category)) s.needsSupplier = true;
+    }
+    return { rows, summary, bySupplier: Object.values(bySupplier).sort((a, b) => b.atRisk - a.atRisk) };
+  }
+
+  function classify(b, t) {
+    if (!t.itcAvailable) return 'itcBlocked';
+    const tb = tax(b), tt = tax(t);
+    if (close(tb, tt) && close(b.taxable, t.taxable)) {
+      const bIgst = (b.igst || 0) > TOL, tIgst = (t.igst || 0) > TOL;
+      return bIgst === tIgst ? 'matched' : 'taxType';
+    }
+    return 'amount';
+  }
+
+  function row(category, b, t) {
+    const taxBooks = b ? round2(tax(b)) : 0;
+    const tax2b = t ? round2(tax(t)) : 0;
+    let claimable = 0, itcAtRisk = 0;
+    if (category === 'matched' || category === 'format') claimable = tax2b;
+    else if (category === 'amount') { claimable = Math.min(taxBooks, tax2b); itcAtRisk = round2(taxBooks - claimable); }
+    else if (category === 'taxType' || category === 'notIn2b' || category === 'itcBlocked') itcAtRisk = taxBooks;
+    const src = b || t;
+    return {
+      category, action: ACTION[category],
+      gstin: (b || t).gstin, gstin2b: t ? t.gstin : null,
+      supplierName: (b && b.supplierName) || (t && t.supplierName) || '',
+      invoiceNo: b ? b.invoiceNo : null, invoiceNo2b: t ? t.invoiceNo : null,
+      date: src.date, taxable: b ? b.taxable : t.taxable, taxable2b: t ? t.taxable : null,
+      taxBooks, tax2b, claimable: round2(claimable), itcAtRisk: round2(itcAtRisk),
+      reason: t && t.reason ? t.reason : '',
+    };
+  }
+
+  const fmtDate = (iso) => (iso ? new Date(iso + 'T00:00:00Z').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'undated');
+  const inr = (v) => '₹' + Math.round(v).toLocaleString('en-IN');
+  const WHY = {
+    notIn2b: 'not yet in our GSTR-2B. Please report it in your GSTR-1',
+    amount: 'reported with a different amount. Please amend it in GSTR-1',
+    taxType: 'reported under a different tax type (IGST vs CGST+SGST). Please issue a corrected invoice',
+  };
+  function followUp(supplierName, rows, period) {
+    const need = rows.filter((r) => WHY[r.category]);
+    const held = need.reduce((s, r) => s + r.itcAtRisk, 0);
+    const lines = need.map((r) => '· ' + r.invoiceNo + ' dated ' + fmtDate(r.date) + ', taxable ' + inr(r.taxable) + ', tax ' + inr(r.taxBooks) + ': ' + WHY[r.category] + '.');
+    return {
+      subject: 'GST ' + period + ': ' + need.length + ' invoice' + (need.length > 1 ? 's need' : ' needs') + ' action · Sarvam Polymers',
+      message: 'Dear ' + supplierName + ' accounts team,\n\nWhile matching our ' + period + ' purchases with GSTR-2B, we found ' + (need.length > 1 ? 'these invoices' : 'this invoice') + ' from you that need' + (need.length > 1 ? '' : 's') + ' action:\n\n' + lines.join('\n') +
+        '\n\nUntil ' + (need.length > 1 ? 'they appear' : 'it appears') + ' correctly in GSTR-2B we cannot claim the input tax credit of ' + inr(held) + '. Please confirm once filed, or reply if you see it differently.\n\nThank you,\nAccounts team, Sarvam Polymers (demo)',
+      held: round2(held),
+    };
+  }
+
+  const api = { normaliseInvoiceNo, mapBooksRow, map2bRow, reconcile, followUp, GST_ACTION: ACTION };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+const DATA = {
+  "company": {
+    "name": "Sarvam Polymers Pvt Ltd",
+    "gstin": "27AAXCS4571A1Z1",
+    "state": "27"
+  },
+  "period": {
+    "label": "September 2026",
+    "code": "092026",
+    "gstr2bGenerated": "2026-10-14",
+    "gstr3bDue": "2026-10-20"
+  },
+  "today": "2026-10-16",
+  "people": [
+    {
+      "id": "priya",
+      "name": "Priya Nair",
+      "role": "exec",
+      "title": "Accounts executive",
+      "email": "priya@example.com"
+    },
+    {
+      "id": "rohan",
+      "name": "Rohan Mehta",
+      "role": "fc",
+      "title": "Finance controller",
+      "email": "rohan@example.com"
+    }
+  ],
+  "suppliers": [
+    {
+      "short": "indus",
+      "name": "Indus Petrochem Ltd",
+      "state": "27",
+      "pan": "AAACI4417R",
+      "gstin": "27AAACI4417R1Z6",
+      "rate": 18,
+      "contact": "Kunal Desai",
+      "gstOnTime12": 12,
+      "email": "indus@example.com",
+      "otherGstin": "24AAACI4417R1ZC"
+    },
+    {
+      "short": "konark",
+      "name": "Konark Masterbatches Pvt Ltd",
+      "state": "27",
+      "pan": "AAECK2208M",
+      "gstin": "27AAECK2208M1ZH",
+      "rate": 18,
+      "contact": "Rashmi Kulkarni",
+      "gstOnTime12": 12,
+      "email": "konark@example.com"
+    },
+    {
+      "short": "shivneri",
+      "name": "Shivneri Corrugators",
+      "state": "27",
+      "pan": "AAPFS6631D",
+      "gstin": "27AAPFS6631D1Z0",
+      "rate": 18,
+      "contact": "Dattatray Jadhav",
+      "gstOnTime12": 7,
+      "email": "shivneri@example.com"
+    },
+    {
+      "short": "narmada",
+      "name": "Narmada Logistics",
+      "state": "24",
+      "pan": "AAKFN3390Q",
+      "gstin": "24AAKFN3390Q1ZN",
+      "rate": 12,
+      "contact": "Bhavin Mehta",
+      "gstOnTime12": 12,
+      "email": "narmada@example.com"
+    },
+    {
+      "short": "saraswati",
+      "name": "Saraswati Chemicals",
+      "state": "24",
+      "pan": "AABCS8820H",
+      "gstin": "24AABCS8820H1ZF",
+      "rate": 18,
+      "contact": "Nirali Shah",
+      "gstOnTime12": 11,
+      "email": "saraswati@example.com"
+    },
+    {
+      "short": "deccanmoulds",
+      "name": "Deccan Moulds & Dies",
+      "state": "36",
+      "pan": "AAFFD1175K",
+      "gstin": "36AAFFD1175K1ZE",
+      "rate": 18,
+      "contact": "Ravi Teja",
+      "gstOnTime12": 12,
+      "email": "deccanmoulds@example.com"
+    },
+    {
+      "short": "punegas",
+      "name": "Pune Industrial Gases",
+      "state": "27",
+      "pan": "AACCP5512B",
+      "gstin": "27AACCP5512B1ZW",
+      "rate": 18,
+      "contact": "Sameer Joshi",
+      "gstOnTime12": 12,
+      "email": "punegas@example.com"
+    },
+    {
+      "short": "ganesh",
+      "name": "Ganesh Pallets",
+      "state": "27",
+      "pan": "AAQFG7741N",
+      "gstin": "27AAQFG7741N1ZL",
+      "rate": 12,
+      "contact": "Ganesh Pawar",
+      "gstOnTime12": 10,
+      "email": "ganesh@example.com"
+    },
+    {
+      "short": "sahyog",
+      "name": "Sahyog Facility Services",
+      "state": "27",
+      "pan": "AAMFS9902L",
+      "gstin": "27AAMFS9902L1ZI",
+      "rate": 18,
+      "contact": "Anjali Rao",
+      "gstOnTime12": 12,
+      "email": "sahyog@example.com"
+    },
+    {
+      "short": "vardhman",
+      "name": "Vardhman Labels",
+      "state": "27",
+      "pan": "AADFV3346C",
+      "gstin": "27AADFV3346C1ZD",
+      "rate": 18,
+      "contact": "Mehul Jain",
+      "gstOnTime12": 12,
+      "email": "vardhman@example.com"
+    }
+  ],
+  "books": [
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0410",
+      "date": "2026-09-02",
+      "taxable": 471900,
+      "igst": 0,
+      "cgst": 42471,
+      "sgst": 42471
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0414",
+      "date": "2026-09-14",
+      "taxable": 531100,
+      "igst": 0,
+      "cgst": 47799,
+      "sgst": 47799
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0418",
+      "date": "2026-09-26",
+      "taxable": 157000,
+      "igst": 0,
+      "cgst": 14130,
+      "sgst": 14130
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0422",
+      "date": "2026-09-11",
+      "taxable": 264900,
+      "igst": 0,
+      "cgst": 23841,
+      "sgst": 23841
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0426",
+      "date": "2026-09-23",
+      "taxable": 432300,
+      "igst": 0,
+      "cgst": 38907,
+      "sgst": 38907
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0430",
+      "date": "2026-09-08",
+      "taxable": 485400,
+      "igst": 0,
+      "cgst": 43686,
+      "sgst": 43686
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0428",
+      "date": "2026-09-05",
+      "taxable": 90600,
+      "igst": 0,
+      "cgst": 8154,
+      "sgst": 8154
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0432",
+      "date": "2026-09-17",
+      "taxable": 402800,
+      "igst": 0,
+      "cgst": 36252,
+      "sgst": 36252
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0436",
+      "date": "2026-09-02",
+      "taxable": 185000,
+      "igst": 0,
+      "cgst": 16650,
+      "sgst": 16650
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0440",
+      "date": "2026-09-14",
+      "taxable": 220200,
+      "igst": 0,
+      "cgst": 19818,
+      "sgst": 19818
+    },
+    {
+      "gstin": "27AAPFS6631D1Z0",
+      "supplierName": "Shivneri Corrugators",
+      "invoiceNo": "SC/0440",
+      "date": "2026-09-25",
+      "taxable": 170900,
+      "igst": 0,
+      "cgst": 15381,
+      "sgst": 15381
+    },
+    {
+      "gstin": "27AAPFS6631D1Z0",
+      "supplierName": "Shivneri Corrugators",
+      "invoiceNo": "SC/0444",
+      "date": "2026-09-10",
+      "taxable": 364700,
+      "igst": 0,
+      "cgst": 32823,
+      "sgst": 32823
+    },
+    {
+      "gstin": "27AAPFS6631D1Z0",
+      "supplierName": "Shivneri Corrugators",
+      "invoiceNo": "SC/0448",
+      "date": "2026-09-22",
+      "taxable": 316400,
+      "igst": 0,
+      "cgst": 28476,
+      "sgst": 28476
+    },
+    {
+      "gstin": "27AAPFS6631D1Z0",
+      "supplierName": "Shivneri Corrugators",
+      "invoiceNo": "SC/0452",
+      "date": "2026-09-07",
+      "taxable": 89900,
+      "igst": 0,
+      "cgst": 8091,
+      "sgst": 8091
+    },
+    {
+      "gstin": "27AAPFS6631D1Z0",
+      "supplierName": "Shivneri Corrugators",
+      "invoiceNo": "SC/0456",
+      "date": "2026-09-19",
+      "taxable": 254400,
+      "igst": 0,
+      "cgst": 22896,
+      "sgst": 22896
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0455",
+      "date": "2026-09-23",
+      "taxable": 151700,
+      "igst": 18204,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0459",
+      "date": "2026-09-08",
+      "taxable": 322100,
+      "igst": 38652,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0463",
+      "date": "2026-09-20",
+      "taxable": 121600,
+      "igst": 14592,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0467",
+      "date": "2026-09-05",
+      "taxable": 278600,
+      "igst": 33432,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0467",
+      "date": "2026-09-16",
+      "taxable": 250000,
+      "igst": 45000,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0471",
+      "date": "2026-09-28",
+      "taxable": 128700,
+      "igst": 23166,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0475",
+      "date": "2026-09-13",
+      "taxable": 79500,
+      "igst": 14310,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0479",
+      "date": "2026-09-25",
+      "taxable": 426300,
+      "igst": 76734,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "36AAFFD1175K1ZE",
+      "supplierName": "Deccan Moulds & Dies",
+      "invoiceNo": "DMD-0479",
+      "date": "2026-09-09",
+      "taxable": 438300,
+      "igst": 78894,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "36AAFFD1175K1ZE",
+      "supplierName": "Deccan Moulds & Dies",
+      "invoiceNo": "DMD-0483",
+      "date": "2026-09-21",
+      "taxable": 107100,
+      "igst": 19278,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "36AAFFD1175K1ZE",
+      "supplierName": "Deccan Moulds & Dies",
+      "invoiceNo": "DMD-0487",
+      "date": "2026-09-06",
+      "taxable": 233200,
+      "igst": 41976,
+      "cgst": 0,
+      "sgst": 0
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0488",
+      "date": "2026-09-24",
+      "taxable": 432700,
+      "igst": 0,
+      "cgst": 38943,
+      "sgst": 38943
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0492",
+      "date": "2026-09-09",
+      "taxable": 133800,
+      "igst": 0,
+      "cgst": 12042,
+      "sgst": 12042
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0496",
+      "date": "2026-09-21",
+      "taxable": 223500,
+      "igst": 0,
+      "cgst": 20115,
+      "sgst": 20115
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0500",
+      "date": "2026-09-06",
+      "taxable": 274600,
+      "igst": 0,
+      "cgst": 24714,
+      "sgst": 24714
+    },
+    {
+      "gstin": "27AAQFG7741N1ZL",
+      "supplierName": "Ganesh Pallets",
+      "invoiceNo": "GP-0500",
+      "date": "2026-09-17",
+      "taxable": 322000,
+      "igst": 0,
+      "cgst": 19320,
+      "sgst": 19320
+    },
+    {
+      "gstin": "27AAQFG7741N1ZL",
+      "supplierName": "Ganesh Pallets",
+      "invoiceNo": "GP-0504",
+      "date": "2026-09-02",
+      "taxable": 169500,
+      "igst": 0,
+      "cgst": 10170,
+      "sgst": 10170
+    },
+    {
+      "gstin": "27AAQFG7741N1ZL",
+      "supplierName": "Ganesh Pallets",
+      "invoiceNo": "GP-0508",
+      "date": "2026-09-14",
+      "taxable": 126500,
+      "igst": 0,
+      "cgst": 7590,
+      "sgst": 7590
+    },
+    {
+      "gstin": "27AAQFG7741N1ZL",
+      "supplierName": "Ganesh Pallets",
+      "invoiceNo": "GP-0512",
+      "date": "2026-09-26",
+      "taxable": 444400,
+      "igst": 0,
+      "cgst": 26664,
+      "sgst": 26664
+    },
+    {
+      "gstin": "27AAMFS9902L1ZI",
+      "supplierName": "Sahyog Facility Services",
+      "invoiceNo": "SFS/0512",
+      "date": "2026-09-10",
+      "taxable": 233800,
+      "igst": 0,
+      "cgst": 21042,
+      "sgst": 21042
+    },
+    {
+      "gstin": "27AAMFS9902L1ZI",
+      "supplierName": "Sahyog Facility Services",
+      "invoiceNo": "SFS/0516",
+      "date": "2026-09-22",
+      "taxable": 150700,
+      "igst": 0,
+      "cgst": 13563,
+      "sgst": 13563
+    },
+    {
+      "gstin": "27AADFV3346C1ZD",
+      "supplierName": "Vardhman Labels",
+      "invoiceNo": "VL0518",
+      "date": "2026-09-20",
+      "taxable": 273300,
+      "igst": 0,
+      "cgst": 24597,
+      "sgst": 24597
+    },
+    {
+      "gstin": "27AADFV3346C1ZD",
+      "supplierName": "Vardhman Labels",
+      "invoiceNo": "VL0522",
+      "date": "2026-09-05",
+      "taxable": 188900,
+      "igst": 0,
+      "cgst": 17001,
+      "sgst": 17001
+    },
+    {
+      "gstin": "27AADFV3346C1ZD",
+      "supplierName": "Vardhman Labels",
+      "invoiceNo": "VL0526",
+      "date": "2026-09-17",
+      "taxable": 119900,
+      "igst": 0,
+      "cgst": 10791,
+      "sgst": 10791
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "pig/0496",
+      "date": "2026-09-21",
+      "taxable": 223500,
+      "igst": 0,
+      "cgst": 20115,
+      "sgst": 20115
+    }
+  ],
+  "gstr2b": [
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0410",
+      "date": "2026-09-02",
+      "taxable": 471900,
+      "igst": 0,
+      "cgst": 42471,
+      "sgst": 42471,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/2627/414",
+      "date": "2026-09-14",
+      "taxable": 531100,
+      "igst": 0,
+      "cgst": 47799,
+      "sgst": 47799,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0418",
+      "date": "2026-09-26",
+      "taxable": 157000,
+      "igst": 0,
+      "cgst": 14130,
+      "sgst": 14130,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0422",
+      "date": "2026-09-11",
+      "taxable": 264900,
+      "igst": 0,
+      "cgst": 23841,
+      "sgst": 23841,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AAACI4417R1ZC",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0426",
+      "date": "2026-09-23",
+      "taxable": 432300,
+      "igst": 77814,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAACI4417R1Z6",
+      "supplierName": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0430",
+      "date": "2026-09-08",
+      "taxable": 485400,
+      "igst": 0,
+      "cgst": 43686,
+      "sgst": 43686,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0428",
+      "date": "2026-09-05",
+      "taxable": 90600,
+      "igst": 0,
+      "cgst": 8154,
+      "sgst": 8154,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0432",
+      "date": "2026-09-17",
+      "taxable": 402800,
+      "igst": 0,
+      "cgst": 36252,
+      "sgst": 36252,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0436",
+      "date": "2026-09-02",
+      "taxable": 158000,
+      "igst": 0,
+      "cgst": 14220,
+      "sgst": 14220,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAECK2208M1ZH",
+      "supplierName": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0440",
+      "date": "2026-09-14",
+      "taxable": 220200,
+      "igst": 0,
+      "cgst": 19818,
+      "sgst": 19818,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAPFS6631D1Z0",
+      "supplierName": "Shivneri Corrugators",
+      "invoiceNo": "SC/0440",
+      "date": "2026-09-25",
+      "taxable": 170900,
+      "igst": 0,
+      "cgst": 15381,
+      "sgst": 15381,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAPFS6631D1Z0",
+      "supplierName": "Shivneri Corrugators",
+      "invoiceNo": "SC/0448",
+      "date": "2026-09-22",
+      "taxable": 316400,
+      "igst": 0,
+      "cgst": 28476,
+      "sgst": 28476,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0455",
+      "date": "2026-09-23",
+      "taxable": 151700,
+      "igst": 18204,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0459",
+      "date": "2026-09-08",
+      "taxable": 322100,
+      "igst": 38652,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0463",
+      "date": "2026-09-20",
+      "taxable": 121600,
+      "igst": 14592,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AAKFN3390Q1ZN",
+      "supplierName": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0467",
+      "date": "2026-09-05",
+      "taxable": 278600,
+      "igst": 0,
+      "cgst": 16716,
+      "sgst": 16716,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0467",
+      "date": "2026-09-16",
+      "taxable": 250000,
+      "igst": 45000,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0471",
+      "date": "2026-09-28",
+      "taxable": 128700,
+      "igst": 23166,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0475",
+      "date": "2026-09-13",
+      "taxable": 79500,
+      "igst": 14310,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": false,
+      "reason": "POS and supplier state are same but recipient state is different"
+    },
+    {
+      "gstin": "24AABCS8820H1ZF",
+      "supplierName": "Saraswati Chemicals",
+      "invoiceNo": "SCL0479",
+      "date": "2026-09-25",
+      "taxable": 426300,
+      "igst": 76734,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "36AAFFD1175K1ZE",
+      "supplierName": "Deccan Moulds & Dies",
+      "invoiceNo": "DMD/26-27/479",
+      "date": "2026-09-09",
+      "taxable": 438300,
+      "igst": 78894,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "36AAFFD1175K1ZE",
+      "supplierName": "Deccan Moulds & Dies",
+      "invoiceNo": "DMD-0483",
+      "date": "2026-09-21",
+      "taxable": 107100,
+      "igst": 19278,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "36AAFFD1175K1ZE",
+      "supplierName": "Deccan Moulds & Dies",
+      "invoiceNo": "DMD-0487",
+      "date": "2026-09-06",
+      "taxable": 233200,
+      "igst": 41976,
+      "cgst": 0,
+      "sgst": 0,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0488",
+      "date": "2026-09-24",
+      "taxable": 432700,
+      "igst": 0,
+      "cgst": 38943,
+      "sgst": 38943,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0492",
+      "date": "2026-09-09",
+      "taxable": 133800,
+      "igst": 0,
+      "cgst": 12042,
+      "sgst": 12042,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0496",
+      "date": "2026-09-21",
+      "taxable": 223500,
+      "igst": 0,
+      "cgst": 20115,
+      "sgst": 20115,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AACCP5512B1ZW",
+      "supplierName": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0500",
+      "date": "2026-09-06",
+      "taxable": 274600,
+      "igst": 0,
+      "cgst": 24714,
+      "sgst": 24714,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAQFG7741N1ZL",
+      "supplierName": "Ganesh Pallets",
+      "invoiceNo": "GP-0500",
+      "date": "2026-09-17",
+      "taxable": 322000,
+      "igst": 0,
+      "cgst": 19320,
+      "sgst": 19320,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAQFG7741N1ZL",
+      "supplierName": "Ganesh Pallets",
+      "invoiceNo": "GP-0504",
+      "date": "2026-09-02",
+      "taxable": 169500,
+      "igst": 0,
+      "cgst": 10170,
+      "sgst": 10170,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAQFG7741N1ZL",
+      "supplierName": "Ganesh Pallets",
+      "invoiceNo": "GP-0508",
+      "date": "2026-09-14",
+      "taxable": 126500,
+      "igst": 0,
+      "cgst": 7590,
+      "sgst": 7590,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAMFS9902L1ZI",
+      "supplierName": "Sahyog Facility Services",
+      "invoiceNo": "SFS/0512",
+      "date": "2026-09-10",
+      "taxable": 233800,
+      "igst": 0,
+      "cgst": 21042,
+      "sgst": 21042,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAMFS9902L1ZI",
+      "supplierName": "Sahyog Facility Services",
+      "invoiceNo": "SFS/0516",
+      "date": "2026-09-22",
+      "taxable": 150700,
+      "igst": 0,
+      "cgst": 13563,
+      "sgst": 13563,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AADFV3346C1ZD",
+      "supplierName": "Vardhman Labels",
+      "invoiceNo": "VL0518",
+      "date": "2026-09-20",
+      "taxable": 273300,
+      "igst": 0,
+      "cgst": 24597,
+      "sgst": 24597,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AADFV3346C1ZD",
+      "supplierName": "Vardhman Labels",
+      "invoiceNo": "VL0522",
+      "date": "2026-09-05",
+      "taxable": 188900,
+      "igst": 0,
+      "cgst": 17001,
+      "sgst": 17001,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AADFV3346C1ZD",
+      "supplierName": "Vardhman Labels",
+      "invoiceNo": "VL0526",
+      "date": "2026-09-17",
+      "taxable": 119900,
+      "igst": 0,
+      "cgst": 10791,
+      "sgst": 10791,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AAMFS9902L1ZI",
+      "supplierName": "Sahyog Facility Services",
+      "invoiceNo": "SFS/0488",
+      "date": "2026-09-29",
+      "taxable": 64000,
+      "igst": 0,
+      "cgst": 5760,
+      "sgst": 5760,
+      "itcAvailable": true,
+      "reason": ""
+    },
+    {
+      "gstin": "27AADFV3346C1ZD",
+      "supplierName": "Vardhman Labels",
+      "invoiceNo": "VL0519",
+      "date": "2026-09-29",
+      "taxable": 41500,
+      "igst": 0,
+      "cgst": 3735,
+      "sgst": 3735,
+      "itcAvailable": true,
+      "reason": ""
+    }
+  ],
+  "story": [
+    [
+      "format",
+      "IPL/26-27/0414",
+      "Supplier writes IPL/2627/414"
+    ],
+    [
+      "wrongGstin",
+      "IPL/26-27/0426",
+      "Billed from Gujarat registration"
+    ],
+    [
+      "amount",
+      "KMB-0436",
+      "Taxable typed as 1,85,000; invoice is 1,58,000"
+    ],
+    [
+      "notIn2b",
+      "SC/0444",
+      "Shivneri has not filed GSTR-1 for these"
+    ],
+    [
+      "notIn2b",
+      "SC/0452",
+      "Shivneri has not filed GSTR-1 for these"
+    ],
+    [
+      "notIn2b",
+      "SC/0456",
+      "Shivneri has not filed GSTR-1 for these"
+    ],
+    [
+      "taxType",
+      "NL/FRT/0467",
+      "IGST in books, CGST+SGST in GSTR-2B"
+    ],
+    [
+      "itcBlocked",
+      "SCL0475",
+      "GSTR-2B: ITC not available"
+    ],
+    [
+      "format",
+      "DMD-0479",
+      "Supplier writes DMD/26-27/479"
+    ],
+    [
+      "duplicate",
+      "PIG/0496",
+      "Entered twice in Tally"
+    ],
+    [
+      "notIn2b",
+      "GP-0512",
+      "Ganesh filed GSTR-1 late"
+    ],
+    [
+      "notInBooks",
+      "SFS/0488",
+      "September housekeeping bill not booked yet"
+    ],
+    [
+      "notInBooks",
+      "VL0519",
+      "Not our order: likely billed to the wrong GSTIN by the supplier"
+    ]
+  ],
+  "sample": true
+};
+const C = globalThis.Credit;
+const TODAY = DATA.today;
+const P = DATA.period;
+const lakh = (v) => '₹' + (Number(v) / 1e5).toFixed(2) + ' L';
+const inr = (v) => '₹' + Math.round(Number(v)).toLocaleString('en-IN');
+const amt = (v) => (Math.abs(v) >= 1e5 ? lakh(v) : inr(v));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtDate = (iso) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const daysTo = (iso) => Math.round((Date.parse(iso) - Date.parse(TODAY)) / 864e5);
+const PEOPLE = Object.fromEntries(DATA.people.map((p) => [p.role, p]));
+const ROLE_LABEL = { exec: 'Accounts executive', fc: 'Finance controller' };
+const ROLE_IN_TEXT = { exec: 'accounts executive', fc: 'finance controller' };
+const VIEWS = [['summary', 'Summary'], ['worklist', 'Worklist'], ['suppliers', 'Suppliers'], ['signoff', 'Sign-off'], ['audit', 'Audit log'], ['connections', 'Connections']];
+
+// What each category means, who acts, and what "done" looks like when it is ours to fix.
+const CAT = {
+  matched: { label: 'Matched', tone: 'good', owner: null },
+  format: { label: 'Number format differs', tone: 'teal', owner: 'us', done: [['accepted', 'Accepted in IMS']] },
+  amount: { label: 'Amount differs', tone: 'warn', owner: 'supplier' },
+  taxType: { label: 'Tax type differs', tone: 'warn', owner: 'supplier' },
+  notIn2b: { label: 'Not in GSTR-2B', tone: 'bad', owner: 'supplier' },
+  notInBooks: { label: 'Not in our books', tone: 'warn', owner: 'us', done: [['booked', 'Book the purchase'], ['rejected', 'Reject in IMS']] },
+  wrongGstin: { label: 'Wrong GSTIN in books', tone: 'warn', owner: 'us', done: [['corrected', 'GSTIN corrected']] },
+  itcBlocked: { label: 'ITC not available', tone: 'bad', owner: 'us', done: [['excluded', 'Marked not claimable']] },
+  duplicate: { label: 'Duplicate in books', tone: 'warn', owner: 'us', done: [['deleted', 'Duplicate deleted']] },
+};
+const DONE_TEXT = { accepted: 'Accepted in IMS', booked: 'Purchase booked', rejected: 'Rejected in IMS', corrected: 'GSTIN corrected in books', excluded: 'Kept out of the claim', deleted: 'Duplicate deleted' };
+
+// ---------- the reconciliation, run in the page with the same tested rules as the n8n flow ----------
+const R = C.reconcile({ books: DATA.books, gstr2b: DATA.gstr2b });
+const ROWS = R.rows.map((r) => ({ ...r, id: r.category + '|' + (r.invoiceNo || r.invoiceNo2b) }));
+const SUP = Object.fromEntries(DATA.suppliers.map((s) => [s.gstin, s]));
+const TWO_B = Object.fromEntries(DATA.gstr2b.map((t) => [t.gstin + '|' + t.invoiceNo, t]));
+const FOLLOW = R.bySupplier.filter((s) => s.needsSupplier).map((s) => {
+  const f = C.followUp(s.supplierName, s.rows, P.label);
+  const c = SUP[s.gstin] || {};
+  return { gstin: s.gstin, name: s.supplierName, contact: c.contact, email: c.email, onTime: c.gstOnTime12, rows: s.rows.filter((r) => CAT[r.category].owner === 'supplier'), ...f };
+});
+
+const S = { role: 'exec', view: 'summary', guide: true, filter: 'open', selSup: FOLLOW[0].gstin, edits: {}, done: {}, sent: {}, signoff: null, form: null, auditFilter: 'all', audit: [] };
+try { const r = localStorage.getItem('gstDeskRole'); if (r && ROLE_LABEL[r]) S.role = r; if (localStorage.getItem('gstDeskGuide') === 'hidden') S.guide = false; } catch (e) {}
+
+const me = () => PEOPLE[S.role];
+const ours = () => ROWS.filter((r) => CAT[r.category].owner === 'us');
+const ourOpen = () => ours().filter((r) => !S.done[r.id]);
+const unsent = () => FOLLOW.filter((f) => !S.sent[f.gstin]);
+
+// Claimable now: everything the rules allow, plus credit unlocked by fixing our own books.
+function claimLines() {
+  const lines = [];
+  for (const r of ROWS) {
+    let c = r.claimable;
+    if (r.category === 'wrongGstin' && S.done[r.id]) c = r.tax2b;
+    if (r.category === 'notInBooks' && S.done[r.id] && S.done[r.id].how === 'booked') c = r.tax2b;
+    if (c > 0) lines.push({ r, c });
+  }
+  return lines;
+}
+function claimNow() { return Math.round(claimLines().reduce((s, l) => s + l.c, 0) * 100) / 100; }
+function heads() {
+  const h = { igst: 0, cgst: 0, sgst: 0 };
+  for (const { r, c } of claimLines()) {
+    const t = TWO_B[r.gstin2b + '|' + r.invoiceNo2b];
+    const f = c / r.tax2b;
+    h.igst += (t.igst || 0) * f; h.cgst += (t.cgst || 0) * f; h.sgst += (t.sgst || 0) * f;
+  }
+  return h;
+}
+const fixFirst = () => ROWS.filter((r) => r.category === 'wrongGstin' && !S.done[r.id]).reduce((s, r) => s + r.tax2b, 0);
+
+// Actions happen on the demo date, at the viewer's current time in IST.
+const stamp = () => TODAY + 'T' + new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(11, 19) + '+05:30';
+function log(actor, actorType, action, record, detail, evidence, at) {
+  S.audit.unshift({ at: at || stamp(), actor, actorType, action, record, detail, evidence });
+}
+(function seedAudit() {
+  const t = (m) => '2026-10-15T09:' + String(m).padStart(2, '0') + ':00+05:30';
+  const c = R.summary.counts;
+  [
+    [t(0), 'GST flow', 'system', 'GSTR-2B fetched', P.label, R.summary.invoices2b + ' invoices from ' + new Set(DATA.gstr2b.map((x) => x.gstin)).size + ' supplier registrations', 'GSP (sample response) · run on the 15th'],
+    [t(0), 'GST flow', 'system', 'Purchase register read', P.label, DATA.books.length + ' bills', 'Tally purchase register (CSV in demo)'],
+    [t(1), 'Matching rules', 'system', 'Matched invoice by invoice', P.label, c.matched + ' matched, ' + (ROWS.length - c.matched) + ' to fix · ' + lakh(R.summary.claimable) + ' claimable, ' + lakh(R.summary.atRisk) + ' held up', 'Rules v2026-10 · Section 16(2)(aa)'],
+    [t(1), 'GST flow', 'system', 'Worklist written', P.label, (ROWS.length - c.matched) + ' rows', 'GST worklist tab'],
+    [t(1), 'GST flow', 'system', 'Supplier emails drafted', P.label, FOLLOW.length + ' drafts, ' + lakh(FOLLOW.reduce((s, f) => s + f.held, 0)) + ' held up', 'Follow-up templates'],
+    [t(2), 'GST flow', 'system', 'Approval requested', P.label, 'Sent to ' + PEOPLE.fc.name, 'Gmail'],
+  ].reverse().forEach((r) => S.audit.push({ at: r[0], actor: r[1], actorType: r[2], action: r[3], record: r[4], detail: r[5], evidence: r[6] }));
+})();
+
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 4200); }
+const chip = (cat) => `<span class="chip ${CAT[cat].tone}">${CAT[cat].label}</span>`;
+
+function waiting() {
+  const items = [];
+  if (S.role === 'exec') {
+    if (ourOpen().length) items.push(['worklist', 'Fix ' + ourOpen().length + ' items in our books', 'Duplicate, wrong GSTIN, bills not booked']);
+    else if (!S.signoff) items.push(['signoff', 'Send ' + lakh(claimNow()) + ' to ' + PEOPLE.fc.name + ' for sign-off', 'The worklist is clear']);
+  } else {
+    if (unsent().length) items.push(['suppliers', 'Approve ' + unsent().length + ' supplier emails', lakh(unsent().reduce((s, f) => s + f.held, 0)) + ' of credit held up']);
+    if (S.signoff && !S.signoff.signedBy) items.push(['signoff', 'Sign off ' + lakh(S.signoff.amount) + ' for GSTR-3B', 'Prepared by ' + S.signoff.preparedBy]);
+  }
+  return items;
+}
+
+// ---------- views ----------
+function viewSummary() {
+  const s = R.summary, cn = claimNow(), ff = fixFirst(), held = s.atRisk, total = cn + ff + held;
+  const due = daysTo(P.gstr3bDue);
+  const cats = Object.keys(CAT).filter((k) => k !== 'matched' && s.counts[k]);
+  const items = waiting();
+  const steps = [
+    ['GSTR-2B generated on the portal', fmtDate(P.gstr2bGenerated), 'done'],
+    ['Matched with the purchase register', '15 Oct, 09:01', 'done'],
+    ['Fix our books', ourOpen().length ? ourOpen().length + ' open' : 'done', ourOpen().length ? 'now' : 'done'],
+    ['Approve supplier emails', unsent().length ? unsent().length + ' waiting' : 'sent', unsent().length ? (ourOpen().length ? '' : 'now') : 'done'],
+    ['Sign off the ITC figure', S.signoff && S.signoff.signedBy ? 'signed' : S.signoff ? 'with ' + PEOPLE.fc.name.split(' ')[0] : 'not yet', S.signoff && S.signoff.signedBy ? 'done' : !ourOpen().length && !unsent().length ? 'now' : ''],
+    ['File GSTR-3B (your team)', 'due ' + fmtDate(P.gstr3bDue), ''],
+  ];
+  return `
+  ${S.guide ? `<section class="panel pad guide">
+    <div class="pagehead"><h3 class="label">Try this: three minutes, two roles</h3><div class="actions"><button class="btn link" data-act="restart">Start the demo again</button><button class="btn link" data-act="hideGuide">Hide</button></div></div>
+    <ol>
+      <li>As <b>Priya Nair</b>, open the <a href="#worklist" data-act="goto" data-view="worklist">Worklist</a> and fix our side: delete the duplicate, correct Indus's GSTIN, decide the two bills that are not in our books.</li>
+      <li>Open <a href="#suppliers" data-act="goto" data-view="suppliers">Suppliers</a>. Edit Shivneri's email if you like. You cannot send it: the finance controller approves.</li>
+      <li>Switch to <b>Rohan Mehta</b> at the top. Approve the supplier emails, then <a href="#signoff" data-act="goto" data-view="signoff">sign off</a> the figure Priya prepared. Every step lands in the <a href="#audit" data-act="goto" data-view="audit">Audit log</a>.</li>
+    </ol>
+  </section>` : ''}
+  <div class="pagehead"><h2>${esc(P.label)}</h2><span class="muted small">GSTR-2B generated ${fmtDate(P.gstr2bGenerated)} · GSTR-3B due ${fmtDate(P.gstr3bDue)}, <b>${due} days</b> left · viewing as ${esc(me().name)}, ${ROLE_IN_TEXT[S.role]}</span></div>
+  <div class="kpis">
+    <div class="panel kpi"><span class="label">ITC in our books</span><span class="big num">${lakh(s.itcBooks)}</span><span class="sub">${s.invoicesBooks} bills, duplicate left out</span></div>
+    <div class="panel kpi"><span class="label">ITC in GSTR-2B</span><span class="big num">${lakh(s.itc2b)}</span><span class="sub">${s.invoices2b} invoices reported by suppliers</span></div>
+    <div class="panel kpi"><span class="label">Claimable now</span><span class="big num">${lakh(cn)}</span><span class="sub">${cn > s.claimable ? '+' + amt(cn - s.claimable) + ' unlocked by fixing our books' : 'in GSTR-2B and matching our books'}</span></div>
+    <div class="panel kpi"><span class="label">Held up</span><span class="big num">${lakh(held)}</span><span class="sub">${FOLLOW.length} suppliers to act · ${amt(ROWS.filter((r) => r.category === 'itcBlocked').reduce((a, r) => a + r.itcAtRisk, 0))} not available at all</span></div>
+  </div>
+  <div class="grid2">
+    <section class="panel pad">
+      <div class="pagehead"><h3 class="label">Where the credit stands</h3><span class="muted small num">${lakh(total)} to account for</span></div>
+      <div class="ageing" role="img" aria-label="Claimable ${lakh(cn)}, correct the books first ${amt(ff)}, held up ${lakh(held)}">
+        <span style="width:${(cn / total) * 100}%;background:var(--teal)"></span><span style="width:${(ff / total) * 100}%;background:var(--age2)"></span><span style="width:${(held / total) * 100}%;background:var(--bad)"></span>
+      </div>
+      <div class="split3">
+        <div><span><i style="background:var(--teal)"></i>Claimable now</span><b class="num">${lakh(cn)}</b></div>
+        <div><span><i style="background:var(--age2)"></i>Correct our books first</span><b class="num">${amt(ff)}</b></div>
+        <div><span><i style="background:var(--bad)"></i>Held up</span><b class="num">${lakh(held)}</b></div>
+      </div>
+      <div class="tablewrap" style="margin-top:16px"><table>
+        <thead><tr><th>What the match found</th><th class="r">Invoices</th><th class="r">Tax</th><th>Who acts</th></tr></thead>
+        <tbody>
+          <tr><td>${chip('matched')}</td><td class="r num">${s.counts.matched}</td><td class="r num">${amt(ROWS.filter((r) => r.category === 'matched').reduce((a, r) => a + r.taxBooks, 0))}</td><td class="small muted">Nobody: claim it</td></tr>
+          ${cats.map((k) => { const rs = ROWS.filter((r) => r.category === k); return `<tr><td>${chip(k)}</td><td class="r num">${rs.length}</td><td class="r num">${amt(rs.reduce((a, r) => a + (r.taxBooks || r.tax2b), 0))}</td><td class="small">${CAT[k].owner === 'us' ? 'Us · ' + esc(PEOPLE.exec.name) : 'The supplier'}</td></tr>`; }).join('')}
+        </tbody>
+      </table></div>
+    </section>
+    <div style="display:grid;gap:16px;align-content:start">
+      <section class="panel pad">
+        <div class="pagehead"><h3 class="label">Needs a decision</h3><span class="legend-gold"><i></i>a person decides</span></div>
+        <div class="decide">${items.length ? items.map(([v, t, sub]) => `<a href="#${v}" data-act="goto" data-view="${v}"><span><b>${esc(t)}</b><br><span class="muted small">${esc(sub)}</span></span><span class="go">Open</span></a>`).join('') : '<p class="empty">Nothing waiting for ' + esc(me().name) + '. Switch role at the top to see what the other person does.</p>'}</div>
+      </section>
+      <section class="panel pad">
+        <h3 class="label" style="margin-bottom:6px">This month</h3>
+        <ol class="month">${steps.map(([l, w, st]) => `<li class="${st}"><span class="dot"></span><span>${l}</span><span class="when num">${esc(w)}</span></li>`).join('')}</ol>
+      </section>
+    </div>
+  </div>
+  <section>
+    <h3 class="label" style="margin-bottom:10px">How every figure on this desk is reached</h3>
+    <div class="how">
+      <div><b>The flow fetches and matches</b><span class="muted small">On the 15th it reads GSTR-2B and the purchase register and matches them invoice by invoice. Rules, not AI: the same files give the same answer.</span></div>
+      <div><b>The law sets what is claimable</b><span class="muted small">Credit only for invoices in GSTR-2B (Section 16(2)(aa)). Differences are claimed at the lower figure until the supplier corrects them.</span></div>
+      <div class="person"><b>A person signs</b><span class="muted small">The accounts executive prepares; the finance controller approves supplier emails and signs the figure. Filing stays with your team.</span></div>
+    </div>
+  </section>`;
+}
+
+function viewWorklist() {
+  const filters = [['open', 'Ours, open'], ['ours', 'Ours'], ['supplier', "Supplier's"], ['all', 'All to fix'], ['matched', 'Matched']];
+  const f = S.filter;
+  const shown = ROWS.filter((r) => {
+    const o = CAT[r.category].owner;
+    if (f === 'matched') return r.category === 'matched';
+    if (r.category === 'matched') return false;
+    if (f === 'open') return o === 'us' && !S.done[r.id];
+    if (f === 'ours') return o === 'us';
+    if (f === 'supplier') return o === 'supplier';
+    return true;
+  });
+  const canFix = S.role === 'exec';
+  return `
+  <div class="pagehead"><h2>Worklist</h2><span class="muted small">${ROWS.length - R.summary.counts.matched} invoices to fix · written to the GST worklist tab by the 15 Oct run</span></div>
+  <section class="panel">
+    <div class="pad pagehead"><span class="small">${ourOpen().length ? `<b>${ourOpen().length} of ${ours().length}</b> of our items still open.` : '<b>Our side is clear.</b> What remains is with suppliers.'}${canFix ? '' : ' ' + esc(PEOPLE.exec.name) + ' fixes our side; you see it as she goes.'}</span>
+      <div class="filters" role="group" aria-label="Filter worklist">${filters.map(([k, l]) => `<button aria-pressed="${f === k}" data-act="filter" data-k="${k}">${l}</button>`).join('')}</div></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Supplier and invoice</th><th class="r">Tax in books</th><th class="r">Tax in 2B</th><th class="r">Held up</th><th>What the match found</th><th>What to do</th></tr></thead>
+      <tbody>${shown.map((r) => worklistRow(r, canFix)).join('') || `<tr><td colspan="6" class="empty">${f === 'open' ? 'Nothing open on our side.' : 'Nothing here.'}</td></tr>`}</tbody>
+    </table></div>
+  </section>`;
+}
+
+function worklistRow(r, canFix) {
+  const cat = CAT[r.category];
+  const inv = r.invoiceNo || r.invoiceNo2b;
+  const other = r.invoiceNo && r.invoiceNo2b && r.invoiceNo2b !== r.invoiceNo ? `<span class="inv2">In 2B as ${esc(r.invoiceNo2b)}</span>` : r.gstin2b && r.gstin2b !== r.gstin ? `<span class="inv2">In 2B under ${esc(r.gstin2b)}</span>` : !r.invoiceNo ? '<span class="inv2">Only in GSTR-2B</span>' : '';
+  let todo;
+  if (r.category === 'matched') todo = '<span class="muted small">Claim in GSTR-3B</span>';
+  else if (cat.owner === 'supplier') {
+    const s = S.sent[r.gstin];
+    todo = `<span class="small">${esc(r.action)}</span>${s ? `<span class="src">Email sent by ${esc(s.by)}</span>` : `<span class="src">Email drafted, waiting for ${esc(PEOPLE.fc.name)}</span>`}`;
+  } else if (S.done[r.id]) {
+    todo = `<span class="chip good">✓ ${DONE_TEXT[S.done[r.id].how]}</span><span class="src">${esc(S.done[r.id].by)}${canFix && !(S.signoff && S.signoff.signedBy) ? ` · <button class="btn link" data-act="undoFix" data-id="${esc(r.id)}">Undo</button>` : ''}</span>`;
+  } else {
+    todo = `<span class="small">${esc(r.action)}</span>${canFix ? `<div class="rowacts" style="margin-top:6px">${cat.done.map(([how, l], i) => `<button class="btn ${i ? '' : 'teal'}" data-act="fix" data-id="${esc(r.id)}" data-how="${how}">${l}</button>`).join('')}</div>` : ''}`;
+  }
+  return `<tr>
+    <td><b>${esc(r.supplierName)}</b><span class="src num">${esc(inv)} · ${fmtDate(r.date)}</span>${other}</td>
+    <td class="r num">${r.taxBooks ? inr(r.taxBooks) : '—'}</td><td class="r num">${r.tax2b ? inr(r.tax2b) : '—'}</td>
+    <td class="r num">${r.itcAtRisk ? inr(r.itcAtRisk) : '—'}</td>
+    <td>${chip(r.category)}${r.reason ? `<span class="src">${esc(r.reason)}</span>` : ''}</td>
+    <td style="min-width:240px">${todo}</td>
+  </tr>`;
+}
+
+function viewSuppliers() {
+  const f = FOLLOW.find((x) => x.gstin === S.selSup) || FOLLOW[0];
+  const canSend = S.role === 'fc';
+  const pending = unsent();
+  const all = R.bySupplier.map((b) => ({ ...b, s: SUP[b.gstin] || SUP[Object.keys(SUP).find((g) => g.slice(2, 12) === b.gstin.slice(2, 12))] })).sort((a, b) => a.s.name.localeCompare(b.s.name));
+  return `
+  <div class="pagehead"><h2>Suppliers</h2><span class="muted small">Only suppliers who have to act get an email · one approval covers them all</span></div>
+  <section class="panel pad pagehead">
+    <span>${pending.length ? `<b>${pending.length} emails</b> drafted, ${lakh(pending.reduce((s, x) => s + x.held, 0))} of credit held up until suppliers correct their GSTR-1.` : '<b>All supplier emails sent.</b> Next month\'s GSTR-2B will show who acted.'}</span>
+    ${canSend ? `<button class="btn gold" data-act="sendAll" ${pending.length ? '' : 'disabled'}>Approve and send all ${pending.length || ''}</button>` : `<span class="gate">${esc(PEOPLE.fc.name)} approves supplier emails. You can edit the drafts.</span>`}
+  </section>
+  <div class="split">
+    <div class="panel list" aria-label="Suppliers to email">${FOLLOW.map((x) => `
+      <button class="row" aria-selected="${x.gstin === f.gstin}" data-act="selSup" data-id="${x.gstin}">
+        <span class="r1"><span class="name">${esc(x.name)}</span><span class="num">${amt(x.held)}</span></span>
+        <span class="r1"><span class="muted small">${x.rows.length} invoice${x.rows.length > 1 ? 's' : ''} · filed on time ${x.onTime} of 12</span>${S.sent[x.gstin] ? '<span class="chip good">Sent</span>' : '<span class="chip warn">Draft</span>'}</span>
+      </button>`).join('')}</div>
+    <article class="panel">${supplierDetail(f, canSend)}</article>
+  </div>
+  <section class="panel">
+    <div class="pad" style="padding-bottom:6px"><h3 class="label">Every supplier this month</h3></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Supplier</th><th class="r">Invoices</th><th class="r">Matched</th><th class="r">Held up</th><th>GSTR-1 on time, last 12 months</th></tr></thead>
+      <tbody>${all.map((b) => `<tr><td><b>${esc(b.s.name)}</b><span class="src num">${esc(b.gstin)}</span></td><td class="r num">${b.rows.length}</td><td class="r num">${b.rows.filter((r) => r.category === 'matched').length}</td><td class="r num">${b.atRisk ? inr(b.atRisk) : '—'}</td><td><span class="chip ${b.s.gstOnTime12 >= 11 ? 'good' : b.s.gstOnTime12 >= 9 ? 'warn' : 'bad'}">${b.s.gstOnTime12} of 12</span></td></tr>`).join('')}</tbody>
+    </table></div>
+    <p class="pad muted small" style="padding-top:8px">Filing record from the GST portal via the GSP (sample). A supplier who files late costs you credit every month: worth raising at the next price negotiation.</p>
+  </section>`;
+}
+
+function supplierDetail(f, canSend) {
+  const sent = S.sent[f.gstin];
+  const text = S.edits[f.gstin] ?? f.message;
+  const edited = S.edits[f.gstin] != null && S.edits[f.gstin] !== f.message;
+  const act = sent
+    ? `<div class="gate">Sent by ${esc(sent.by)}${sent.edited ? ' (edited)' : ''} · logged</div>`
+    : `<div class="actions">${canSend ? `<button class="btn gold" data-act="sendOne" data-id="${f.gstin}">Approve and send</button>` : ''}${edited ? '<span class="chip teal">Edited</span>' : ''}${!canSend ? `<span class="muted small">Edits are kept for ${esc(PEOPLE.fc.name)} to approve.</span>` : ''}</div>`;
+  return `<div class="detail">
+    <div class="dhead"><div><span class="label">${esc(f.gstin)} · filed on time ${f.onTime} of 12 months</span><h3>${esc(f.name)}</h3></div><span class="chip bad num">${amt(f.held)} held up</span></div>
+    <div><label class="label" for="draft">Email to ${esc(f.contact)} · ${esc(f.email)}</label><p class="small" style="margin:6px 0"><b>Subject:</b> ${esc(f.subject)}</p><textarea class="draft" id="draft" data-id="${f.gstin}" ${sent ? 'readonly' : ''}>${esc(text)}</textarea></div>
+    ${act}
+    <section><h4 class="label" style="margin-bottom:8px">Invoices that need this supplier</h4><div class="tablewrap"><table><thead><tr><th>Invoice</th><th>Date</th><th class="r">Tax</th><th class="r">Held up</th><th>Found</th></tr></thead><tbody>${f.rows.map((r) => `<tr><td class="num">${esc(r.invoiceNo)}</td><td>${fmtDate(r.date)}</td><td class="r num">${inr(r.taxBooks)}</td><td class="r num">${inr(r.itcAtRisk)}</td><td>${chip(r.category)}</td></tr>`).join('')}</tbody></table></div></section>
+  </div>`;
+}
+
+function viewSignoff() {
+  const h = heads(), cn = claimNow(), so = S.signoff, open = ourOpen();
+  const checks = [
+    [!open.length, open.length ? open.length + ' of our worklist items still open' : 'Our side of the worklist is clear'],
+    [true, 'Only invoices in GSTR-2B are counted (Section 16(2)(aa))'],
+    [true, 'Amount differences counted at the lower figure; blocked credit left out'],
+    [!unsent().length, unsent().length ? unsent().length + ' supplier emails not yet approved' : 'Every supplier who must act has been emailed'],
+  ];
+  let act;
+  if (so && so.signedBy) act = `<div class="gate">Signed off by ${esc(so.signedBy)} · ${new Date(so.signedAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })} · <span class="num">${inr(so.amount)}</span>. The figure is locked for GSTR-3B; your team files it on the portal.</div>`;
+  else if (S.role === 'exec') {
+    if (so) act = `<div class="gate">Sent to ${esc(PEOPLE.fc.name)} for sign-off at <span class="num">${inr(so.amount)}</span>. You prepared it, so you cannot sign it.</div>`;
+    else if (open.length) act = `<div class="gate">Fix the ${open.length} open items on the <a href="#worklist" data-act="goto" data-view="worklist">worklist</a> first. The figure changes as you do.</div>`;
+    else act = `<div class="actions"><button class="btn teal" data-act="prepare">Send ${inr(cn)} to ${esc(PEOPLE.fc.name)} for sign-off</button></div>`;
+  } else {
+    if (!so) act = `<div class="gate">Waiting for ${esc(PEOPLE.exec.name)} to clear the worklist and prepare the figure.</div>`;
+    else if (S.form && S.form.kind === 'sendback') act = `<form class="form" data-act="submitSendback"><b>Send back to ${esc(PEOPLE.exec.name)}</b><label>Reason (goes into the audit log)<textarea id="f-reason" rows="2" placeholder="Required">${esc(S.form.reason || '')}</textarea></label>${S.form.error ? `<span class="err">${esc(S.form.error)}</span>` : ''}<div class="actions"><button class="btn teal" type="submit">Send back</button><button class="btn link" type="button" data-act="closeForm">Cancel</button></div></form>`;
+    else act = `<div class="actions"><button class="btn gold" data-act="sign">Sign off ${inr(so.amount)}</button><button class="btn link" data-act="openSendback">Send back</button><span class="muted small">Prepared by ${esc(so.preparedBy)}</span></div>`;
+  }
+  return `
+  <div class="pagehead"><h2>Sign-off</h2><span class="muted small">The input tax credit Sarvam claims for ${esc(P.label)} · GSTR-3B due ${fmtDate(P.gstr3bDue)}</span></div>
+  <div class="grid2">
+    <section class="panel pad" style="display:grid;gap:16px">
+      <div class="pagehead"><h3 class="label">ITC to claim · GSTR-3B table 4(A)(5), all other ITC</h3>${so && so.signedBy ? '<span class="chip good">Signed</span>' : so ? '<span class="chip warn">Awaiting sign-off</span>' : '<span class="chip">Being prepared</span>'}</div>
+      <div class="sheet">
+        <div><span>Integrated tax (IGST)</span><span class="num">${inr(h.igst)}</span></div>
+        <div><span>Central tax (CGST)</span><span class="num">${inr(h.cgst)}</span></div>
+        <div><span>State tax (SGST)</span><span class="num">${inr(h.sgst)}</span></div>
+        <div><span>Cess</span><span class="num">₹0</span></div>
+        <div class="total"><span>Total to claim</span><span class="num">${inr(so ? so.amount : cn)}</span></div>
+      </div>
+      ${so && !so.signedBy && Math.abs(so.amount - cn) > 0.5 ? `<div class="gate">The figure changed after it was prepared. ${esc(PEOPLE.exec.name)} must send it again.</div>` : ''}
+      ${act}
+    </section>
+    <section class="panel pad">
+      <h3 class="label" style="margin-bottom:12px">Before signing</h3>
+      <ul class="checks">${checks.map(([ok, t]) => `<li><span class="${ok ? 'y' : 'n'}">${ok ? '✓' : '!'}</span><span>${esc(t)}</span></li>`).join('')}</ul>
+      <p class="muted small" style="margin-top:14px">Held up and not claimed this month: <span class="num">${inr(R.summary.atRisk)}</span>. It can be claimed in a later month once the supplier reports it, within the time limit in Section 16(4).</p>
+    </section>
+  </div>`;
+}
+
+function viewAudit() {
+  const f = S.auditFilter;
+  const rows = S.audit.filter((r) => f === 'all' || (f === 'people' ? r.actorType === 'person' : r.actorType !== 'person'));
+  return `
+  <div class="pagehead"><h2>Audit log</h2><span class="muted small">Every step, who or what did it, and the evidence · ${S.audit.length} entries</span></div>
+  <section class="panel">
+    <div class="pad pagehead"><span class="muted small">Newest first. In a live install this is the n8n audit table, kept with you.</span><div class="filters" role="group" aria-label="Filter log">${[['all', 'All'], ['people', 'People'], ['machine', 'System']].map(([k, l]) => `<button aria-pressed="${f === k}" data-act="auditFilter" data-k="${k}">${l}</button>`).join('')}</div></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>When</th><th>Who</th><th>What</th><th>Record</th><th>Detail and evidence</th></tr></thead>
+      <tbody>${rows.map((r) => `<tr><td class="num small" style="white-space:nowrap">${new Date(r.at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}</td><td><b>${esc(r.actor)}</b><span class="src">${r.actorType === 'person' ? 'Person' : 'System'}</span></td><td>${esc(r.action)}</td><td class="num small">${esc(r.record)}</td><td class="small">${esc(r.detail)}<span class="src">${esc(r.evidence)}</span></td></tr>`).join('')}</tbody>
+    </table></div>
+  </section>`;
+}
+
+function viewConnections() {
+  const rows = [
+    ['Purchase register upload (CSV or Excel)', 'Live in demo', 'Bills from any ledger; columns matched by name', 'Nothing', 'Nothing'],
+    ['GSTR-2B upload (portal download)', 'Live in demo', 'Invoices suppliers reported, ITC availability', 'Nothing: download from the GST portal and drop it in', 'Nothing'],
+    ['Google Sheet', 'Live in demo', 'Supplier contacts', 'Nothing', 'The GST worklist'],
+    ['Gmail or Microsoft 365', 'Live in demo', 'The controller\'s approval', 'A mailbox the flow can send from', 'Supplier follow-ups, the approval email'],
+    ['GST data via a GSP', 'Configured', 'GSTR-2B on the 15th; supplier filing record', 'A GST Suvidha Provider account and taxpayer API access', 'IMS accept, reject or pending, only if you switch it on'],
+    ['TallyPrime', 'Configured', 'Purchase register (XML on port 9000)', 'A small agent inside your network; the Tally port is never exposed', 'Nothing'],
+    ['Zoho Books', 'Configured', 'Bills (REST API, India data centre)', 'An API connection and the organisation ID', 'Nothing'],
+    ['SAP S/4HANA or Business One', 'Configured', 'Supplier invoices (OData / Service Layer)', 'An API user with read access', 'Nothing'],
+  ];
+  return `
+  <div class="pagehead"><h2>Connections</h2><span class="muted small">What this desk reads, what it writes back, and what we need from your IT team</span></div>
+  <section class="panel"><div class="tablewrap"><table class="conn">
+    <thead><tr><th>System</th><th>Status</th><th>What we read</th><th>What we write back</th><th>What we need from you</th></tr></thead>
+    <tbody>${rows.map(([n, s, r, need, w]) => `<tr><td>${n}</td><td class="${s === 'Live in demo' ? 'ok' : 'cfg'} small">${s}</td><td class="small">${r}</td><td class="small">${w}</td><td class="small">${need}</td></tr>`).join('')}</tbody>
+  </table></div></section>
+  <div class="grid2">
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">How it runs</h3>
+      <div class="ceil">
+        <div><span>1 · Fetch</span><span class="muted">15th, 09:00 → GSTR-2B and purchase register</span></div>
+        <div><span>2 · Match</span><span class="muted">invoice by invoice → 9 outcomes</span></div>
+        <div><span>3 · Worklist</span><span class="muted">every difference → sheet, with the action</span></div>
+        <div><span>4 · Suppliers</span><span class="muted">one approval → one email per supplier</span></div>
+        <div><span>5 · Sign-off</span><span class="muted">executive prepares → controller signs</span></div>
+      </div>
+      <p class="muted small" style="margin-top:10px">One n8n workflow: visual, readable by your IT team, and running in your own cloud account.</p>
+    </section>
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">Controls</h3>
+      <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">
+        <li>Credit is counted only for invoices in GSTR-2B. The rule is in code and tested every release.</li>
+        <li>Matching is rules, not AI: the same files give the same answer, every month.</li>
+        <li>The accounts executive prepares the figure; the finance controller signs it. The preparer never signs.</li>
+        <li>No email reaches a supplier without the controller's approval. Every email is logged.</li>
+        <li>We prepare the figure. Filing GSTR-3B stays with your team or your GST practitioner.</li>
+      </ul>
+    </section>
+  </div>`;
+}
+
+// ---------- render ----------
+function render() {
+  document.getElementById('roles').innerHTML = '<span class="as">Viewing as</span>' + ['exec', 'fc'].map((r) => `<button aria-pressed="${S.role === r}" data-act="role" data-role="${r}">${esc(PEOPLE[r].name)}<span>${ROLE_LABEL[r]}</span></button>`).join('');
+  const counts = { worklist: S.role === 'exec' ? ourOpen().length : 0, suppliers: S.role === 'fc' ? unsent().length : 0, signoff: waiting().some(([v]) => v === 'signoff') ? 1 : 0 };
+  document.getElementById('tabs').innerHTML = VIEWS.map(([k, l]) => `<a href="#${k}" data-act="goto" data-view="${k}" ${S.view === k ? 'aria-current="page"' : ''}>${l}${counts[k] ? `<span class="count num">${counts[k]}</span>` : ''}</a>`).join('');
+  const v = { summary: viewSummary, worklist: viewWorklist, suppliers: viewSuppliers, signoff: viewSignoff, audit: viewAudit, connections: viewConnections }[S.view];
+  document.getElementById('main').innerHTML = v();
+}
+
+// ---------- actions ----------
+function sendFollowUp(f) {
+  const edited = S.edits[f.gstin] != null && S.edits[f.gstin] !== f.message;
+  S.sent[f.gstin] = { by: me().name, edited };
+  log(me().name, 'person', 'Supplier email sent', f.name, f.subject + ' · ' + inr(f.held) + ' held up' + (edited ? ' (edited)' : ''), 'Approved on the GST Desk');
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (!t || t.tagName === 'FORM') return;
+  const act = t.dataset.act, id = t.dataset.id;
+  if (act === 'goto') { e.preventDefault(); S.view = t.dataset.view; S.form = null; history.replaceState(null, '', '#' + S.view); render(); window.scrollTo({ top: 0 }); return; }
+  if (act === 'role') { S.role = t.dataset.role; S.form = null; try { localStorage.setItem('gstDeskRole', S.role); } catch (err) {} render(); return; }
+  if (act === 'filter') { S.filter = t.dataset.k; render(); return; }
+  if (act === 'auditFilter') { S.auditFilter = t.dataset.k; render(); return; }
+  if (act === 'selSup') { S.selSup = id; render(); return; }
+  if (act === 'hideGuide') { S.guide = false; try { localStorage.setItem('gstDeskGuide', 'hidden'); } catch (err) {} render(); return; }
+  if (act === 'restart') { try { localStorage.removeItem('gstDeskRole'); localStorage.removeItem('gstDeskGuide'); } catch (err) {} location.hash = 'summary'; location.reload(); return; }
+  if (act === 'closeForm') { S.form = null; render(); return; }
+  if (act === 'fix') {
+    const r = ROWS.find((x) => x.id === id);
+    S.done[id] = { how: t.dataset.how, by: me().name };
+    if (S.signoff && !S.signoff.signedBy) S.signoff = null;
+    log(me().name, 'person', DONE_TEXT[t.dataset.how], r.invoiceNo || r.invoiceNo2b, r.supplierName + ' · ' + CAT[r.category].label, 'GST worklist');
+    toast(DONE_TEXT[t.dataset.how] + ': ' + r.supplierName + '. ' + (ourOpen().length ? ourOpen().length + ' of our items left.' : 'Our side is clear. Prepare the figure on Sign-off.'));
+    render(); return;
+  }
+  if (act === 'undoFix') {
+    const r = ROWS.find((x) => x.id === id);
+    delete S.done[id];
+    if (S.signoff && !S.signoff.signedBy) S.signoff = null;
+    log(me().name, 'person', 'Undone', r.invoiceNo || r.invoiceNo2b, r.supplierName + ' · back on the worklist', 'GST worklist');
+    toast('Back on the worklist: ' + r.supplierName + '.'); render(); return;
+  }
+  if (act === 'sendOne') { const f = FOLLOW.find((x) => x.gstin === id); sendFollowUp(f); toast('Email to ' + f.name + ' approved and sent (demo: nothing leaves this page).'); render(); return; }
+  if (act === 'sendAll') {
+    const list = unsent();
+    list.forEach(sendFollowUp);
+    toast(list.length + ' supplier emails approved and sent (demo: nothing leaves this page).'); render(); return;
+  }
+  if (act === 'prepare') {
+    S.signoff = { preparedBy: me().name, amount: claimNow() };
+    log(me().name, 'person', 'Sent for sign-off', P.label, 'ITC ' + inr(S.signoff.amount) + ' for GSTR-3B', 'Sent to ' + PEOPLE.fc.name);
+    toast('Sent to ' + PEOPLE.fc.name + ' for sign-off.'); render(); return;
+  }
+  if (act === 'sign') {
+    S.signoff.signedBy = me().name; S.signoff.signedAt = stamp();
+    log(me().name, 'person', 'ITC signed off', P.label, inr(S.signoff.amount) + ' for GSTR-3B, prepared by ' + S.signoff.preparedBy, 'Sign-off button · GST Desk');
+    toast('Signed off ' + inr(S.signoff.amount) + '. Locked for GSTR-3B.'); render(); return;
+  }
+  if (act === 'openSendback') { S.form = { kind: 'sendback' }; render(); document.getElementById('f-reason')?.focus(); return; }
+});
+
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'draft') S.edits[e.target.dataset.id] = e.target.value;
+  if (S.form && e.target.id === 'f-reason') S.form.reason = e.target.value;
+});
+
+document.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (e.target.dataset.act !== 'submitSendback') return;
+  const reason = (S.form.reason || '').trim();
+  if (!reason) { S.form.error = 'Add a reason. It goes into the audit log.'; render(); return; }
+  log(me().name, 'person', 'Sent back', P.label, reason, 'GST Desk sign-off');
+  S.signoff = null; S.form = null;
+  toast('Sent back to ' + PEOPLE.exec.name + '.'); render();
+});
+
+const fromHash = () => { const h = location.hash.slice(1); if (VIEWS.some(([k]) => k === h)) S.view = h; };
+window.addEventListener('hashchange', () => { fromHash(); S.form = null; render(); });
+document.getElementById('gstin').textContent = DATA.company.gstin;
+fromHash();
+render();
+</script>

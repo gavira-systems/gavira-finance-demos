@@ -1,0 +1,1103 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AP Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap">
+<style>
+
+/* Layout: a working desk — header with role switch, tab bar, then list-and-detail panes. Gold marks only buttons where a person decides. */
+:root {
+  --bg: #f3f5f1; --surface: #ffffff; --surface-2: #eef2ee; --line: #d9e1db; --line-2: #c6d0c9;
+  --ink: #111a19; --ink-2: #45524f; --ink-3: #66746f;
+  --teal: #006d77; --teal-ink: #005c65; --teal-soft: #e0eeee; --on-teal: #ffffff;
+  --sage: #899670; --sage-soft: #a3b18a;
+  --gold: #ffd166; --gold-ink: #2b2100; --gold-line: #e9b53a;
+  --good: #2e7744; --good-soft: #e2f0e5; --warn: #8f5600; --warn-soft: #f7ead3; --bad: #a93224; --bad-soft: #f7e0dc;
+  --age0: #a3b18a; --age1: #6fa6ab; --age2: #e0ad45; --age3: #d4774e; --age4: #a93224;
+  --shadow: 0 1px 2px rgb(17 26 25 / .06), 0 4px 16px rgb(17 26 25 / .05);
+  --f-display: 'Playfair Display', Georgia, serif;
+  --f-body: 'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--teal-ink); outline-offset: 2px; border-radius: 6px; }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.muted { color: var(--ink-3); }
+.small { font-size: 13px; }
+.label { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+
+.demo { margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 8px max(16px, env(safe-area-inset-left, 0px)); background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--ink-2); text-align: center; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-block: 18px 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-right: auto; }
+.brand h1 { font-family: var(--f-display); font-weight: 600; font-size: 26px; letter-spacing: -.01em; }
+.brand .co { color: var(--ink-2); font-size: 13.5px; }
+.roles { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); padding: 4px; border-radius: 12px; flex-wrap: wrap; }
+.roles button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; text-align: left; line-height: 1.25; }
+.roles button span { display: block; font-size: 11px; color: var(--ink-3); }
+.roles button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); }
+.roles .as { align-self: center; padding: 0 6px 0 8px; font-size: 11.5px; color: var(--ink-3); }
+nav.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+nav.tabs a { padding: 10px 14px; text-decoration: none; color: var(--ink-2); border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 700; font-size: 14px; }
+nav.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--teal); }
+nav.tabs .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 10px; background: var(--teal-soft); color: var(--teal-ink); font-size: 12px; text-align: center; }
+main { padding-top: 22px; display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+main > *, .panel, .split > *, .grid2 > * { min-width: 0; }
+.pagehead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.pagehead h2 { font-family: var(--f-display); font-weight: 600; font-size: 24px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.pad { padding: 18px 20px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kpi .big { font-size: 26px; font-weight: 500; }
+.kpi .sub { font-size: 13px; color: var(--ink-2); }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; }
+.split { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+
+.ageing { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 12px 0 10px; background: var(--surface-2); }
+.ageing span { display: block; height: 100%; }
+.legend { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.legend div { display: grid; gap: 2px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+.legend b { font-weight: 500; color: var(--ink); font-size: 14px; }
+
+.list { display: grid; }
+.row { display: grid; gap: 4px; padding: 12px 16px; border-top: 1px solid var(--line); text-align: left; background: transparent; border-left: 3px solid transparent; border-right: 0; border-bottom: 0; cursor: pointer; width: 100%; }
+.row:first-child { border-top: 0; }
+.row:hover { background: var(--surface-2); }
+.row[aria-selected="true"] { background: var(--teal-soft); border-left-color: var(--teal); }
+.row .r1 { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.row .name { font-weight: 700; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+.chip.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.chip.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.chip.teal { background: var(--teal-soft); color: var(--teal-ink); border-color: transparent; }
+.grade { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; font-weight: 900; font-size: 13px; }
+.grade.A { background: var(--good-soft); color: var(--good); } .grade.B { background: var(--teal-soft); color: var(--teal-ink); }
+.grade.C { background: var(--warn-soft); color: var(--warn); } .grade.D { background: var(--bad-soft); color: var(--bad); }
+
+.btn { border: 1px solid var(--line-2); background: var(--surface); padding: 9px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { background: var(--surface-2); }
+.btn.teal { background: var(--teal); color: var(--on-teal); border-color: var(--teal); }
+.btn.teal:hover { filter: brightness(1.08); }
+.btn.gold { background: var(--gold); color: var(--gold-ink); border-color: var(--gold-line); }
+.btn.gold:hover { filter: brightness(.97); }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.btn.link { border: 0; background: transparent; padding: 4px 2px; color: var(--teal-ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gate { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--surface-2); color: var(--ink-2); font-size: 13.5px; }
+
+.detail { display: grid; gap: 18px; padding: 20px 22px; }
+.dhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: start; }
+.dhead h3 { font-size: 20px; font-weight: 900; }
+.amounts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.amounts div { padding: 12px 14px; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.amounts div:first-child { border-left: 0; }
+.amounts .v { font-size: 20px; font-weight: 500; }
+.amounts .hl { background: var(--teal-soft); }
+.steps { display: flex; flex-wrap: wrap; gap: 6px 4px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; }
+.steps li { display: flex; align-items: center; gap: 6px; color: var(--ink-3); }
+.steps li::after { content: ''; width: 18px; height: 1px; background: var(--line-2); margin-left: 4px; }
+.steps li:last-child::after { display: none; }
+.steps li.done { color: var(--ink-2); }
+.steps li.now { color: var(--ink); font-weight: 700; }
+.steps .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); }
+.steps .done .dot { background: var(--sage); }
+.steps .now .dot { background: var(--gold); box-shadow: 0 0 0 3px rgb(255 209 102 / .35); }
+
+table { border-collapse: collapse; width: 100%; }
+.tablewrap { overflow-x: auto; }
+th { text-align: left; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; }
+.pts { font-family: var(--f-mono); font-weight: 500; }
+.pts.pos { color: var(--good); } .pts.neg { color: var(--bad); }
+.src { display: block; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.ceil { display: grid; gap: 6px; font-size: 13.5px; }
+.ceil div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: 6px; }
+.ceil .bind { background: var(--teal-soft); font-weight: 700; }
+.note { white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; background: var(--surface-2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--line); }
+.usage { position: relative; height: 8px; border-radius: 4px; background: var(--surface-2); min-width: 90px; overflow: hidden; }
+.usage span { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.usage::after { content: ''; position: absolute; top: -2px; bottom: -2px; left: calc(100% / 1.2); width: 2px; background: var(--ink-3); opacity: .5; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 13px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.form { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface-2); }
+.form label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+.form input, .form textarea { border: 1px solid var(--line-2); background: var(--surface); border-radius: 6px; padding: 8px 10px; font-weight: 400; }
+.form .err { color: var(--bad); font-size: 13px; }
+textarea.draft { width: 100%; min-height: 180px; border: 1px solid var(--line-2); border-radius: 8px; padding: 12px 14px; background: var(--surface); line-height: 1.55; resize: vertical; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 6px 12px; cursor: pointer; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--teal-soft); color: var(--teal-ink); font-weight: 700; }
+.wa { background: #e7f1e4; color: #0b141a; border-radius: 10px; padding: 14px; display: grid; gap: 8px; }
+.wa .bubble { background: #ffffff; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; font-size: 14px; box-shadow: 0 1px 1px rgb(0 0 0 / .08); max-width: 520px; }
+.wa .meta { font-size: 11.5px; color: #54656f; }
+
+.decide { display: grid; gap: 2px; }
+.decide a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 4px; border-top: 1px solid var(--line); text-decoration: none; color: inherit; align-items: center; }
+.decide a:first-child { border-top: 0; }
+.decide a:hover .go { text-decoration: underline; }
+.decide .go { color: var(--teal-ink); font-weight: 700; font-size: 13px; white-space: nowrap; }
+.guide { border-color: var(--gold-line); }
+.guide ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+.guide a { color: var(--teal-ink); font-weight: 700; }
+.how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.how div { padding: 14px 16px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); display: grid; gap: 6px; align-content: start; }
+.how div.person { border-color: var(--gold-line); background: color-mix(in srgb, var(--gold) 14%, var(--surface)); }
+.how b { font-size: 15px; }
+.spark { width: 100%; height: 64px; display: block; }
+.months { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+.months span { display: grid; justify-items: center; gap: 1px; }
+.months b { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+.conn td:first-child { font-weight: 700; }
+.ok { color: var(--good); font-weight: 700; } .cfg { color: var(--warn); font-weight: 700; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow); z-index: 20; max-width: min(560px, calc(100vw - 32px)); }
+.legend-gold { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+.legend-gold i { width: 12px; height: 12px; border-radius: 3px; background: var(--gold); border: 1px solid var(--gold-line); }
+.empty { padding: 28px; text-align: center; color: var(--ink-3); }
+@media (max-width: 980px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid2, .split { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; } .roles .as { grid-column: 1 / -1; padding: 2px 6px; } .roles button { padding: 6px 8px; font-size: 13.5px; } .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); } .how { grid-template-columns: minmax(0, 1fr); } .amounts { grid-template-columns: minmax(0, 1fr); } .amounts div { border-left: 0; border-top: 1px solid var(--line); } .amounts div:first-child { border-top: 0; } .brand h1 { font-size: 22px; } .detail { padding: 16px; } }
+@media (prefers-reduced-motion: no-preference) { .row, .btn, nav.tabs a { transition: background-color .15s, border-color .15s, filter .15s; } }
+
+/* AP Desk additions: the check list, line-by-line match and the MSME clock. */
+@media (max-width: 560px) { .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+.checks li { display: flex; gap: 10px; align-items: baseline; }
+.checks .y { color: var(--good); font-weight: 900; } .checks .n { color: var(--bad); font-weight: 900; } .checks .q { color: var(--ink-3); font-weight: 900; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.facts div { padding: 10px 14px; display: grid; gap: 2px; border-left: 1px solid var(--line); font-size: 14px; }
+.facts div:first-child { border-left: 0; }
+.clock { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface-2); font-size: 14px; }
+.clock.late { border-color: var(--bad); background: var(--bad-soft); }
+.clock .num { font-size: 18px; font-weight: 500; }
+tr.bad td { background: color-mix(in srgb, var(--bad-soft) 60%, transparent); }
+.list .row { min-width: 0; }
+.list .row .r1 { flex-wrap: wrap; row-gap: 4px; }
+.detail > * { min-width: 0; }
+.detail .label { overflow-wrap: anywhere; }
+@media (max-width: 560px) { .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .facts div:nth-child(3) { border-left: 0; } .facts div:nth-child(n+3) { border-top: 1px solid var(--line); } }
+</style>
+
+<div class="wrap">
+  <div class="demo">Demo · Sarvam Polymers is a fictional company · sample data · nothing here posts to a real ledger or pays anyone</div>
+  <header class="top">
+    <div class="brand"><h1>AP Desk</h1><span class="co">Sarvam Polymers Pvt Ltd · supplier invoices, October 2026 · GaVira Systems</span></div>
+    <div class="roles" role="group" aria-label="Viewing as" id="roles"></div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// PAN and GSTIN checks. Self-contained so it can be pasted into an n8n Code node
+// or inlined into a page; exposes itself on globalThis.Credit and module.exports.
+(function (root) {
+  const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const PAN_RE = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+  const GSTIN_RE = /^[0-9]{2}[A-Z0-9]{10}[0-9A-Z]Z[0-9A-Z]$/;
+
+  function normalizeId(s) {
+    return String(s == null ? '' : s).replace(/\s+/g, '').toUpperCase();
+  }
+
+  function validatePAN(pan) {
+    return PAN_RE.test(normalizeId(pan)) ? { ok: true } : { ok: false, reason: 'format' };
+  }
+
+  // Check digit: base-36 values, factors alternate 1,2 over the first 14 characters.
+  function gstinCheckDigit(first14) {
+    let sum = 0;
+    for (let i = 0; i < 14; i++) {
+      const p = CHARS.indexOf(first14[i]) * (i % 2 === 0 ? 1 : 2);
+      sum += Math.floor(p / 36) + (p % 36);
+    }
+    return CHARS[(36 - (sum % 36)) % 36];
+  }
+
+  function validateGSTIN(gstin, pan) {
+    const g = normalizeId(gstin);
+    if (!GSTIN_RE.test(g)) return { ok: false, reason: 'format' };
+    const state = Number(g.slice(0, 2));
+    if (state < 1 || state > 38) return { ok: false, reason: 'state' };
+    const embedded = g.slice(2, 12);
+    if (!PAN_RE.test(embedded)) return { ok: false, reason: 'format' };
+    if (pan != null && normalizeId(pan) !== embedded) return { ok: false, reason: 'pan-mismatch' };
+    if (gstinCheckDigit(g.slice(0, 14)) !== g[14]) return { ok: false, reason: 'checksum' };
+    return { ok: true, stateCode: g.slice(0, 2), pan: embedded };
+  }
+
+  const api = { normalizeId, validatePAN, validateGSTIN, gstinCheckDigit };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// Reading amounts and dates as Indian ledgers and Excel exports write them.
+(function (root) {
+  const MONTHS = { JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8, SEP: 9, OCT: 10, NOV: 11, DEC: 12 };
+
+  function parseAmount(v) {
+    if (typeof v === 'number') return v;
+    let s = String(v == null ? '' : v).trim();
+    const negative = /^\(.*\)$/.test(s) || /^-/.test(s);
+    s = s.replace(/[()₹\s-]/g, '').replace(/^Rs\.?/i, '');
+    let mult = 1;
+    if (/cr(ore)?s?$/i.test(s)) { mult = 1e7; s = s.replace(/cr(ore)?s?$/i, ''); }
+    else if (/(l|lakh|lakhs|lac|lacs)$/i.test(s)) { mult = 1e5; s = s.replace(/(lakhs|lakh|lacs|lac|l)$/i, ''); }
+    const n = Number(s.replace(/,/g, ''));
+    if (!Number.isFinite(n)) return NaN;
+    return Math.round(n * mult * 100) / 100 * (negative ? -1 : 1);
+  }
+
+  function iso(y, m, d) {
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) return null;
+    return dt.toISOString().slice(0, 10);
+  }
+
+  // Excel serial 25569 = 1970-01-01.
+  function fromSerial(n) {
+    return new Date(Math.round((n - 25569) * 86400000)).toISOString().slice(0, 10);
+  }
+
+  function parseDate(v) {
+    if (typeof v === 'number') return fromSerial(v);
+    const s = String(v == null ? '' : v).trim();
+    if (/^\d{5}(\.\d+)?$/.test(s)) return fromSerial(Number(s));
+    let m;
+    if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return iso(+m[1], +m[2], +m[3]);
+    if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/))) return iso(+m[3], +m[2], +m[1]);
+    if ((m = s.match(/^(\d{1,2})[\s\-]([A-Za-z]{3})[A-Za-z]*[\s\-,]+(\d{4})$/))) {
+      const mon = MONTHS[m[2].toUpperCase()];
+      return mon ? iso(+m[3], mon, +m[1]) : null;
+    }
+    return null;
+  }
+
+  const api = { parseAmount, parseDate };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// Invoice to ledger: read a supplier invoice, validate it, match it three ways against the purchase order
+// and the goods receipt, and set the MSME payment date. Matched invoices are ready to post; anything else
+// goes to a person with the reason. Needs ids.js and parse.js loaded first.
+(function (root) {
+  const TOL = 1; // ₹1 on arithmetic
+  const RATE_TOL = 0.01; // rate within 1% of the PO
+  const GSTIN_RE = /\b\d{2}[A-Z]{5}\d{4}[A-Z][0-9A-Z]Z[0-9A-Z]\b/g;
+  const num = (s) => { const n = root.Credit.parseAmount(String(s == null ? '' : s).trim()); return Number.isFinite(n) ? n : null; };
+  const grab = (text, re) => { const m = text.match(re); return m ? m[1].trim() : ''; };
+  const inr = (v) => '₹' + Math.round(v).toLocaleString('en-IN');
+  const r2 = (v) => Math.round(v * 100) / 100;
+
+  // The fields an AP clerk keys in, read from the invoice text. An AI read can fill the same fields
+  // for layouts the rules do not know; it can only send an invoice to review.
+  function readInvoice(text) {
+    const t = String(text || '');
+    const gstins = t.match(GSTIN_RE) || [];
+    const billTo = t.search(/bill(ed)?\s*to|buyer|recipient/i);
+    const buyer = billTo >= 0 ? (t.slice(billTo).match(GSTIN_RE) || [])[0] : gstins[1];
+    const lines = t.split('\n').map((l) => l.split('|').map((c) => c.trim())).filter((c) => c.length === 6 && num(c[2]) != null && num(c[5]) != null)
+      .map(([item, desc, qty, unit, rate, amount]) => ({ item, desc, qty: num(qty), unit, rate: num(rate), amount: num(amount) }));
+    const po = grab(t, /\bP\.?O\.?\s*(?:No|Number|#|Ref)\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9/\-]*)/i);
+    const inv = {
+      supplierName: (t.split('\n').map((l) => l.trim()).find((l) => l && !/tax invoice|invoice$/i.test(l)) || ''),
+      supplierGstin: gstins.find((g) => g !== buyer) || '', buyerGstin: buyer || '',
+      invoiceNo: grab(t, /invoice\s*(?:no|number|#)\.?\s*[:\-]?\s*([A-Z0-9][A-Z0-9/\-]*)/i),
+      date: root.Credit.parseDate(grab(t, /invoice\s*date\s*[:\-]?\s*([0-9]{1,2}[/.\-][0-9]{1,2}[/.\-][0-9]{4}|\d{1,2}[\s\-][A-Za-z]{3,9}[\s\-,]+\d{4})/i)),
+      poNo: /^[A-Z0-9]/i.test(po) && po.length > 2 ? po : '',
+      lines, taxable: num(grab(t, /taxable\s*value\s*[:\-]?\s*₹?\s*([\d,.]+)/i)),
+      cgst: num(grab(t, /\bCGST[^:\n]*:\s*₹?\s*([\d,.]+)/i)) || 0, sgst: num(grab(t, /\bSGST[^:\n]*:\s*₹?\s*([\d,.]+)/i)) || 0,
+      igst: num(grab(t, /\bIGST[^:\n]*:\s*₹?\s*([\d,.]+)/i)) || 0, total: num(grab(t, /^\s*(?:grand\s*)?total\s*[:\-]?\s*₹?\s*([\d,.]+)/im)),
+    };
+    inv.missing = [['supplierGstin', 'supplier GSTIN'], ['invoiceNo', 'invoice number'], ['date', 'invoice date'], ['total', 'total']].filter(([k]) => !inv[k]).map(([, l]) => l);
+    return inv;
+  }
+
+  const normNo = (s) => (String(s || '').toUpperCase().match(/[A-Z]+|\d+/g) || []).map((x) => (/^\d+$/.test(x) ? String(Number(x)) : x)).join('|');
+  const lastNo = (s) => { const m = String(s || '').match(/\d+/g); return m ? Number(m[m.length - 1]) : null; };
+
+  function validateInvoice(inv, ctx) {
+    const issues = [];
+    const g = root.Credit.validateGSTIN(inv.supplierGstin);
+    if (!g.ok) issues.push({ kind: 'gstin', text: 'Supplier GSTIN ' + inv.supplierGstin + ' is not valid.' });
+    if (inv.buyerGstin !== ctx.buyerGstin) issues.push({ kind: 'buyer', text: 'Billed to GSTIN ' + (inv.buyerGstin || 'none') + ', not Sarvam\'s (' + ctx.buyerGstin + '): no input tax credit on it.' });
+    const tax = inv.cgst + inv.sgst + inv.igst;
+    const lineSum = inv.lines.reduce((s, l) => s + l.amount, 0);
+    const badLine = inv.lines.find((l) => Math.abs(l.qty * l.rate - l.amount) > TOL);
+    if (badLine || (inv.lines.length && Math.abs(lineSum - inv.taxable) > TOL) || Math.abs(inv.taxable + tax - inv.total) > TOL) {
+      issues.push({ kind: 'arithmetic', text: 'The invoice does not add up: ' + (badLine ? badLine.item + ' quantity × rate is ' + inr(badLine.qty * badLine.rate) + ', billed ' + inr(badLine.amount) : 'taxable ' + inr(inv.taxable) + ' + tax ' + inr(tax) + ' = ' + inr(inv.taxable + tax) + ', total says ' + inr(inv.total)) + '.' });
+    }
+    const sameState = inv.supplierGstin.slice(0, 2) === ctx.buyerGstin.slice(0, 2);
+    if ((sameState && inv.igst > TOL) || (!sameState && inv.cgst + inv.sgst > TOL)) issues.push({ kind: 'taxType', text: sameState ? 'IGST charged on a supply within the state; CGST + SGST expected.' : 'CGST + SGST charged on a supply from another state; IGST expected.' });
+    const dup = (ctx.seen || []).find((s) => s.supplierGstin === inv.supplierGstin && (normNo(s.invoiceNo) === normNo(inv.invoiceNo) || (lastNo(s.invoiceNo) === lastNo(inv.invoiceNo) && Math.abs(s.total - inv.total) <= TOL)));
+    if (dup) issues.push({ kind: 'duplicate', text: 'Already received as ' + dup.invoiceNo + (dup.status ? ' (' + dup.status + ')' : '') + '.' });
+    return { ok: !issues.length, issues };
+  }
+
+  function matchInvoice(inv, poLines) {
+    const po = (poLines || []).filter((p) => p.poNo === inv.poNo);
+    if (!inv.poNo || !po.length) return { lines: [], exceptions: [{ kind: 'noPo', text: inv.poNo ? 'PO ' + inv.poNo + ' not found.' : 'No purchase order quoted on the invoice.' }], held: r2(inv.taxable || 0) };
+    const ex = [];
+    if (po[0].supplierGstin !== inv.supplierGstin) ex.push({ kind: 'poSupplier', text: 'PO ' + inv.poNo + ' was raised on another supplier.' });
+    let held = 0;
+    const lines = inv.lines.map((l) => {
+      const p = po.find((x) => x.item === l.item);
+      if (!p) { ex.push({ kind: 'notOnPo', text: l.item + ' is not on PO ' + inv.poNo + '.' }); held += l.amount; return { ...l, ok: false, note: 'Not on the PO' }; }
+      const notes = [];
+      if (l.rate > p.rate * (1 + RATE_TOL)) { const h = (l.rate - p.rate) * l.qty; held += h; notes.push('rate ' + ((l.rate / p.rate - 1) * 100).toFixed(1) + '% above the PO'); ex.push({ kind: 'price', text: l.item + ': rate ' + ((l.rate / p.rate - 1) * 100).toFixed(1) + '% above the PO rate (' + l.rate + ' vs ' + p.rate + '), ' + inr(h) + ' held.' }); }
+      if (l.qty > p.receivedQty) { const h = (l.qty - p.receivedQty) * l.rate; held += h; notes.push((l.qty - p.receivedQty).toLocaleString('en-IN') + ' ' + l.unit + ' more than received'); ex.push({ kind: 'qty', text: l.item + ': billed ' + (l.qty - p.receivedQty).toLocaleString('en-IN') + ' ' + l.unit + ' more than received (' + p.receivedQty.toLocaleString('en-IN') + ' of ' + l.qty.toLocaleString('en-IN') + '), ' + inr(h) + ' held.' }); }
+      return { ...l, poQty: p.qty, poRate: p.rate, received: p.receivedQty, receivedOn: p.receivedOn, ok: !notes.length, note: notes.join('; ') };
+    });
+    return { lines, exceptions: ex, held: r2(held) };
+  }
+
+  const addDays = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
+  // MSMED Act s.15 with Income-tax Act s.43B(h): micro and small only, agreed days capped at 45, 15 without a written agreement.
+  function msmeDue(supplier, acceptedOn) {
+    const cat = String((supplier && supplier.msme) || '').toLowerCase();
+    if (!['micro', 'small'].includes(cat)) return { applies: false, basis: cat === 'medium' ? 'Medium enterprise: outside Section 43B(h)' : 'Not registered as micro or small' };
+    if (supplier.trader) return { applies: false, basis: 'Trader: outside Section 43B(h) (check with your tax adviser)' };
+    const label = cat[0].toUpperCase() + cat.slice(1) + ' enterprise';
+    const days = supplier.agreedDays ? Math.min(Number(supplier.agreedDays), 45) : 15;
+    const basis = supplier.agreedDays ? label + ', ' + supplier.agreedDays + ' days agreed' + (supplier.agreedDays > 45 ? ', capped at 45' : '') : label + ', no written agreement: 15 days';
+    return { applies: true, days, due: addDays(acceptedOn, days), basis };
+  }
+
+  function processInvoice(inv, ctx) {
+    const supplier = (ctx.suppliers || []).find((s) => s.gstin === inv.supplierGstin) || { gstin: inv.supplierGstin, name: inv.supplierName };
+    const base = { supplier: supplier.name || inv.supplierName, supplierGstin: inv.supplierGstin, invoiceNo: inv.invoiceNo, total: inv.total, taxable: inv.taxable };
+    if (inv.missing.length) return { ...base, status: 'needsReview', reasons: ['Could not read the ' + inv.missing.join(', ') + '. A person needs to look at it.'], exceptions: [], lines: [], held: inv.total || 0, msme: { applies: false, basis: 'Not read yet' } };
+    const v = validateInvoice(inv, ctx);
+    const dup = v.issues.find((i) => i.kind === 'duplicate');
+    if (dup) return { ...base, status: 'duplicate', reasons: [dup.text + ' Not posted again.'], exceptions: [dup], lines: [], held: 0, msme: { applies: false, basis: 'Duplicate' } };
+    const m = matchInvoice(inv, ctx.poLines);
+    const exceptions = v.issues.concat(m.exceptions);
+    const received = m.lines.map((l) => l.receivedOn).filter(Boolean).sort();
+    const msme = msmeDue(supplier, received.length ? received[received.length - 1] : inv.date);
+    const held = exceptions.some((e) => ['buyer', 'gstin', 'arithmetic', 'taxType'].includes(e.kind)) ? r2(inv.taxable) : m.held;
+    return { ...base, status: exceptions.length ? 'exception' : 'ready', reasons: exceptions.length ? exceptions.map((e) => e.text) : ['Matches ' + inv.poNo + ' and the goods received.'], exceptions, lines: m.lines, held, msme };
+  }
+
+  const api = { readInvoice, validateInvoice, matchInvoice, msmeDue, processInvoice };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+const DATA = {
+  "company": {
+    "name": "Sarvam Polymers Pvt Ltd",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "pan": "AAXCS4571A",
+    "revenueCr": 180,
+    "ledger": "TallyPrime",
+    "plannedLedger": "SAP Business One",
+    "ipoTarget": "2028",
+    "fy": "FY 2026-27",
+    "gstin": "27AAXCS4571A1Z1"
+  },
+  "today": "2026-10-31",
+  "sisterGstin": "27AAXFS7731K1ZA",
+  "people": [
+    {
+      "id": "priya",
+      "name": "Priya Nair",
+      "role": "exec",
+      "title": "Accounts executive",
+      "email": "priya@example.com"
+    },
+    {
+      "id": "rohan",
+      "name": "Rohan Mehta",
+      "role": "fc",
+      "title": "Finance controller",
+      "email": "rohan@example.com"
+    }
+  ],
+  "suppliers": [
+    {
+      "short": "indus",
+      "gstin": "27AAACI4417R1Z6",
+      "name": "Indus Petrochem Ltd",
+      "contact": "Kunal Desai",
+      "email": "indus@example.com",
+      "msme": "",
+      "agreedDays": 60,
+      "trader": false
+    },
+    {
+      "short": "konark",
+      "gstin": "27AAECK2208M1ZH",
+      "name": "Konark Masterbatches Pvt Ltd",
+      "contact": "Rashmi Kulkarni",
+      "email": "konark@example.com",
+      "msme": "medium",
+      "agreedDays": 45,
+      "trader": false
+    },
+    {
+      "short": "shivneri",
+      "gstin": "27AAPFS6631D1Z0",
+      "name": "Shivneri Corrugators",
+      "contact": "Dattatray Jadhav",
+      "email": "shivneri@example.com",
+      "msme": "small",
+      "agreedDays": 30,
+      "trader": false
+    },
+    {
+      "short": "narmada",
+      "gstin": "24AAKFN3390Q1ZN",
+      "name": "Narmada Logistics",
+      "contact": "Bhavin Mehta",
+      "email": "narmada@example.com",
+      "msme": "",
+      "agreedDays": 30,
+      "trader": false
+    },
+    {
+      "short": "saraswati",
+      "gstin": "24AABCS8820H1ZF",
+      "name": "Saraswati Chemicals",
+      "contact": "Nirali Shah",
+      "email": "saraswati@example.com",
+      "msme": "",
+      "agreedDays": 45,
+      "trader": false
+    },
+    {
+      "short": "deccanmoulds",
+      "gstin": "36AAFFD1175K1ZE",
+      "name": "Deccan Moulds & Dies",
+      "contact": "Ravi Teja",
+      "email": "deccanmoulds@example.com",
+      "msme": "medium",
+      "agreedDays": 45,
+      "trader": false
+    },
+    {
+      "short": "punegas",
+      "gstin": "27AACCP5512B1ZW",
+      "name": "Pune Industrial Gases",
+      "contact": "Sameer Joshi",
+      "email": "punegas@example.com",
+      "msme": "small",
+      "agreedDays": 30,
+      "trader": true
+    },
+    {
+      "short": "ganesh",
+      "gstin": "27AAQFG7741N1ZL",
+      "name": "Ganesh Pallets",
+      "contact": "Ganesh Pawar",
+      "email": "ganesh@example.com",
+      "msme": "micro",
+      "agreedDays": null,
+      "trader": false
+    },
+    {
+      "short": "sahyog",
+      "gstin": "27AAMFS9902L1ZI",
+      "name": "Sahyog Facility Services",
+      "contact": "Anjali Rao",
+      "email": "sahyog@example.com",
+      "msme": "small",
+      "agreedDays": 30,
+      "trader": false
+    },
+    {
+      "short": "vardhman",
+      "gstin": "27AADFV3346C1ZD",
+      "name": "Vardhman Labels",
+      "contact": "Mehul Jain",
+      "email": "vardhman@example.com",
+      "msme": "micro",
+      "agreedDays": 45,
+      "trader": false
+    }
+  ],
+  "poLines": [
+    {
+      "poNo": "PO/26-27/0141",
+      "supplierGstin": "27AAACI4417R1Z6",
+      "supplier": "Indus Petrochem Ltd",
+      "item": "RM-HD01",
+      "desc": "HDPE resin, film grade",
+      "qty": 12000,
+      "unit": "kg",
+      "rate": 98.5,
+      "receivedQty": 12000,
+      "receivedOn": "2026-10-05"
+    },
+    {
+      "poNo": "PO/26-27/0141",
+      "supplierGstin": "27AAACI4417R1Z6",
+      "supplier": "Indus Petrochem Ltd",
+      "item": "RM-LD02",
+      "desc": "LDPE resin",
+      "qty": 5000,
+      "unit": "kg",
+      "rate": 102,
+      "receivedQty": 5000,
+      "receivedOn": "2026-10-05"
+    },
+    {
+      "poNo": "PO/26-27/0144",
+      "supplierGstin": "27AAECK2208M1ZH",
+      "supplier": "Konark Masterbatches Pvt Ltd",
+      "item": "MB-W01",
+      "desc": "White masterbatch",
+      "qty": 1500,
+      "unit": "kg",
+      "rate": 186,
+      "receivedQty": 1500,
+      "receivedOn": "2026-10-08"
+    },
+    {
+      "poNo": "PO/26-27/0147",
+      "supplierGstin": "27AAPFS6631D1Z0",
+      "supplier": "Shivneri Corrugators",
+      "item": "PK-CB05",
+      "desc": "Corrugated box, 5-ply",
+      "qty": 5000,
+      "unit": "nos",
+      "rate": 42,
+      "receivedQty": 4600,
+      "receivedOn": "2026-10-09"
+    },
+    {
+      "poNo": "PO/26-27/0150",
+      "supplierGstin": "27AAQFG7741N1ZL",
+      "supplier": "Ganesh Pallets",
+      "item": "PK-PL01",
+      "desc": "Wooden pallet",
+      "qty": 400,
+      "unit": "nos",
+      "rate": 650,
+      "receivedQty": 400,
+      "receivedOn": "2026-10-12"
+    },
+    {
+      "poNo": "PO/26-27/0152",
+      "supplierGstin": "27AADFV3346C1ZD",
+      "supplier": "Vardhman Labels",
+      "item": "PK-LB02",
+      "desc": "Printed labels",
+      "qty": 50000,
+      "unit": "nos",
+      "rate": 1.2,
+      "receivedQty": 50000,
+      "receivedOn": "2026-10-14"
+    },
+    {
+      "poNo": "PO/26-27/0155",
+      "supplierGstin": "27AACCP5512B1ZW",
+      "supplier": "Pune Industrial Gases",
+      "item": "CN-N201",
+      "desc": "Nitrogen cylinder refill",
+      "qty": 120,
+      "unit": "nos",
+      "rate": 410,
+      "receivedQty": 120,
+      "receivedOn": "2026-10-15"
+    },
+    {
+      "poNo": "PO/26-27/0157",
+      "supplierGstin": "24AABCS8820H1ZF",
+      "supplier": "Saraswati Chemicals",
+      "item": "CH-AD03",
+      "desc": "Antioxidant additive",
+      "qty": 800,
+      "unit": "kg",
+      "rate": 540,
+      "receivedQty": 800,
+      "receivedOn": "2026-10-16"
+    },
+    {
+      "poNo": "PO/26-27/0160",
+      "supplierGstin": "27AAMFS9902L1ZI",
+      "supplier": "Sahyog Facility Services",
+      "item": "SV-HK01",
+      "desc": "Housekeeping services, October",
+      "qty": 1,
+      "unit": "month",
+      "rate": 64000,
+      "receivedQty": 1,
+      "receivedOn": "2026-10-31"
+    },
+    {
+      "poNo": "PO/26-27/0162",
+      "supplierGstin": "36AAFFD1175K1ZE",
+      "supplier": "Deccan Moulds & Dies",
+      "item": "TL-MD07",
+      "desc": "Mould refurbishment, 2-cavity",
+      "qty": 1,
+      "unit": "job",
+      "rate": 240000,
+      "receivedQty": 1,
+      "receivedOn": "2026-10-20"
+    },
+    {
+      "poNo": "PO/26-27/0165",
+      "supplierGstin": "27AAECK2208M1ZH",
+      "supplier": "Konark Masterbatches Pvt Ltd",
+      "item": "MB-B02",
+      "desc": "Black masterbatch",
+      "qty": 1000,
+      "unit": "kg",
+      "rate": 172,
+      "receivedQty": 1000,
+      "receivedOn": "2026-10-22"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "INV-01",
+      "supplier": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/26-27/0612",
+      "date": "2026-10-03",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-03T10:12:00+05:30",
+      "file": "INV-01 IPL-26-27-0612.pdf",
+      "story": "Matches the PO and the receipt",
+      "text": "TAX INVOICE\nIndus Petrochem Ltd\nGSTIN: 27AAACI4417R1Z6\nInvoice No: IPL/26-27/0612\nInvoice Date: 03/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0141\nItem | Description | Qty | Unit | Rate | Amount\nRM-HD01 | HDPE resin, film grade | 12,000 | kg | 98.50 | 11,82,000.00\nRM-LD02 | LDPE resin | 5,000 | kg | 102.00 | 5,10,000.00\nTaxable value: 16,92,000.00\nCGST 9%: 1,52,280.00\nSGST 9%: 1,52,280.00\nTotal: 19,96,560.00"
+    },
+    {
+      "id": "INV-02",
+      "supplier": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0471",
+      "date": "2026-10-09",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-09T10:12:00+05:30",
+      "file": "INV-02 KMB-0471.pdf",
+      "story": "Rate 3.2% above the PO",
+      "text": "TAX INVOICE\nKonark Masterbatches Pvt Ltd\nGSTIN: 27AAECK2208M1ZH\nInvoice No: KMB-0471\nInvoice Date: 09/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0144\nItem | Description | Qty | Unit | Rate | Amount\nMB-W01 | White masterbatch | 1,500 | kg | 192.00 | 2,88,000.00\nTaxable value: 2,88,000.00\nCGST 9%: 25,920.00\nSGST 9%: 25,920.00\nTotal: 3,39,840.00"
+    },
+    {
+      "id": "INV-03",
+      "supplier": "Shivneri Corrugators",
+      "invoiceNo": "SC/0478",
+      "date": "2026-10-10",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-10T10:12:00+05:30",
+      "file": "INV-03 SC-0478.pdf",
+      "story": "Billed 5,000 boxes, 4,600 received",
+      "text": "TAX INVOICE\nShivneri Corrugators\nGSTIN: 27AAPFS6631D1Z0\nInvoice No: SC/0478\nInvoice Date: 10/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0147\nItem | Description | Qty | Unit | Rate | Amount\nPK-CB05 | Corrugated box, 5-ply | 5,000 | nos | 42.00 | 2,10,000.00\nTaxable value: 2,10,000.00\nCGST 9%: 18,900.00\nSGST 9%: 18,900.00\nTotal: 2,47,800.00"
+    },
+    {
+      "id": "INV-04",
+      "supplier": "Ganesh Pallets",
+      "invoiceNo": "GP-0533",
+      "date": "2026-10-12",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-12T10:12:00+05:30",
+      "file": "INV-04 GP-0533.pdf",
+      "story": "Micro supplier, no written agreement: 15 days",
+      "text": "TAX INVOICE\nGanesh Pallets\nGSTIN: 27AAQFG7741N1ZL\nInvoice No: GP-0533\nInvoice Date: 12/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0150\nItem | Description | Qty | Unit | Rate | Amount\nPK-PL01 | Wooden pallet | 400 | nos | 650.00 | 2,60,000.00\nTaxable value: 2,60,000.00\nCGST 6%: 15,600.00\nSGST 6%: 15,600.00\nTotal: 2,91,200.00"
+    },
+    {
+      "id": "INV-05",
+      "supplier": "Vardhman Labels",
+      "invoiceNo": "VL0561",
+      "date": "2026-10-14",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-14T10:12:00+05:30",
+      "file": "INV-05 VL0561.pdf",
+      "story": "Micro supplier, 45 days agreed",
+      "text": "TAX INVOICE\nVardhman Labels\nGSTIN: 27AADFV3346C1ZD\nInvoice No: VL0561\nInvoice Date: 14/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0152\nItem | Description | Qty | Unit | Rate | Amount\nPK-LB02 | Printed labels | 50,000 | nos | 1.20 | 60,000.00\nTaxable value: 60,000.00\nCGST 9%: 5,400.00\nSGST 9%: 5,400.00\nTotal: 70,800.00"
+    },
+    {
+      "id": "INV-06",
+      "supplier": "Narmada Logistics",
+      "invoiceNo": "NL/FRT/0512",
+      "date": "2026-10-15",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-15T10:12:00+05:30",
+      "file": "INV-06 NL-FRT-0512.pdf",
+      "story": "Freight with no PO",
+      "text": "TAX INVOICE\nNarmada Logistics\nGSTIN: 24AAKFN3390Q1ZN\nInvoice No: NL/FRT/0512\nInvoice Date: 15/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: -\nItem | Description | Qty | Unit | Rate | Amount\nSV-FR01 | Freight Chakan to Ahmedabad, 4 trips | 4 | trip | 28500.00 | 1,14,000.00\nTaxable value: 1,14,000.00\nIGST 12%: 13,680.00\nTotal: 1,27,680.00"
+    },
+    {
+      "id": "INV-07",
+      "supplier": "Pune Industrial Gases",
+      "invoiceNo": "PIG/0532",
+      "date": "2026-10-16",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-16T10:12:00+05:30",
+      "file": "INV-07 PIG-0532.pdf",
+      "story": "Trader: outside 43B(h)",
+      "text": "TAX INVOICE\nPune Industrial Gases\nGSTIN: 27AACCP5512B1ZW\nInvoice No: PIG/0532\nInvoice Date: 16/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0155\nItem | Description | Qty | Unit | Rate | Amount\nCN-N201 | Nitrogen cylinder refill | 120 | nos | 410.00 | 49,200.00\nTaxable value: 49,200.00\nCGST 9%: 4,428.00\nSGST 9%: 4,428.00\nTotal: 58,056.00"
+    },
+    {
+      "id": "INV-08",
+      "supplier": "Saraswati Chemicals",
+      "invoiceNo": "SCL0498",
+      "date": "2026-10-17",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-17T10:12:00+05:30",
+      "file": "INV-08 SCL0498.pdf",
+      "story": "Total typed wrong by the supplier",
+      "text": "TAX INVOICE\nSaraswati Chemicals\nGSTIN: 24AABCS8820H1ZF\nInvoice No: SCL0498\nInvoice Date: 17/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0157\nItem | Description | Qty | Unit | Rate | Amount\nCH-AD03 | Antioxidant additive | 800 | kg | 540.00 | 4,32,000.00\nTaxable value: 4,32,000.00\nIGST 18%: 77,760.00\nTotal: 5,12,760.00"
+    },
+    {
+      "id": "INV-09",
+      "supplier": "Indus Petrochem Ltd",
+      "invoiceNo": "IPL/2627/612",
+      "date": "2026-10-03",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-20T16:40:00+05:30",
+      "file": "INV-09 IPL-2627-612.pdf",
+      "story": "INV-01 sent again, number written differently",
+      "text": "TAX INVOICE\nIndus Petrochem Ltd\nGSTIN: 27AAACI4417R1Z6\nInvoice No: IPL/2627/612\nInvoice Date: 03/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0141\nItem | Description | Qty | Unit | Rate | Amount\nRM-HD01 | HDPE resin, film grade | 12,000 | kg | 98.50 | 11,82,000.00\nRM-LD02 | LDPE resin | 5,000 | kg | 102.00 | 5,10,000.00\nTaxable value: 16,92,000.00\nCGST 9%: 1,52,280.00\nSGST 9%: 1,52,280.00\nTotal: 19,96,560.00"
+    },
+    {
+      "id": "INV-10",
+      "supplier": "Sahyog Facility Services",
+      "invoiceNo": "SFS/0531",
+      "date": "2026-10-31",
+      "via": "Upload",
+      "receivedAt": "2026-10-31T10:12:00+05:30",
+      "file": "INV-10 SFS-0531.pdf",
+      "story": "Service entry confirmed by admin",
+      "text": "TAX INVOICE\nSahyog Facility Services\nGSTIN: 27AAMFS9902L1ZI\nInvoice No: SFS/0531\nInvoice Date: 31/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0160\nItem | Description | Qty | Unit | Rate | Amount\nSV-HK01 | Housekeeping services, October | 1 | month | 64000.00 | 64,000.00\nTaxable value: 64,000.00\nCGST 9%: 5,760.00\nSGST 9%: 5,760.00\nTotal: 75,520.00"
+    },
+    {
+      "id": "INV-11",
+      "supplier": "Deccan Moulds & Dies",
+      "invoiceNo": "DMD/26-27/0512",
+      "date": "2026-10-21",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-21T10:12:00+05:30",
+      "file": "INV-11 DMD-26-27-0512.pdf",
+      "story": "Billed to the sister firm",
+      "text": "TAX INVOICE\nDeccan Moulds & Dies\nGSTIN: 36AAFFD1175K1ZE\nInvoice No: DMD/26-27/0512\nInvoice Date: 21/10/2026\nBill to: Sarvam Packaging LLP, Chakan, Pune\nGSTIN: 27AAXFS7731K1ZA\nPO No: PO/26-27/0162\nItem | Description | Qty | Unit | Rate | Amount\nTL-MD07 | Mould refurbishment, 2-cavity | 1 | job | 240000.00 | 2,40,000.00\nTaxable value: 2,40,000.00\nIGST 18%: 43,200.00\nTotal: 2,83,200.00"
+    },
+    {
+      "id": "INV-12",
+      "supplier": "Konark Masterbatches Pvt Ltd",
+      "invoiceNo": "KMB-0479",
+      "date": "2026-10-23",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-23T10:12:00+05:30",
+      "file": "INV-12 KMB-0479.pdf",
+      "story": "Medium enterprise: outside 43B(h)",
+      "text": "TAX INVOICE\nKonark Masterbatches Pvt Ltd\nGSTIN: 27AAECK2208M1ZH\nInvoice No: KMB-0479\nInvoice Date: 23/10/2026\nBill to: Sarvam Polymers Private Limited, Chakan, Pune\nGSTIN: 27AAXCS4571A1Z1\nPO No: PO/26-27/0165\nItem | Description | Qty | Unit | Rate | Amount\nMB-B02 | Black masterbatch | 1,000 | kg | 172.00 | 1,72,000.00\nTaxable value: 1,72,000.00\nCGST 9%: 15,480.00\nSGST 9%: 15,480.00\nTotal: 2,02,960.00"
+    },
+    {
+      "id": "INV-13",
+      "supplier": "Shivneri Corrugators",
+      "invoiceNo": "SC/0490",
+      "date": "2026-10-27",
+      "via": "AP mailbox",
+      "receivedAt": "2026-10-27T10:12:00+05:30",
+      "file": "INV-13 SC-0490.pdf",
+      "story": "A scan the rules cannot read",
+      "text": "Shivneri Corrugators\n(scanned copy, no readable text)"
+    }
+  ],
+  "sample": true
+};
+const C = globalThis.Credit;
+const TODAY = DATA.today;
+const lakh = (v) => '₹' + (Number(v) / 1e5).toFixed(2) + ' L';
+const inr = (v) => '₹' + Math.round(Number(v)).toLocaleString('en-IN');
+const amt = (v) => (Math.abs(v) >= 1e5 ? lakh(v) : inr(v));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtDate = (iso) => new Date(iso.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const days = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+const PEOPLE = Object.fromEntries(DATA.people.map((p) => [p.role, p]));
+const ROLE_IN_TEXT = { exec: 'accounts executive', fc: 'finance controller' };
+const VIEWS = [['queue', 'Invoices'], ['msme', 'MSME dates'], ['audit', 'Audit log'], ['connections', 'Connections']];
+const STATUS = {
+  ready: ['Ready to post', 'teal'], exception: ['Exception', 'bad'], duplicate: ['Duplicate', ''], needsReview: ['Needs a look', 'warn'],
+  posted: ['Posted', 'good'], held: ['Held', 'warn'], asked: ['Clear copy asked for', ''],
+};
+const stamp = () => TODAY + 'T' + new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(11, 19) + '+05:30';
+
+// ---------- run every invoice through the same tested rules as the n8n flow, in the order received ----------
+const INV = (() => {
+  const seen = [];
+  return DATA.invoices.slice().sort((a, b) => a.receivedAt.localeCompare(b.receivedAt)).map((i) => {
+    const read = C.readInvoice(i.text);
+    const r = C.processInvoice(read, { buyerGstin: DATA.company.gstin, suppliers: DATA.suppliers, poLines: DATA.poLines, seen });
+    if (r.status !== 'needsReview') seen.push({ supplierGstin: r.supplierGstin, invoiceNo: r.invoiceNo, total: r.total, status: r.status });
+    return { ...i, read, r, state: r.status, done: null };
+  });
+})();
+
+const S = { role: 'exec', view: 'queue', guide: true, filter: 'all', sel: 'INV-03', form: null, auditFilter: 'all', audit: [], payRun: {} };
+try { const r = localStorage.getItem('apDeskRole'); if (r && PEOPLE[r]) S.role = r; if (localStorage.getItem('apDeskGuide') === 'hidden') S.guide = false; } catch (e) {}
+const me = () => PEOPLE[S.role];
+
+function log(actor, actorType, action, record, detail, evidence, at) { S.audit.unshift({ at: at || stamp(), actor, actorType, action, record, detail, evidence }); }
+(function seedAudit() {
+  const seed = [];
+  for (const i of INV) {
+    seed.push([i.receivedAt, 'Invoice to ledger', 'system', 'Received via ' + (i.via === 'Upload' ? 'upload' : 'the AP mailbox'), i.id, i.file, 'Flow · read and checked']);
+    seed.push([i.receivedAt.replace(/:(\d\d):00/, (m, x) => ':' + String(Number(x) + 1).padStart(2, '0') + ':00'), 'Invoice to ledger', 'system', STATUS[i.r.status][0], i.id, i.r.reasons.join(' '), i.r.status === 'exception' ? 'Approval email to ' + PEOPLE.fc.name : 'Rules · PO and goods receipt']);
+  }
+  seed.sort((a, b) => b[0].localeCompare(a[0])).forEach((r) => S.audit.push({ at: r[0], actor: r[1], actorType: r[2], action: r[3], record: r[4], detail: r[5], evidence: r[6] }));
+})();
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 4200); }
+const chip = (s) => `<span class="chip ${STATUS[s][1]}">${STATUS[s][0]}</span>`;
+const msmeOpen = () => INV.filter((i) => i.r.msme.applies && !S.payRun[i.id]);
+
+function waiting() {
+  const items = [];
+  if (S.role === 'exec') {
+    const ready = INV.filter((i) => i.state === 'ready');
+    if (ready.length) items.push(['queue', 'ready', 'Post ' + ready.length + ' matched invoices', amt(ready.reduce((s, i) => s + i.r.total, 0)) + ' · PO and goods receipt agree']);
+    const look = INV.filter((i) => i.state === 'needsReview');
+    if (look.length) items.push(['queue', 'needsReview', look.length + ' invoice' + (look.length > 1 ? 's' : '') + ' the rules could not read', look.map((i) => i.r.supplier).join(', ')]);
+  } else {
+    const ex = INV.filter((i) => i.state === 'exception');
+    if (ex.length) items.push(['queue', 'exception', 'Decide ' + ex.length + ' exceptions', amt(ex.reduce((s, i) => s + i.r.held, 0)) + ' held across them']);
+    const late = msmeOpen().filter((i) => i.r.msme.due < TODAY);
+    if (late.length) items.push(['msme', '', late.length + ' MSME invoice' + (late.length > 1 ? 's' : '') + ' past the legal date', late.map((i) => i.r.supplier + ', due ' + fmtDate(i.r.msme.due)).join('; ')]);
+  }
+  return items;
+}
+
+// ---------- views ----------
+function viewQueue() {
+  const n = (k) => INV.filter((i) => i.state === k);
+  const filters = [['all', 'All'], ['exception', 'Exceptions'], ['ready', 'Ready to post'], ['posted', 'Posted'], ['duplicate', 'Duplicates'], ['needsReview', 'Needs a look']];
+  const shown = INV.filter((i) => S.filter === 'all' || i.state === S.filter || (S.filter === 'needsReview' && i.state === 'asked') || (S.filter === 'exception' && i.state === 'held'));
+  if (!shown.find((i) => i.id === S.sel) && shown[0]) S.sel = shown[0].id;
+  const sel = INV.find((i) => i.id === S.sel);
+  const late = msmeOpen().filter((i) => i.r.msme.due < TODAY);
+  const items = waiting();
+  return `
+  ${S.guide ? `<section class="panel pad guide">
+    <div class="pagehead"><h3 class="label">Try this: two minutes, two roles</h3><div class="actions"><button class="btn link" data-act="restart">Start the demo again</button><button class="btn link" data-act="hideGuide">Hide</button></div></div>
+    <ol>
+      <li>As <b>Priya Nair</b>, post the matched invoices in one go. Open <a href="#queue" data-act="pick" data-id="INV-09">INV-09</a>: the same Indus invoice sent again, caught and not posted twice.</li>
+      <li>Switch to <b>Rohan Mehta</b>. Open <a href="#queue" data-act="pick" data-id="INV-03">Shivneri's invoice</a>: 400 boxes billed but not received. Hold it, with a reason.</li>
+      <li>Open <a href="#msme" data-act="goto" data-view="msme">MSME dates</a>. Ganesh Pallets is a micro supplier with no written agreement: 15 days, already past. Add it to today's payment run.</li>
+    </ol>
+  </section>` : ''}
+  <div class="pagehead"><h2>Invoices</h2><span class="muted small">${INV.length} received in October · read, checked and matched by the flow · viewing as ${esc(me().name)}, ${ROLE_IN_TEXT[S.role]}</span></div>
+  <div class="kpis">
+    <div class="panel kpi"><span class="label">Ready to post</span><span class="big num">${n('ready').length}</span><span class="sub">${amt(n('ready').reduce((s, i) => s + i.r.total, 0))} · ${n('posted').length} posted so far</span></div>
+    <div class="panel kpi"><span class="label">Exceptions</span><span class="big num">${n('exception').length}</span><span class="sub">${amt(n('exception').reduce((s, i) => s + i.r.held, 0))} held for a decision</span></div>
+    <div class="panel kpi"><span class="label">Caught before posting</span><span class="big num">${n('duplicate').length + INV.filter((i) => i.r.exceptions.some((e) => e.kind === 'buyer')).length}</span><span class="sub">a duplicate and a bill to the wrong company</span></div>
+    <div class="panel kpi"><span class="label">MSME past the date</span><span class="big num">${late.length}</span><span class="sub">${late.length ? amt(late.reduce((s, i) => s + i.r.total, 0)) + ' · deduction at risk' : 'none'}</span></div>
+  </div>
+  ${items.length ? `<section class="panel pad"><div class="pagehead"><h3 class="label">Needs you</h3><span class="legend-gold"><i></i>a person decides</span></div><div class="decide">${items.map(([v, f, t, s]) => `<a href="#${v}" data-act="goto" data-view="${v}" data-filter="${f}"><span><b>${esc(t)}</b><br><span class="muted small">${esc(s)}</span></span><span class="go">Open</span></a>`).join('')}</div></section>` : ''}
+  <div class="pagehead"><div class="filters" role="group" aria-label="Filter invoices">${filters.map(([k, l]) => `<button aria-pressed="${S.filter === k}" data-act="filter" data-k="${k}">${l}</button>`).join('')}</div>
+    ${S.role === 'exec' && n('ready').length ? `<button class="btn teal" data-act="postAll">Post all ${n('ready').length} matched</button>` : ''}</div>
+  <div class="split">
+    <div class="panel list" aria-label="Invoices">${shown.map((i) => `
+      <button class="row" aria-selected="${i.id === S.sel}" data-act="sel" data-id="${i.id}">
+        <span class="r1"><span class="name">${esc(i.r.supplier)}</span><span class="num">${i.r.total ? amt(i.r.total) : '—'}</span></span>
+        <span class="r1"><span class="muted small num">${i.id} · ${esc(i.r.invoiceNo || i.file)}</span>${chip(i.state)}</span>
+      </button>`).join('') || '<p class="empty">Nothing here.</p>'}</div>
+    <article class="panel">${sel ? detail(sel) : '<p class="empty">Pick an invoice.</p>'}</article>
+  </div>`;
+}
+
+function detail(i) {
+  const r = i.r, rd = i.read;
+  const g = rd.supplierGstin ? C.validateGSTIN(rd.supplierGstin) : { ok: false };
+  const kinds = new Set(r.exceptions.map((e) => e.kind));
+  const checks = r.status === 'needsReview' ? [['q', 'Could not read the ' + rd.missing.join(', ')]] : [
+    [g.ok ? 'y' : 'n', 'Supplier GSTIN ' + rd.supplierGstin + (g.ok ? ' is valid' : ' is not valid')],
+    [kinds.has('buyer') ? 'n' : 'y', 'Billed to ' + (kinds.has('buyer') ? rd.buyerGstin + ', not Sarvam' : 'Sarvam (' + rd.buyerGstin + ')')],
+    [kinds.has('arithmetic') ? 'n' : 'y', kinds.has('arithmetic') ? 'Does not add up' : 'Lines, tax and total add up'],
+    [kinds.has('taxType') ? 'n' : 'y', rd.igst ? 'IGST: supplier in another state' : 'CGST + SGST: supplier in Maharashtra'],
+    [r.status === 'duplicate' ? 'n' : 'y', r.status === 'duplicate' ? 'Already received' : 'Not received before'],
+    ...(() => { const off = ['qty', 'price', 'notOnPo', 'poSupplier'].some((k) => kinds.has(k));
+      return [[kinds.has('noPo') || off ? 'n' : r.status === 'duplicate' ? 'q' : 'y', kinds.has('noPo') ? 'No purchase order' : r.status === 'duplicate' ? 'Match not run' : off ? 'Does not match ' + rd.poNo + ' and the goods received' : 'Matches ' + rd.poNo + ' and the goods received']]; })(),
+  ];
+  let act = '';
+  const by = i.done;
+  if (i.state === 'posted') act = `<div class="gate">Posted to the ledger by ${esc(by.by)}${by.reason ? ' · ' + esc(by.reason) : ''} · purchase voucher in Tally (configured in the demo)</div>`;
+  else if (i.state === 'held') act = `<div class="gate">Held by ${esc(by.by)}: ${esc(by.reason)}. ${esc(r.supplier)} is asked for a corrected invoice or credit note.</div>`;
+  else if (i.state === 'asked') act = `<div class="gate">${esc(by.by)} asked ${esc(r.supplier)} for a readable copy. It is checked again when it arrives.</div>`;
+  else if (i.state === 'duplicate') act = `<div class="gate">${esc(r.reasons[0])} The accounts executive was told; nothing to do.</div>`;
+  else if (i.state === 'ready') act = S.role === 'exec' ? `<div class="actions"><button class="btn teal" data-act="post" data-id="${i.id}">Post to the ledger</button><span class="muted small">PO, goods receipt and invoice agree</span></div>` : `<div class="gate">Matched invoices are posted by ${esc(PEOPLE.exec.name)}.</div>`;
+  else if (i.state === 'needsReview') act = S.role === 'exec' ? `<div class="actions"><button class="btn" data-act="askCopy" data-id="${i.id}">Ask ${esc(r.supplier)} for a readable copy</button></div>` : `<div class="gate">With ${esc(PEOPLE.exec.name)}.</div>`;
+  else if (i.state === 'exception') {
+    if (S.role !== 'fc') act = `<div class="gate">With ${esc(PEOPLE.fc.name)} for approval. The person who prepares an invoice never approves its exception.</div>`;
+    else if (S.form && S.form.id === i.id) act = `<form class="form" data-act="submitDecision" data-id="${i.id}"><b>${S.form.kind === 'approve' ? 'Approve and post as billed' : 'Hold the invoice'}</b><label>Reason (goes into the audit log${S.form.kind === 'hold' ? ' and to the supplier' : ''})<textarea id="f-reason" rows="2" placeholder="${S.form.kind === 'approve' ? 'e.g. price increase agreed by purchase on 8 Oct' : 'e.g. bill only the 4,600 boxes received'}">${esc(S.form.reason || '')}</textarea></label>${S.form.error ? `<span class="err">${esc(S.form.error)}</span>` : ''}<div class="actions"><button class="btn gold" type="submit">${S.form.kind === 'approve' ? 'Approve and post' : 'Hold'}</button><button class="btn link" type="button" data-act="closeForm">Cancel</button></div></form>`;
+    else act = `<div class="actions"><button class="btn gold" data-act="openDecision" data-k="hold" data-id="${i.id}">Hold</button><button class="btn" data-act="openDecision" data-k="approve" data-id="${i.id}">Approve and post as billed</button></div>`;
+  }
+  const m = r.msme;
+  const clock = m.applies ? (() => { const left = days(TODAY, m.due); return `<div class="clock ${left < 0 ? 'late' : ''}"><span class="num">${left < 0 ? Math.abs(left) + ' days late' : left + ' days'}</span><span>MSME: pay by <b>${fmtDate(m.due)}</b> · ${esc(m.basis)}${left < 0 ? '. Past the date: the expense is not deductible this year until paid (Section 43B(h)).' : ''}</span></div>`; })() : `<p class="muted small">MSME: ${esc(m.basis)}.</p>`;
+  return `<div class="detail">
+    <div class="dhead"><div><span class="label">${i.id} · ${esc(i.via)} · ${esc(i.file)}</span><h3>${esc(r.supplier)}</h3><span class="muted small">${esc(i.story || '')}</span></div>${chip(i.state)}</div>
+    <div class="facts">
+      <div><span class="label">Invoice</span><span class="num">${esc(rd.invoiceNo || '—')}</span></div>
+      <div><span class="label">Date</span><span>${rd.date ? fmtDate(rd.date) : '—'}</span></div>
+      <div><span class="label">PO</span><span class="num">${esc(rd.poNo || 'none')}</span></div>
+      <div><span class="label">Total</span><span class="num">${rd.total ? inr(rd.total) : '—'}</span></div>
+    </div>
+    ${act}
+    ${r.status === 'exception' || r.status === 'needsReview' ? `<section><h4 class="label" style="margin-bottom:8px">Why it did not post itself</h4><ul class="reasons" style="margin:0;padding-left:18px;display:grid;gap:4px">${r.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>${r.held ? `<p class="small" style="margin-top:6px">Held: <b class="num">${inr(r.held)}</b></p>` : ''}</section>` : ''}
+    <section><h4 class="label" style="margin-bottom:8px">Checks</h4><ul class="checks">${checks.map(([k, t]) => `<li><span class="${k}">${k === 'y' ? '✓' : k === 'n' ? '✕' : '–'}</span><span>${esc(t)}</span></li>`).join('')}</ul></section>
+    ${r.lines.length ? `<section><h4 class="label" style="margin-bottom:8px">Line by line</h4><div class="tablewrap"><table><thead><tr><th>Item</th><th class="r">Billed</th><th class="r">PO</th><th class="r">Received</th><th>Result</th></tr></thead><tbody>${r.lines.map((l) => `<tr class="${l.ok ? '' : 'bad'}"><td><b class="num">${esc(l.item)}</b><span class="src">${esc(l.desc)}</span></td><td class="r num">${l.qty.toLocaleString('en-IN')} @ ${l.rate}</td><td class="r num">${l.poQty != null ? l.poQty.toLocaleString('en-IN') + ' @ ' + l.poRate : '—'}</td><td class="r num">${l.received != null ? l.received.toLocaleString('en-IN') : '—'}<span class="src">${l.receivedOn ? fmtDate(l.receivedOn) : ''}</span></td><td class="small">${l.ok ? '<span class="chip good">Matches</span>' : esc(l.note)}</td></tr>`).join('')}</tbody></table></div></section>` : ''}
+    ${clock}
+  </div>`;
+}
+
+function viewMsme() {
+  const list = INV.filter((i) => i.r.msme.applies).sort((a, b) => a.r.msme.due.localeCompare(b.r.msme.due));
+  const outside = DATA.suppliers.filter((s) => !['micro', 'small'].includes(s.msme) || s.trader);
+  return `
+  <div class="pagehead"><h2>MSME dates</h2><span class="muted small">Micro and small suppliers must be paid within the agreed days, 45 at most, or 15 with no written agreement</span></div>
+  <section class="panel pad pagehead"><span class="small">The clock starts when the goods are accepted. Paid late, the expense is not deductible until the year it is paid (Income-tax Act s.43B(h), MSMED Act s.15). The desk reads the Udyam category and agreed days from the supplier master.</span>${S.role === 'fc' ? '' : `<span class="gate">${esc(PEOPLE.fc.name)} adds invoices to the payment run.</span>`}</section>
+  <section class="panel"><div class="tablewrap"><table>
+    <thead><tr><th>Supplier</th><th>Invoice</th><th class="r">Amount</th><th>Accepted</th><th>Pay by</th><th>Status</th></tr></thead>
+    <tbody>${list.map((i) => { const left = days(TODAY, i.r.msme.due); const accepted = i.r.lines.map((l) => l.receivedOn).filter(Boolean).sort().pop(); const pr = S.payRun[i.id]; return `<tr class="${left < 0 && !pr ? 'bad' : ''}">
+      <td><b>${esc(i.r.supplier)}</b><span class="src">${esc(i.r.msme.basis)}</span></td>
+      <td class="num small">${esc(i.r.invoiceNo)}<span class="src">${STATUS[i.state][0]}</span></td>
+      <td class="r num">${amt(i.r.total)}</td><td class="small">${accepted ? fmtDate(accepted) : '—'}</td>
+      <td><b>${fmtDate(i.r.msme.due)}</b><span class="src">${left < 0 ? Math.abs(left) + ' days late' : left + ' days left'}</span></td>
+      <td style="min-width:200px">${pr ? `<span class="chip good">In today's payment run</span><span class="src">${esc(pr.by)}</span>` : i.state === 'exception' || i.state === 'held' ? `<span class="chip warn">Exception first</span><span class="src">Pay the agreed part once decided</span>` : S.role === 'fc' ? `<button class="btn gold" data-act="payRun" data-id="${i.id}">Add to today's payment run</button>` : '<span class="chip">Not yet in a run</span>'}</td></tr>`; }).join('')}</tbody>
+  </table></div></section>
+  <section class="panel">
+    <div class="pad" style="padding-bottom:6px"><h3 class="label">Suppliers outside the 45-day rule</h3></div>
+    <div class="tablewrap"><table><thead><tr><th>Supplier</th><th>Why</th></tr></thead><tbody>${outside.map((s) => `<tr><td><b>${esc(s.name)}</b></td><td class="small">${esc(C.msmeDue(s, TODAY).basis)}${s.agreedDays ? ' · ' + s.agreedDays + ' days agreed' : ''}</td></tr>`).join('')}</tbody></table></div>
+    <p class="pad muted small" style="padding-top:8px">Traders are treated as outside the rule on most commentary; confirm with your tax adviser. Udyam categories are re-checked when the supplier master is updated.</p>
+  </section>`;
+}
+
+function viewAudit() {
+  const f = S.auditFilter;
+  const rows = S.audit.filter((r) => f === 'all' || (f === 'people' ? r.actorType === 'person' : r.actorType !== 'person'));
+  return `
+  <div class="pagehead"><h2>Audit log</h2><span class="muted small">Every invoice, check, posting and decision · ${S.audit.length} entries</span></div>
+  <section class="panel">
+    <div class="pad pagehead"><span class="muted small">Newest first. In a live install this is the n8n audit table, kept with you.</span><div class="filters" role="group" aria-label="Filter log">${[['all', 'All'], ['people', 'People'], ['machine', 'System']].map(([k, l]) => `<button aria-pressed="${f === k}" data-act="auditFilter" data-k="${k}">${l}</button>`).join('')}</div></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>When</th><th>Who</th><th>What</th><th>Record</th><th>Detail and evidence</th></tr></thead>
+      <tbody>${rows.map((r) => `<tr><td class="num small" style="white-space:nowrap">${new Date(r.at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}</td><td><b>${esc(r.actor)}</b><span class="src">${r.actorType === 'person' ? 'Person' : 'System'}</span></td><td>${esc(r.action)}</td><td class="num small">${esc(r.record)}</td><td class="small">${esc(r.detail)}<span class="src">${esc(r.evidence)}</span></td></tr>`).join('')}</tbody>
+    </table></div>
+  </section>`;
+}
+
+function viewConnections() {
+  const rows = [
+    ['Upload form', 'Live in demo', 'Invoice PDFs', 'Nothing', 'Nothing'],
+    ['AP mailbox (Gmail or Microsoft 365)', 'Configured', 'Unread mail with a PDF, every 5 minutes', 'A shared AP mailbox the flow can read', 'Approval emails, notes to the team'],
+    ['Google Sheet', 'Live in demo', 'POs with goods received, supplier master with Udyam category', 'Nothing', 'The invoice register'],
+    ['TallyPrime', 'Configured', 'POs and goods receipt notes (XML on port 9000)', 'A small agent inside your network; the Tally port is never exposed', 'Purchase vouchers'],
+    ['Zoho Books', 'Configured', 'Purchase orders, bills', 'An API connection and the organisation ID', 'Bills'],
+    ['SAP Business One', 'Configured', 'Purchase orders, goods receipt POs (Service Layer)', 'An API user', 'A/P invoices'],
+    ['AI read of invoices', 'Needs a model key', 'Layouts the rules do not know', 'A model key added in n8n by you', 'Fields for a person to confirm; it never posts'],
+  ];
+  return `
+  <div class="pagehead"><h2>Connections</h2><span class="muted small">What this desk reads, what it writes back, and what we need from your IT team</span></div>
+  <section class="panel"><div class="tablewrap"><table class="conn">
+    <thead><tr><th>System</th><th>Status</th><th>What we read</th><th>What we write back</th><th>What we need from you</th></tr></thead>
+    <tbody>${rows.map(([n, s, r, need, w]) => `<tr><td>${n}</td><td class="${s === 'Live in demo' ? 'ok' : 'cfg'} small">${s}</td><td class="small">${r}</td><td class="small">${w}</td><td class="small">${need}</td></tr>`).join('')}</tbody>
+  </table></div></section>
+  <div class="grid2">
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">How it runs</h3>
+      <div class="ceil">
+        <div><span>1 · Arrive</span><span class="muted">AP mailbox or upload</span></div>
+        <div><span>2 · Read and check</span><span class="muted">GSTIN, billed to you, arithmetic, tax type, duplicate</span></div>
+        <div><span>3 · Match three ways</span><span class="muted">PO, goods receipt, invoice</span></div>
+        <div><span>4 · Route</span><span class="muted">post · controller decides · executive told</span></div>
+      </div>
+      <p class="muted small" style="margin-top:10px">One n8n workflow: visual, readable by your IT team, and running in your own cloud account.</p>
+    </section>
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">Controls</h3>
+      <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">
+        <li>Your tolerances, written as rules: billed quantity never above received; rate within 1% of the PO.</li>
+        <li>Only an invoice that matches three ways posts without a person. Every exception goes to the finance controller with the reason; the preparer never approves.</li>
+        <li>The same invoice cannot post twice, however its number is written.</li>
+        <li>MSME payment dates are set the day the goods are accepted.</li>
+        <li>Every invoice, check, posting and decision is in the audit log.</li>
+      </ul>
+    </section>
+  </div>`;
+}
+
+// ---------- render ----------
+function render() {
+  document.getElementById('roles').innerHTML = '<span class="as">Viewing as</span>' + ['exec', 'fc'].map((r) => `<button aria-pressed="${S.role === r}" data-act="role" data-role="${r}">${esc(PEOPLE[r].name)}<span>${PEOPLE[r].title}</span></button>`).join('');
+  const counts = { queue: S.role === 'exec' ? INV.filter((i) => ['ready', 'needsReview'].includes(i.state)).length : INV.filter((i) => i.state === 'exception').length, msme: S.role === 'fc' ? msmeOpen().filter((i) => i.r.msme.due < TODAY && !['exception', 'held'].includes(i.state)).length : 0 };
+  document.getElementById('tabs').innerHTML = VIEWS.map(([k, l]) => `<a href="#${k}" data-act="goto" data-view="${k}" ${S.view === k ? 'aria-current="page"' : ''}>${l}${counts[k] ? `<span class="count num">${counts[k]}</span>` : ''}</a>`).join('');
+  const v = { queue: viewQueue, msme: viewMsme, audit: viewAudit, connections: viewConnections }[S.view];
+  document.getElementById('main').innerHTML = v();
+}
+
+// ---------- actions ----------
+function postInvoice(i, reason) {
+  i.state = 'posted'; i.done = { by: me().name, reason };
+  log(me().name, 'person', reason ? 'Approved and posted' : 'Posted', i.id, i.r.supplier + ' ' + i.r.invoiceNo + ' · ' + inr(i.r.total) + (reason ? ' · ' + reason : ''), 'Purchase voucher · ledger (configured)');
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (!t || t.tagName === 'FORM') return;
+  const act = t.dataset.act, id = t.dataset.id;
+  const inv = id ? INV.find((x) => x.id === id) : null;
+  if (act === 'goto') { e.preventDefault(); S.view = t.dataset.view; S.form = null; if (t.dataset.filter) S.filter = t.dataset.filter; history.replaceState(null, '', '#' + S.view); render(); window.scrollTo({ top: 0 }); return; }
+  if (act === 'pick') { e.preventDefault(); S.view = 'queue'; S.filter = 'all'; S.sel = id; S.form = null; render(); document.querySelector('main article')?.scrollIntoView({ block: 'start' }); return; }
+  if (act === 'role') { S.role = t.dataset.role; S.form = null; try { localStorage.setItem('apDeskRole', S.role); } catch (err) {} render(); return; }
+  if (act === 'filter') { S.filter = t.dataset.k; S.form = null; render(); return; }
+  if (act === 'auditFilter') { S.auditFilter = t.dataset.k; render(); return; }
+  if (act === 'sel') { S.sel = id; S.form = null; render(); if (innerWidth <= 980) document.querySelector('main article')?.scrollIntoView({ block: 'start' }); return; }
+  if (act === 'hideGuide') { S.guide = false; try { localStorage.setItem('apDeskGuide', 'hidden'); } catch (err) {} render(); return; }
+  if (act === 'restart') { try { localStorage.removeItem('apDeskRole'); localStorage.removeItem('apDeskGuide'); } catch (err) {} location.hash = 'queue'; location.reload(); return; }
+  if (act === 'closeForm') { S.form = null; render(); return; }
+  if (act === 'post') { postInvoice(inv, ''); toast(inv.r.supplier + ' ' + inv.r.invoiceNo + ' posted to the ledger.'); render(); return; }
+  if (act === 'postAll') { const ready = INV.filter((x) => x.state === 'ready'); ready.forEach((x) => postInvoice(x, '')); toast(ready.length + ' matched invoices posted (demo: nothing reaches a real ledger).'); render(); return; }
+  if (act === 'askCopy') { inv.state = 'asked'; inv.done = { by: me().name }; log(me().name, 'person', 'Asked for a readable copy', inv.id, inv.r.supplier + ' · ' + inv.file, 'Email to the supplier'); toast(inv.r.supplier + ' asked for a readable copy.'); render(); return; }
+  if (act === 'openDecision') { S.form = { id, kind: t.dataset.k }; render(); document.getElementById('f-reason')?.focus(); return; }
+  if (act === 'payRun') { S.payRun[id] = { by: me().name }; log(me().name, 'person', 'Added to the payment run', inv.id, inv.r.supplier + ' ' + inv.r.invoiceNo + ' · ' + inr(inv.r.total) + ' · MSME date ' + fmtDate(inv.r.msme.due), 'Payment run, ' + fmtDate(TODAY)); toast(inv.r.supplier + ' added to today\'s payment run.'); render(); return; }
+});
+document.addEventListener('input', (e) => { if (S.form && e.target.id === 'f-reason') S.form.reason = e.target.value; });
+document.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const inv = INV.find((x) => x.id === e.target.dataset.id);
+  const reason = (S.form.reason || '').trim();
+  if (!reason) { S.form.error = 'Add a reason. It goes into the audit log.'; render(); return; }
+  if (S.form.kind === 'approve') { postInvoice(inv, reason); toast('Approved and posted: ' + inv.r.supplier + ' ' + inv.r.invoiceNo + '.'); }
+  else { inv.state = 'held'; inv.done = { by: me().name, reason }; log(me().name, 'person', 'Held', inv.id, inv.r.supplier + ' ' + inv.r.invoiceNo + ' · ' + reason, 'Exception decision'); toast('Held. ' + inv.r.supplier + ' is asked for a corrected invoice.'); }
+  S.form = null; render();
+});
+
+const fromHash = () => { const h = location.hash.slice(1); if (VIEWS.some(([k]) => k === h)) S.view = h; };
+window.addEventListener('hashchange', () => { fromHash(); S.form = null; render(); });
+fromHash();
+render();
+</script>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GaVira Systems · Finance demos</title>
+  <meta name="description" content="Four working finance systems on sample data: credit control, GST input credit, an IPO data room and supplier invoices.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root { --cream: #f3f5ee; --teal: #006d77; --sage: #899670; --onyx: #111111; --ink2: #3d4436; --line: #dfe3d8; color-scheme: light; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--cream); color: var(--onyx); font-family: Lato, system-ui, sans-serif; font-size: 18px; line-height: 1.55; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 56px 24px 72px; }
+    header img { width: 168px; height: auto; display: block; }
+    header .sys { font-size: 15px; letter-spacing: .02em; color: var(--ink2); margin-top: 6px; }
+    h1 { font-family: "Playfair Display", Georgia, serif; font-size: clamp(36px, 5.2vw, 60px); line-height: 1.08; letter-spacing: -.01em; margin-top: 48px; max-width: 16ch; }
+    h1 em { font-style: normal; color: var(--teal); }
+    .lede { margin-top: 20px; max-width: 62ch; color: var(--ink2); }
+    .how { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 16px; color: var(--ink2); }
+    .how b { color: var(--onyx); }
+    .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; }
+    .desk a.shot { display: block; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #fff; box-shadow: 0 18px 40px rgba(17,17,17,.08); transition: transform .2s ease, box-shadow .2s ease; }
+    .desk a.shot:hover { transform: translateY(-3px); box-shadow: 0 24px 48px rgba(17,17,17,.12); }
+    .desk img { display: block; width: 100%; height: auto; aspect-ratio: 1280 / 750; object-fit: cover; object-position: top; }
+    .desk h2 { font-family: "Playfair Display", Georgia, serif; font-size: 28px; margin-top: 18px; }
+    .desk p { margin-top: 6px; color: var(--ink2); }
+    .desk .who { font-size: 16px; margin-top: 8px; }
+    .desk .who b { color: var(--onyx); }
+    .desk .open { display: inline-block; margin-top: 14px; color: var(--teal); font-weight: 700; text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 1px; }
+    .desk .open:hover { color: var(--onyx); }
+    footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink2); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+    footer a { color: var(--teal); }
+    @media (max-width: 760px) { .wrap { padding: 36px 16px 56px; } .grid { grid-template-columns: 1fr; gap: 36px; } h1 { margin-top: 32px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="img/wordmark.png" alt="GaVira">
+      <div class="sys">Systems</div>
+    </header>
+
+    <h1>Four finance systems you can <em>click through</em>.</h1>
+    <p class="lede">Each one runs on the same fictional company, Sarvam Polymers, with sample data. Switch people at the top right of any desk and you'll see who can approve what. Nothing here sends a real message or touches a real ledger.</p>
+    <div class="how">
+      <span><b>The AI</b> reads and drafts</span>
+      <span><b>Written rules</b> decide what's clear</span>
+      <span><b>A person</b> approves the rest, and every step is logged</span>
+    </div>
+
+    <div class="grid">
+      <section class="desk">
+        <a class="shot" href="credit-desk/"><img src="screens/credit.jpg" alt="Credit Desk overview: what customers owe, by age, and the decisions waiting"></a>
+        <h2>Credit Desk</h2>
+        <p>Credit applications checked against GST filings, payment history and the balance sheet. The limit is set by your policy, orders are checked before they ship, and collections are chased daily.</p>
+        <p class="who"><b>Who decides:</b> the finance controller up to ₹50 lakh, the CFO above that.</p>
+        <a class="open" href="credit-desk/">Open the Credit Desk</a>
+      </section>
+      <section class="desk">
+        <a class="shot" href="gst-desk/"><img src="screens/gst.jpg" alt="GST Desk summary: input credit claimable now and held up"></a>
+        <h2>GST Desk</h2>
+        <p>The purchase register is matched with GSTR-2B, invoice by invoice. Our own errors land on a worklist, each supplier gets one email, and the ITC figure is signed before filing.</p>
+        <p class="who"><b>Who decides:</b> the accounts executive prepares, the finance controller signs.</p>
+        <a class="open" href="gst-desk/">Open the GST Desk</a>
+      </section>
+      <section class="desk">
+        <a class="shot" href="ipo-room/"><img src="screens/ipo.jpg" alt="IPO Room readiness by workstream"></a>
+        <h2>IPO Room</h2>
+        <p>The DRHP data room. Every request has an owner and a date, every upload is checked for document, year and signature, and the ledger is scanned weekly for related parties.</p>
+        <p class="who"><b>Who decides:</b> the company secretary decides every related-party flag; nobody accepts their own upload.</p>
+        <a class="open" href="ipo-room/">Open the IPO Room</a>
+      </section>
+      <section class="desk">
+        <a class="shot" href="ap-desk/"><img src="screens/ap.jpg" alt="AP Desk invoices: ready to post, exceptions and MSME dates"></a>
+        <h2>AP Desk</h2>
+        <p>Supplier invoices are read and matched with the PO and goods receipt. Duplicates are caught, short deliveries held, and MSME payment dates tracked.</p>
+        <p class="who"><b>Who decides:</b> the finance controller decides every exception, with a reason on record.</p>
+        <a class="open" href="ap-desk/">Open the AP Desk</a>
+      </section>
+    </div>
+
+    <footer>
+      <span>Built by GaVira Systems. In a real install, these screens sit on n8n flows running in your own cloud.</span>
+      <a href="https://www.gavira.co.in">gavira.co.in</a>
+    </footer>
+  </div>
+</body>
+</html>

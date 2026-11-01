@@ -1,0 +1,2049 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPO Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap">
+<style>
+
+/* Layout: a working desk — header with role switch, tab bar, then list-and-detail panes. Gold marks only buttons where a person decides. */
+:root {
+  --bg: #f3f5f1; --surface: #ffffff; --surface-2: #eef2ee; --line: #d9e1db; --line-2: #c6d0c9;
+  --ink: #111a19; --ink-2: #45524f; --ink-3: #66746f;
+  --teal: #006d77; --teal-ink: #005c65; --teal-soft: #e0eeee; --on-teal: #ffffff;
+  --sage: #899670; --sage-soft: #a3b18a;
+  --gold: #ffd166; --gold-ink: #2b2100; --gold-line: #e9b53a;
+  --good: #2e7744; --good-soft: #e2f0e5; --warn: #8f5600; --warn-soft: #f7ead3; --bad: #a93224; --bad-soft: #f7e0dc;
+  --age0: #a3b18a; --age1: #6fa6ab; --age2: #e0ad45; --age3: #d4774e; --age4: #a93224;
+  --shadow: 0 1px 2px rgb(17 26 25 / .06), 0 4px 16px rgb(17 26 25 / .05);
+  --f-display: 'Playfair Display', Georgia, serif;
+  --f-body: 'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--teal-ink); outline-offset: 2px; border-radius: 6px; }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.muted { color: var(--ink-3); }
+.small { font-size: 13px; }
+.label { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+
+.demo { margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 8px max(16px, env(safe-area-inset-left, 0px)); background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--ink-2); text-align: center; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-block: 18px 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-right: auto; }
+.brand h1 { font-family: var(--f-display); font-weight: 600; font-size: 26px; letter-spacing: -.01em; }
+.brand .co { color: var(--ink-2); font-size: 13.5px; }
+.roles { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); padding: 4px; border-radius: 12px; flex-wrap: wrap; }
+.roles button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; text-align: left; line-height: 1.25; }
+.roles button span { display: block; font-size: 11px; color: var(--ink-3); }
+.roles button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); }
+.roles .as { align-self: center; padding: 0 6px 0 8px; font-size: 11.5px; color: var(--ink-3); }
+nav.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+nav.tabs a { padding: 10px 14px; text-decoration: none; color: var(--ink-2); border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 700; font-size: 14px; }
+nav.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--teal); }
+nav.tabs .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 10px; background: var(--teal-soft); color: var(--teal-ink); font-size: 12px; text-align: center; }
+main { padding-top: 22px; display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+main > *, .panel, .split > *, .grid2 > * { min-width: 0; }
+.pagehead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.pagehead h2 { font-family: var(--f-display); font-weight: 600; font-size: 24px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.pad { padding: 18px 20px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kpi .big { font-size: 26px; font-weight: 500; }
+.kpi .sub { font-size: 13px; color: var(--ink-2); }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; }
+.split { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+
+.ageing { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 12px 0 10px; background: var(--surface-2); }
+.ageing span { display: block; height: 100%; }
+.legend { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.legend div { display: grid; gap: 2px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+.legend b { font-weight: 500; color: var(--ink); font-size: 14px; }
+
+.list { display: grid; }
+.row { display: grid; gap: 4px; padding: 12px 16px; border-top: 1px solid var(--line); text-align: left; background: transparent; border-left: 3px solid transparent; border-right: 0; border-bottom: 0; cursor: pointer; width: 100%; }
+.row:first-child { border-top: 0; }
+.row:hover { background: var(--surface-2); }
+.row[aria-selected="true"] { background: var(--teal-soft); border-left-color: var(--teal); }
+.row .r1 { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.row .name { font-weight: 700; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+.chip.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.chip.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.chip.teal { background: var(--teal-soft); color: var(--teal-ink); border-color: transparent; }
+.grade { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; font-weight: 900; font-size: 13px; }
+.grade.A { background: var(--good-soft); color: var(--good); } .grade.B { background: var(--teal-soft); color: var(--teal-ink); }
+.grade.C { background: var(--warn-soft); color: var(--warn); } .grade.D { background: var(--bad-soft); color: var(--bad); }
+
+.btn { border: 1px solid var(--line-2); background: var(--surface); padding: 9px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { background: var(--surface-2); }
+.btn.teal { background: var(--teal); color: var(--on-teal); border-color: var(--teal); }
+.btn.teal:hover { filter: brightness(1.08); }
+.btn.gold { background: var(--gold); color: var(--gold-ink); border-color: var(--gold-line); }
+.btn.gold:hover { filter: brightness(.97); }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.btn.link { border: 0; background: transparent; padding: 4px 2px; color: var(--teal-ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gate { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--surface-2); color: var(--ink-2); font-size: 13.5px; }
+
+.detail { display: grid; gap: 18px; padding: 20px 22px; }
+.dhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: start; }
+.dhead h3 { font-size: 20px; font-weight: 900; }
+.amounts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.amounts div { padding: 12px 14px; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.amounts div:first-child { border-left: 0; }
+.amounts .v { font-size: 20px; font-weight: 500; }
+.amounts .hl { background: var(--teal-soft); }
+.steps { display: flex; flex-wrap: wrap; gap: 6px 4px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; }
+.steps li { display: flex; align-items: center; gap: 6px; color: var(--ink-3); }
+.steps li::after { content: ''; width: 18px; height: 1px; background: var(--line-2); margin-left: 4px; }
+.steps li:last-child::after { display: none; }
+.steps li.done { color: var(--ink-2); }
+.steps li.now { color: var(--ink); font-weight: 700; }
+.steps .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); }
+.steps .done .dot { background: var(--sage); }
+.steps .now .dot { background: var(--gold); box-shadow: 0 0 0 3px rgb(255 209 102 / .35); }
+
+table { border-collapse: collapse; width: 100%; }
+.tablewrap { overflow-x: auto; }
+th { text-align: left; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; }
+.pts { font-family: var(--f-mono); font-weight: 500; }
+.pts.pos { color: var(--good); } .pts.neg { color: var(--bad); }
+.src { display: block; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.ceil { display: grid; gap: 6px; font-size: 13.5px; }
+.ceil div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: 6px; }
+.ceil .bind { background: var(--teal-soft); font-weight: 700; }
+.note { white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; background: var(--surface-2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--line); }
+.usage { position: relative; height: 8px; border-radius: 4px; background: var(--surface-2); min-width: 90px; overflow: hidden; }
+.usage span { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.usage::after { content: ''; position: absolute; top: -2px; bottom: -2px; left: calc(100% / 1.2); width: 2px; background: var(--ink-3); opacity: .5; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 13px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.form { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface-2); }
+.form label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+.form input, .form textarea { border: 1px solid var(--line-2); background: var(--surface); border-radius: 6px; padding: 8px 10px; font-weight: 400; }
+.form .err { color: var(--bad); font-size: 13px; }
+textarea.draft { width: 100%; min-height: 180px; border: 1px solid var(--line-2); border-radius: 8px; padding: 12px 14px; background: var(--surface); line-height: 1.55; resize: vertical; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 6px 12px; cursor: pointer; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--teal-soft); color: var(--teal-ink); font-weight: 700; }
+.wa { background: #e7f1e4; color: #0b141a; border-radius: 10px; padding: 14px; display: grid; gap: 8px; }
+.wa .bubble { background: #ffffff; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; font-size: 14px; box-shadow: 0 1px 1px rgb(0 0 0 / .08); max-width: 520px; }
+.wa .meta { font-size: 11.5px; color: #54656f; }
+
+.decide { display: grid; gap: 2px; }
+.decide a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 4px; border-top: 1px solid var(--line); text-decoration: none; color: inherit; align-items: center; }
+.decide a:first-child { border-top: 0; }
+.decide a:hover .go { text-decoration: underline; }
+.decide .go { color: var(--teal-ink); font-weight: 700; font-size: 13px; white-space: nowrap; }
+.guide { border-color: var(--gold-line); }
+.guide ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+.guide a { color: var(--teal-ink); font-weight: 700; }
+.how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.how div { padding: 14px 16px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); display: grid; gap: 6px; align-content: start; }
+.how div.person { border-color: var(--gold-line); background: color-mix(in srgb, var(--gold) 14%, var(--surface)); }
+.how b { font-size: 15px; }
+.spark { width: 100%; height: 64px; display: block; }
+.months { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+.months span { display: grid; justify-items: center; gap: 1px; }
+.months b { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+.conn td:first-child { font-weight: 700; }
+.ok { color: var(--good); font-weight: 700; } .cfg { color: var(--warn); font-weight: 700; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow); z-index: 20; max-width: min(560px, calc(100vw - 32px)); }
+.legend-gold { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+.legend-gold i { width: 12px; height: 12px; border-radius: 3px; background: var(--gold); border: 1px solid var(--gold-line); }
+.empty { padding: 28px; text-align: center; color: var(--ink-3); }
+@media (max-width: 980px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid2, .split { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; } .roles .as { grid-column: 1 / -1; padding: 2px 6px; } .roles button { padding: 6px 8px; font-size: 13.5px; } .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); } .how { grid-template-columns: minmax(0, 1fr); } .amounts { grid-template-columns: minmax(0, 1fr); } .amounts div { border-left: 0; border-top: 1px solid var(--line); } .amounts div:first-child { border-top: 0; } .brand h1 { font-size: 22px; } .detail { padding: 16px; } }
+@media (prefers-reduced-motion: no-preference) { .row, .btn, nav.tabs a { transition: background-color .15s, border-color .15s, filter .15s; } }
+
+/* IPO Room additions: the readiness board, request states and the related-party register. */
+.board { display: grid; gap: 0; }
+.board .ws { display: grid; grid-template-columns: minmax(150px, 220px) minmax(0, 1fr) 52px; gap: 14px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.board .ws:first-child { border-top: 0; }
+.board .ws b { font-size: 14.5px; }
+.board .bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--surface-2); }
+.board .bar span { display: block; height: 100%; }
+.board .pct { text-align: right; font-weight: 500; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin-top: 12px; }
+.keys i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+:root { --st-acc: var(--teal); --st-fix: var(--bad); --st-rev: var(--age2); --st-over: var(--age3); --st-soon: var(--sage-soft); --st-open: var(--line-2); }
+.reasons { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+.files { display: grid; gap: 8px; }
+.files button { text-align: left; justify-content: flex-start; }
+.files .btn span.small { font-weight: 400; color: var(--ink-3); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.facts div { padding: 10px 14px; display: grid; gap: 2px; border-left: 1px solid var(--line); font-size: 14px; }
+.facts div:first-child { border-left: 0; }
+.reg td { vertical-align: top; }
+.reg .names { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.rowacts { display: flex; flex-wrap: wrap; gap: 6px; }
+.rowacts .btn { padding: 5px 10px; font-size: 13px; }
+.list .row { min-width: 0; }
+.list .row .r1 { flex-wrap: wrap; row-gap: 4px; }
+.detail > * { min-width: 0; }
+.detail .label { overflow-wrap: anywhere; }
+@media (max-width: 560px) { .roles { grid-template-columns: repeat(3, minmax(0, 1fr)); } .board .ws { grid-template-columns: minmax(0, 1fr) 44px; } .board .ws .bar { grid-column: 1 / -1; grid-row: 2; } .facts { grid-template-columns: minmax(0, 1fr); } .facts div { border-left: 0; border-top: 1px solid var(--line); } .facts div:first-child { border-top: 0; } }
+</style>
+
+<div class="wrap">
+  <div class="demo">Demo · Sarvam Polymers is a fictional company · sample data · nothing here sends a real message or shares a real document</div>
+  <header class="top">
+    <div class="brand"><h1>IPO Room</h1><span class="co">Sarvam Polymers Pvt Ltd · DRHP preparation · GaVira Systems</span></div>
+    <div class="roles" role="group" aria-label="Viewing as" id="roles"></div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// Reading amounts and dates as Indian ledgers and Excel exports write them.
+(function (root) {
+  const MONTHS = { JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8, SEP: 9, OCT: 10, NOV: 11, DEC: 12 };
+
+  function parseAmount(v) {
+    if (typeof v === 'number') return v;
+    let s = String(v == null ? '' : v).trim();
+    const negative = /^\(.*\)$/.test(s) || /^-/.test(s);
+    s = s.replace(/[()₹\s-]/g, '').replace(/^Rs\.?/i, '');
+    let mult = 1;
+    if (/cr(ore)?s?$/i.test(s)) { mult = 1e7; s = s.replace(/cr(ore)?s?$/i, ''); }
+    else if (/(l|lakh|lakhs|lac|lacs)$/i.test(s)) { mult = 1e5; s = s.replace(/(lakhs|lakh|lacs|lac|l)$/i, ''); }
+    const n = Number(s.replace(/,/g, ''));
+    if (!Number.isFinite(n)) return NaN;
+    return Math.round(n * mult * 100) / 100 * (negative ? -1 : 1);
+  }
+
+  function iso(y, m, d) {
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) return null;
+    return dt.toISOString().slice(0, 10);
+  }
+
+  // Excel serial 25569 = 1970-01-01.
+  function fromSerial(n) {
+    return new Date(Math.round((n - 25569) * 86400000)).toISOString().slice(0, 10);
+  }
+
+  function parseDate(v) {
+    if (typeof v === 'number') return fromSerial(v);
+    const s = String(v == null ? '' : v).trim();
+    if (/^\d{5}(\.\d+)?$/.test(s)) return fromSerial(Number(s));
+    let m;
+    if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return iso(+m[1], +m[2], +m[3]);
+    if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/))) return iso(+m[3], +m[2], +m[1]);
+    if ((m = s.match(/^(\d{1,2})[\s\-]([A-Za-z]{3})[A-Za-z]*[\s\-,]+(\d{4})$/))) {
+      const mon = MONTHS[m[2].toUpperCase()];
+      return mon ? iso(+m[3], mon, +m[1]) : null;
+    }
+    return null;
+  }
+
+  const api = { parseAmount, parseDate };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// IPO readiness: the bankers' and lawyers' document requests, a rules check on every upload, and a
+// related-party watch over the ledger. The check and the watch flag; a person decides.
+// Needs parse.js loaded first (for request-list dates).
+(function (root) {
+  const WORKSTREAMS = [
+    { id: 'corporate', label: 'Corporate & secretarial', match: /corporate|secretar|statutory|roc/ },
+    { id: 'financial', label: 'Financial', match: /financ|account|audit|restat/ },
+    { id: 'legal', label: 'Legal & litigation', match: /legal|litigat|regulat|licen/ },
+    { id: 'contracts', label: 'Material contracts', match: /contract|agreement|commercial/ },
+    { id: 'hr', label: 'HR & key people', match: /\bhr\b|human|employ|people|managerial|kmp/ },
+    { id: 'tax', label: 'Tax', match: /tax|gst|tds/ },
+  ];
+  const FILE_TYPES = ['pdf', 'xlsx', 'xls', 'csv'];
+  const SIGNED = /digitally signed|signed by|sd\/-|signature\s*:/i;
+
+  const fyLabel = (start) => 'FY ' + start + '-' + String(start + 1).slice(2);
+  const fyOfDate = (iso) => { const y = Number(iso.slice(0, 4)), m = Number(iso.slice(5, 7)); return fyLabel(m >= 4 ? y : y - 1); };
+
+  // Every financial year a document mentions, in the forms auditors and lawyers write them.
+  function yearsIn(text) {
+    const found = new Set();
+    const t = String(text);
+    for (const m of t.matchAll(/\bF\.?\s?Y\.?\s*(20\d{2})\s*[-–/]\s*(\d{2,4})\b/gi)) found.add(fyLabel(Number(m[1])));
+    for (const m of t.matchAll(/\bFY\s?(\d{2})\b/gi)) found.add(fyLabel(2000 + Number(m[1]) - 1));
+    for (const m of t.matchAll(/(?:as at|as on|ended)\s+(?:the\s+)?(?:31(?:st)?\s+march,?\s*(20\d{2})|march\s+31(?:st)?,?\s*(20\d{2}))/gi)) found.add(fyLabel(Number(m[1] || m[2]) - 1));
+    return [...found];
+  }
+
+  // Rules check of an uploaded file against its request. The AI read, once a model key is added,
+  // sits beside this and can only move a file to "needs review", never to "accepted" on its own.
+  function checkUpload(req, file) {
+    const fix = [], review = [];
+    const ext = String(file.name || '').split('.').pop().toLowerCase();
+    if (!FILE_TYPES.includes(ext)) fix.push('PDF or Excel expected, got .' + ext + '.');
+    const text = String(file.text || '');
+    if (!text.trim()) {
+      review.push('No readable text: likely a scan. A person needs to look at it.');
+    } else {
+      const lower = text.toLowerCase();
+      const kws = req.keywords || [];
+      if (!kws.length) review.push('No checks set for this request: a person needs to look at it.');
+      else if (!kws.some((k) => lower.includes(k.toLowerCase()))) review.push('Could not confirm this is the ' + req.title.toLowerCase() + ' (looked for: ' + kws.join(', ') + ').');
+      if (/^FY \d{4}-\d{2}$/.test(req.period || '')) {
+        const years = yearsIn(text);
+        if (!years.length) review.push('Could not find the year in the document; ' + req.period + ' was asked for.');
+        else if (!years.includes(req.period)) fix.push('Covers ' + years.join(', ') + '; ' + req.period + ' was asked for.');
+      }
+      if (req.signed && !SIGNED.test(text)) fix.push('Not signed: a signed copy was asked for.');
+    }
+    if (fix.length) return { verdict: 'needsFix', reasons: fix.concat(review) };
+    if (review.length) return { verdict: 'needsReview', reasons: review };
+    const fy = /^FY \d{4}-\d{2}$/.test(req.period || '') ? ', ' + req.period : '';
+    return { verdict: 'accepted', reasons: ['Right document' + fy + (req.signed ? ', signed' : '') + '.'] };
+  }
+
+  const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+  function requestState(req, today) {
+    if (req.check) return req.check.verdict;
+    const left = daysBetween(today, req.due);
+    return left < 0 ? 'overdue' : left <= 3 ? 'dueSoon' : 'open';
+  }
+
+  function readiness(requests, today) {
+    return WORKSTREAMS.map((w) => {
+      const rs = requests.filter((r) => r.workstream === w.id);
+      const counts = { accepted: 0, needsFix: 0, needsReview: 0, overdue: 0, dueSoon: 0, open: 0 };
+      for (const r of rs) counts[requestState(r, today)]++;
+      return { id: w.id, label: w.label, total: rs.length, counts, pct: rs.length ? Math.round((counts.accepted / rs.length) * 100) : 0 };
+    });
+  }
+
+  const ORDER = { overdue: 0, needsFix: 1, dueSoon: 2 };
+  function reminders(requests, today) {
+    const by = {};
+    for (const r of requests) {
+      const state = requestState(r, today);
+      if (!(state in ORDER)) continue;
+      (by[r.owner] = by[r.owner] || []).push({ ref: r.ref, title: r.title, due: r.due, state, daysLate: Math.max(0, daysBetween(r.due, today)), reason: r.check ? r.check.reasons.join(' ') : '' });
+    }
+    return Object.entries(by).map(([owner, items]) => ({ owner, items: items.sort((a, b) => ORDER[a.state] - ORDER[b.state] || a.due.localeCompare(b.due)) }));
+  }
+
+  // One request per row of the bankers' list. Headers are matched by name, not position.
+  function mapRequestRow(row) {
+    const used = new Set();
+    const key = (test) => { const k = Object.keys(row).find((h) => !used.has(h) && test(h.toLowerCase())); if (k) used.add(k); return k; };
+    const k = {
+      ref: key((h) => /^(sr|ref|s\.?\s?no|#|id\b|item no)/.test(h)),
+      workstream: key((h) => /category|workstream|section|head/.test(h)),
+      due: key((h) => /due|target|by when/.test(h)),
+      owner: key((h) => /responsib|owner|assigned|person/.test(h)),
+      keywords: key((h) => /check for|keywords/.test(h)),
+      signed: key((h) => /signed/.test(h)),
+      period: key((h) => /period|year/.test(h)),
+      title: key((h) => /document|description|item|particular|request/.test(h)),
+    };
+    const v = (name) => (k[name] ? String(row[k[name]] == null ? '' : row[k[name]]).trim() : '');
+    const ws = WORKSTREAMS.find((w) => w.match.test(v('workstream').toLowerCase()));
+    return {
+      ref: v('ref'), workstream: ws ? ws.id : 'corporate', title: v('title'), period: v('period'), owner: v('owner'),
+      due: root.Credit.parseDate(v('due')), keywords: v('keywords') ? v('keywords').split(/\s*;\s*/).filter(Boolean) : [],
+      signed: /^(y|yes|true|1)$/i.test(v('signed')),
+    };
+  }
+
+  // ---------- related parties ----------
+  const SUFFIX = new Set(['pvt', 'private', 'ltd', 'limited', 'llp', 'inc', 'co', 'company', 'corp', 'corporation', 'the', 'm/s', 'ms']);
+  function normaliseName(s) {
+    return String(s || '').toLowerCase().replace(/&/g, ' and ').replace(/\./g, '').replace(/[^a-z0-9/]+/g, ' ')
+      .split(' ').filter((t) => t && !SUFFIX.has(t)).join(' ');
+  }
+  function bigrams(s) { const g = new Map(); for (let i = 0; i < s.length - 1; i++) { const b = s.slice(i, i + 2); g.set(b, (g.get(b) || 0) + 1); } return g; }
+  function dice(a, b) {
+    if (a.length < 2 || b.length < 2) return 0;
+    const ga = bigrams(a), gb = bigrams(b);
+    let common = 0;
+    for (const [k, n] of ga) common += Math.min(n, gb.get(k) || 0);
+    return (2 * common) / (a.length - 1 + b.length - 1);
+  }
+  const CLOSE = 0.8;
+  function matchParty(name, parties) {
+    const n = normaliseName(name);
+    if (!n) return null;
+    const nt = n.split(' ');
+    let best = null;
+    const take = (m) => { if (!best || m.score > best.score) best = m; };
+    for (const p of parties) {
+      const pn = normaliseName(p.name);
+      if (n === pn) return { party: p, kind: 'listed', score: 1, why: 'Same name as a listed party' };
+      const pt = pn.split(' ');
+      if (p.kind === 'person' && pt.length >= 2) {
+        const surname = pt[pt.length - 1];
+        if (nt.includes(surname) && nt[0].length === 1 && nt[0] === pt[0][0]) take({ party: p, kind: 'close', score: 0.85, why: 'Initial and surname match ' + p.name });
+      }
+      const [short, long] = nt.length <= pt.length ? [nt, pt] : [pt, nt];
+      if (short.length >= 2 && short.every((t) => long.includes(t))) take({ party: p, kind: 'close', score: 0.9, why: 'Every word of ' + p.name + ' appears' });
+      const d = dice(n, pn);
+      if (d >= CLOSE) take({ party: p, kind: 'close', score: Math.round(d * 100) / 100, why: 'Spelt like ' + p.name + ' (' + Math.round(d * 100) + '% similar)' });
+    }
+    return best;
+  }
+
+  // Flags every ledger line with a listed or close counterparty, then totals by party, nature and
+  // financial year (the shape the DRHP disclosure needs) and looks up the approval on file.
+  function rptScan(txns, parties, approvals) {
+    const flags = [];
+    for (const t of txns) {
+      const m = matchParty(t.party, parties);
+      if (m) flags.push({ ...t, partyId: m.party.id, partyName: m.party.name, relation: m.party.relation, kind: m.kind, why: m.why, fy: fyOfDate(t.date) });
+    }
+    const groups = {};
+    for (const f of flags) {
+      const key = f.partyId + '|' + f.nature + '|' + f.fy;
+      const g = (groups[key] = groups[key] || { key, partyId: f.partyId, partyName: f.partyName, relation: f.relation, nature: f.nature, fy: f.fy, count: 0, total: 0, close: 0, names: [] });
+      g.count++; g.total += f.amount;
+      if (f.kind === 'close') g.close++;
+      if (!g.names.includes(f.party)) g.names.push(f.party);
+    }
+    const register = Object.values(groups).map((g) => ({
+      ...g, total: Math.round(g.total * 100) / 100,
+      approval: (approvals || []).find((a) => a.party === g.partyId && a.nature === g.nature && a.fy === g.fy) || null,
+    })).sort((a, b) => a.partyName.localeCompare(b.partyName) || a.fy.localeCompare(b.fy) || a.nature.localeCompare(b.nature));
+    return { flags, register };
+  }
+
+  const api = { WORKSTREAMS, checkUpload, yearsIn, fyOfDate, requestState, readiness, reminders, mapRequestRow, normaliseName, matchParty, rptScan };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+const DATA = {
+  "company": {
+    "name": "Sarvam Polymers Pvt Ltd",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "pan": "AAXCS4571A",
+    "revenueCr": 180,
+    "ledger": "TallyPrime",
+    "plannedLedger": "SAP Business One",
+    "ipoTarget": "2028",
+    "fy": "FY 2026-27",
+    "gstin": "27AAXCS4571A1Z1"
+  },
+  "today": "2026-10-31",
+  "asked": "FY 2025-26",
+  "bankers": "Book running lead managers and their counsel (fictional)",
+  "people": [
+    {
+      "id": "kavya",
+      "name": "Kavya Rao",
+      "role": "cs",
+      "title": "Company secretary",
+      "email": "kavya@example.com"
+    },
+    {
+      "id": "anita",
+      "name": "Anita Kapoor",
+      "role": "cfo",
+      "title": "CFO",
+      "email": "anita@example.com"
+    },
+    {
+      "id": "rohan",
+      "name": "Rohan Mehta",
+      "role": "fc",
+      "title": "Finance controller",
+      "email": "rohan@example.com"
+    },
+    {
+      "id": "nikhil",
+      "name": "Nikhil Bhat",
+      "role": "owner",
+      "title": "Head of procurement",
+      "email": "nikhil@example.com"
+    },
+    {
+      "id": "deepak",
+      "name": "Deepak Joshi",
+      "role": "owner",
+      "title": "Head of HR",
+      "email": "deepak@example.com"
+    },
+    {
+      "id": "sanjay",
+      "name": "Sanjay Kulkarni",
+      "role": "owner",
+      "title": "Tax manager",
+      "email": "sanjay@example.com"
+    }
+  ],
+  "requests": [
+    {
+      "ref": "CS-01",
+      "workstream": "corporate",
+      "title": "Certificate of incorporation and name-change certificates",
+      "keywords": [
+        "certificate of incorporation"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-10-20",
+      "file": {
+        "name": "COI and fresh COI.pdf",
+        "text": "Certificate of Incorporation consequent upon change of name. Sarvam Polymers Private Limited.",
+        "uploadedBy": "kavya",
+        "uploadedAt": "2026-10-14T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "CS-02",
+      "workstream": "corporate",
+      "title": "Memorandum and articles of association, current",
+      "keywords": [
+        "memorandum of association",
+        "articles of association"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-10-20",
+      "file": {
+        "name": "MOA AOA 2026.pdf",
+        "text": "Memorandum of Association and Articles of Association of Sarvam Polymers Private Limited, as amended.",
+        "uploadedBy": "kavya",
+        "uploadedAt": "2026-10-14T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "CS-03",
+      "workstream": "corporate",
+      "title": "Board minutes, last three years",
+      "keywords": [
+        "minutes of the meeting of the board"
+      ],
+      "period": "FY 2023-24 to FY 2025-26",
+      "signed": true,
+      "owner": "kavya",
+      "due": "2026-10-28",
+      "file": {
+        "name": "Board minutes scanned.pdf",
+        "text": "",
+        "uploadedBy": "kavya",
+        "uploadedAt": "2026-10-27T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "needsReview",
+        "reasons": [
+          "No readable text: likely a scan. A person needs to look at it."
+        ]
+      },
+      "reviewer": "anita"
+    },
+    {
+      "ref": "CS-04",
+      "workstream": "corporate",
+      "title": "Shareholder meeting minutes, last three years",
+      "keywords": [
+        "general meeting"
+      ],
+      "period": "FY 2023-24 to FY 2025-26",
+      "signed": true,
+      "owner": "kavya",
+      "due": "2026-11-06"
+    },
+    {
+      "ref": "CS-05",
+      "workstream": "corporate",
+      "title": "Register of members and share capital history",
+      "keywords": [
+        "register of members"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-10-27"
+    },
+    {
+      "ref": "CS-06",
+      "workstream": "corporate",
+      "title": "ROC filings: MGT-7 and AOC-4, last three years",
+      "keywords": [
+        "mgt-7",
+        "aoc-4"
+      ],
+      "period": "FY 2023-24 to FY 2025-26",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-11-02"
+    },
+    {
+      "ref": "CS-07",
+      "workstream": "corporate",
+      "title": "Statutory registers: directors, KMP and charges",
+      "keywords": [
+        "register of directors"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-10-22",
+      "file": {
+        "name": "Statutory registers.pdf",
+        "text": "Register of Directors and Key Managerial Personnel and their shareholding. Register of charges.",
+        "uploadedBy": "kavya",
+        "uploadedAt": "2026-10-21T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "FIN-01",
+      "workstream": "financial",
+      "title": "Audited financial statements FY 2025-26, signed",
+      "keywords": [
+        "balance sheet",
+        "statement of profit and loss"
+      ],
+      "period": "FY 2025-26",
+      "signed": true,
+      "owner": "rohan",
+      "due": "2026-11-02"
+    },
+    {
+      "ref": "FIN-02",
+      "workstream": "financial",
+      "title": "Audited financial statements FY 2024-25, signed",
+      "keywords": [
+        "balance sheet",
+        "statement of profit and loss"
+      ],
+      "period": "FY 2024-25",
+      "signed": true,
+      "owner": "rohan",
+      "due": "2026-10-15",
+      "file": {
+        "name": "Sarvam FS FY2024-25.pdf",
+        "text": "Balance Sheet as at 31 March 2025. Statement of Profit and Loss for the year ended 31 March 2025.\nDigitally signed by A K Rao & Co, Chartered Accountants",
+        "uploadedBy": "rohan",
+        "uploadedAt": "2026-10-12T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document, FY 2024-25, signed."
+        ]
+      }
+    },
+    {
+      "ref": "FIN-03",
+      "workstream": "financial",
+      "title": "Audited financial statements FY 2023-24, signed",
+      "keywords": [
+        "balance sheet",
+        "statement of profit and loss"
+      ],
+      "period": "FY 2023-24",
+      "signed": true,
+      "owner": "rohan",
+      "due": "2026-10-15",
+      "file": {
+        "name": "Sarvam FS old.pdf",
+        "text": "Balance Sheet as at 31 March 2023. Statement of Profit and Loss for the year ended 31 March 2023.\nDigitally signed by A K Rao & Co, Chartered Accountants",
+        "uploadedBy": "rohan",
+        "uploadedAt": "2026-10-12T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "needsFix",
+        "reasons": [
+          "Covers FY 2022-23; FY 2023-24 was asked for."
+        ]
+      }
+    },
+    {
+      "ref": "FIN-04",
+      "workstream": "financial",
+      "title": "Auditor's reports with CARO, last three years",
+      "keywords": [
+        "independent auditor's report",
+        "caro"
+      ],
+      "period": "FY 2023-24 to FY 2025-26",
+      "signed": true,
+      "owner": "rohan",
+      "due": "2026-10-30"
+    },
+    {
+      "ref": "FIN-05",
+      "workstream": "financial",
+      "title": "Monthly MIS, FY 2025-26",
+      "keywords": [
+        "mis"
+      ],
+      "period": "FY 2025-26",
+      "signed": false,
+      "owner": "rohan",
+      "due": "2026-11-04"
+    },
+    {
+      "ref": "FIN-06",
+      "workstream": "financial",
+      "title": "Bank sanction letters and loan statements",
+      "keywords": [
+        "sanction letter"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "rohan",
+      "due": "2026-11-02"
+    },
+    {
+      "ref": "FIN-07",
+      "workstream": "financial",
+      "title": "Statutory auditor's peer review certificate",
+      "keywords": [
+        "peer review"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "rohan",
+      "due": "2026-10-20",
+      "file": {
+        "name": "Peer review certificate.pdf",
+        "text": "Peer Review Board of the Institute of Chartered Accountants of India. Peer review certificate, valid till 2028.",
+        "uploadedBy": "rohan",
+        "uploadedAt": "2026-10-16T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "LEG-01",
+      "workstream": "legal",
+      "title": "Pending litigation by and against the company, directors and promoters",
+      "keywords": [
+        "litigation"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "kavya",
+      "due": "2026-10-26"
+    },
+    {
+      "ref": "LEG-02",
+      "workstream": "legal",
+      "title": "Plaints and notices for cases above ₹10 lakh",
+      "keywords": [
+        "plaint",
+        "notice"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-11-10"
+    },
+    {
+      "ref": "LEG-03",
+      "workstream": "legal",
+      "title": "Factory licence, consent to operate and fire NOC, Chakan plant",
+      "keywords": [
+        "consent to operate",
+        "factory licence"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-10-22",
+      "file": {
+        "name": "consent to operate.jpg",
+        "text": "Maharashtra Pollution Control Board. Consent to Operate.",
+        "uploadedBy": "kavya",
+        "uploadedAt": "2026-10-21T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "needsFix",
+        "reasons": [
+          "PDF or Excel expected, got .jpg."
+        ]
+      }
+    },
+    {
+      "ref": "LEG-04",
+      "workstream": "legal",
+      "title": "Trademark registration certificates",
+      "keywords": [
+        "trade marks",
+        "registration"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-10-20",
+      "file": {
+        "name": "TM certificates.pdf",
+        "text": "Certificate of Registration of Trade Marks. Trade Marks Registry, Mumbai.",
+        "uploadedBy": "kavya",
+        "uploadedAt": "2026-10-18T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "LEG-05",
+      "workstream": "legal",
+      "title": "Title deeds and leases: Chakan plant and Pune office",
+      "keywords": [
+        "lease deed",
+        "sale deed"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "kavya",
+      "due": "2026-10-29"
+    },
+    {
+      "ref": "LEG-06",
+      "workstream": "legal",
+      "title": "Regulatory notices received in the last three years",
+      "keywords": [
+        "notice"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "kavya",
+      "due": "2026-11-12"
+    },
+    {
+      "ref": "CON-01",
+      "workstream": "contracts",
+      "title": "Top ten customer agreements",
+      "keywords": [
+        "agreement"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "nikhil",
+      "due": "2026-10-20",
+      "file": {
+        "name": "Customer agreements top 10.pdf",
+        "text": "Distribution Agreement between Sarvam Polymers Private Limited and Deccan Agro Plastics.\nDigitally signed by Suresh Deshpande, Managing Director",
+        "uploadedBy": "nikhil",
+        "uploadedAt": "2026-10-19T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document, signed."
+        ]
+      }
+    },
+    {
+      "ref": "CON-02",
+      "workstream": "contracts",
+      "title": "Top ten supplier agreements: resin and packaging",
+      "keywords": [
+        "supply agreement"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "nikhil",
+      "due": "2026-10-24",
+      "file": {
+        "name": "Supplier POs.pdf",
+        "text": "Purchase Order No. 4471 to Indus Petrochem Ltd for HDPE resin, 40 MT.\nDigitally signed by Nikhil Bhat",
+        "uploadedBy": "nikhil",
+        "uploadedAt": "2026-10-23T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "needsReview",
+        "reasons": [
+          "Could not confirm this is the top ten supplier agreements: resin and packaging (looked for: supply agreement)."
+        ]
+      },
+      "reviewer": "kavya"
+    },
+    {
+      "ref": "CON-03",
+      "workstream": "contracts",
+      "title": "Loan agreements and charge documents",
+      "keywords": [
+        "loan agreement",
+        "hypothecation"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "nikhil",
+      "due": "2026-10-28"
+    },
+    {
+      "ref": "CON-04",
+      "workstream": "contracts",
+      "title": "Technology licence with the extrusion line supplier",
+      "keywords": [
+        "licence agreement"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "nikhil",
+      "due": "2026-11-03"
+    },
+    {
+      "ref": "CON-05",
+      "workstream": "contracts",
+      "title": "Agreements with related parties: rent, job work, warehousing",
+      "keywords": [
+        "agreement"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "nikhil",
+      "due": "2026-11-06"
+    },
+    {
+      "ref": "CON-06",
+      "workstream": "contracts",
+      "title": "Insurance policies: plant, stock and directors",
+      "keywords": [
+        "policy schedule"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "nikhil",
+      "due": "2026-10-20",
+      "file": {
+        "name": "Insurance schedules.pdf",
+        "text": "Policy Schedule. Standard Fire and Special Perils Policy. Insured: Sarvam Polymers Private Limited.",
+        "uploadedBy": "nikhil",
+        "uploadedAt": "2026-10-17T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "HR-01",
+      "workstream": "hr",
+      "title": "Organisation chart and list of key managerial personnel",
+      "keywords": [
+        "organisation chart"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "deepak",
+      "due": "2026-10-20",
+      "file": {
+        "name": "Org chart Oct 2026.pdf",
+        "text": "Organisation chart, October 2026. Key managerial personnel: MD, CFO, Company Secretary.",
+        "uploadedBy": "deepak",
+        "uploadedAt": "2026-10-15T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "HR-02",
+      "workstream": "hr",
+      "title": "Appointment letters of key managerial personnel",
+      "keywords": [
+        "appointment"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "deepak",
+      "due": "2026-10-22",
+      "file": {
+        "name": "KMP appointment letters.pdf",
+        "text": "Letter of appointment: Chief Financial Officer. Letter of appointment: Company Secretary.",
+        "uploadedBy": "deepak",
+        "uploadedAt": "2026-10-21T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "needsFix",
+        "reasons": [
+          "Not signed: a signed copy was asked for."
+        ]
+      }
+    },
+    {
+      "ref": "HR-03",
+      "workstream": "hr",
+      "title": "Director and KMP profiles with proof of qualification",
+      "keywords": [
+        "qualification",
+        "degree"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "deepak",
+      "due": "2026-11-01"
+    },
+    {
+      "ref": "HR-04",
+      "workstream": "hr",
+      "title": "PF and ESIC challans, last twelve months",
+      "keywords": [
+        "challan"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "deepak",
+      "due": "2026-10-20",
+      "file": {
+        "name": "PF ESIC challans.pdf",
+        "text": "Electronic Challan cum Return (ECR). Employees Provident Fund Organisation. ESIC challan.",
+        "uploadedBy": "deepak",
+        "uploadedAt": "2026-10-19T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "HR-05",
+      "workstream": "hr",
+      "title": "ESOP scheme and grant register",
+      "keywords": [
+        "employee stock option"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "deepak",
+      "due": "2026-11-09"
+    },
+    {
+      "ref": "TAX-01",
+      "workstream": "tax",
+      "title": "Income tax returns, last three years",
+      "keywords": [
+        "acknowledgement",
+        "itr"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "sanjay",
+      "due": "2026-10-20",
+      "file": {
+        "name": "ITR acknowledgements.pdf",
+        "text": "Indian Income Tax Return Acknowledgement, ITR-6, Sarvam Polymers Private Limited.",
+        "uploadedBy": "sanjay",
+        "uploadedAt": "2026-10-16T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document."
+        ]
+      }
+    },
+    {
+      "ref": "TAX-02",
+      "workstream": "tax",
+      "title": "Tax audit reports (Form 3CD), last three years",
+      "keywords": [
+        "form no. 3cd",
+        "3cd"
+      ],
+      "period": "",
+      "signed": true,
+      "owner": "sanjay",
+      "due": "2026-10-20",
+      "file": {
+        "name": "Tax audit reports.pdf",
+        "text": "Form No. 3CA and Form No. 3CD. Statement of particulars required to be furnished under section 44AB.\nDigitally signed by A K Rao & Co",
+        "uploadedBy": "sanjay",
+        "uploadedAt": "2026-10-16T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document, signed."
+        ]
+      }
+    },
+    {
+      "ref": "TAX-03",
+      "workstream": "tax",
+      "title": "GST returns summary: GSTR-1 and GSTR-3B",
+      "keywords": [
+        "gstr-3b"
+      ],
+      "period": "FY 2025-26",
+      "signed": false,
+      "owner": "sanjay",
+      "due": "2026-10-20",
+      "file": {
+        "name": "GST returns FY26.pdf",
+        "text": "Summary of GSTR-1 and GSTR-3B filed for FY 2025-26, GSTIN 27AAXCS4571A1Z1.",
+        "uploadedBy": "sanjay",
+        "uploadedAt": "2026-10-18T11:20:00+05:30"
+      },
+      "check": {
+        "verdict": "accepted",
+        "reasons": [
+          "Right document, FY 2025-26."
+        ]
+      }
+    },
+    {
+      "ref": "TAX-04",
+      "workstream": "tax",
+      "title": "Pending tax demands and appeals",
+      "keywords": [
+        "demand"
+      ],
+      "period": "",
+      "signed": false,
+      "owner": "sanjay",
+      "due": "2026-10-27"
+    },
+    {
+      "ref": "TAX-05",
+      "workstream": "tax",
+      "title": "Transfer pricing documentation",
+      "keywords": [
+        "transfer pricing"
+      ],
+      "period": "FY 2025-26",
+      "signed": false,
+      "owner": "sanjay",
+      "due": "2026-11-05"
+    }
+  ],
+  "demoFiles": [
+    {
+      "name": "Sarvam_FS_FY2025-26_signed.pdf",
+      "text": "Sarvam Polymers Private Limited\nCIN U25209PN2009PTC134512\nBalance Sheet as at 31 March 2026\nStatement of Profit and Loss for the year ended 31 March 2026\nNotes forming part of the financial statements\nFor A K Rao & Co, Chartered Accountants\nDigitally signed by A K Rao, Partner, 22 May 2026"
+    },
+    {
+      "name": "Sarvam_FS_FY2024-25_signed.pdf",
+      "text": "Sarvam Polymers Private Limited\nCIN U25209PN2009PTC134512\nBalance Sheet as at 31 March 2025\nStatement of Profit and Loss for the year ended 31 March 2025\nNotes forming part of the financial statements\nFor A K Rao & Co, Chartered Accountants\nDigitally signed by A K Rao, Partner, 20 May 2025"
+    },
+    {
+      "name": "Sarvam_FS_FY2025-26_draft.pdf",
+      "text": "Sarvam Polymers Private Limited\nCIN U25209PN2009PTC134512\nBalance Sheet as at 31 March 2026\nStatement of Profit and Loss for the year ended 31 March 2026\nNotes forming part of the financial statements\nDRAFT FOR DISCUSSION"
+    }
+  ],
+  "parties": [
+    {
+      "id": "p1",
+      "name": "Suresh Deshpande",
+      "kind": "person",
+      "relation": "Promoter and Managing Director"
+    },
+    {
+      "id": "p2",
+      "name": "Meena Deshpande",
+      "kind": "person",
+      "relation": "Spouse of the Managing Director; owns the Pune office"
+    },
+    {
+      "id": "p3",
+      "name": "Arjun Deshpande",
+      "kind": "person",
+      "relation": "Whole-time director; son of the Managing Director"
+    },
+    {
+      "id": "p4",
+      "name": "Prakash Deshpande",
+      "kind": "person",
+      "relation": "Brother of the Managing Director"
+    },
+    {
+      "id": "p5",
+      "name": "Anita Kapoor",
+      "kind": "person",
+      "relation": "CFO (key managerial personnel)"
+    },
+    {
+      "id": "p6",
+      "name": "Kavya Rao",
+      "kind": "person",
+      "relation": "Company secretary (key managerial personnel)"
+    },
+    {
+      "id": "p7",
+      "name": "Sunrise Resins Pvt Ltd",
+      "kind": "entity",
+      "relation": "Meena Deshpande is a director"
+    },
+    {
+      "id": "p8",
+      "name": "Deshpande Polymers LLP",
+      "kind": "entity",
+      "relation": "Suresh Deshpande is a designated partner"
+    },
+    {
+      "id": "p9",
+      "name": "Mahalaxmi Warehousing",
+      "kind": "entity",
+      "relation": "Partnership firm of Prakash Deshpande"
+    }
+  ],
+  "approvals": [
+    {
+      "party": "p2",
+      "nature": "Rent",
+      "fy": "FY 2025-26",
+      "ref": "AC/2025-26/04",
+      "date": "2025-04-22",
+      "by": "Audit committee"
+    },
+    {
+      "party": "p7",
+      "nature": "Purchase of goods",
+      "fy": "FY 2025-26",
+      "ref": "AC/2025-26/05",
+      "date": "2025-04-22",
+      "by": "Audit committee"
+    },
+    {
+      "party": "p7",
+      "nature": "Purchase of goods",
+      "fy": "FY 2026-27",
+      "ref": "AC/2026-27/02",
+      "date": "2026-04-18",
+      "by": "Audit committee"
+    },
+    {
+      "party": "p9",
+      "nature": "Warehousing charges",
+      "fy": "FY 2025-26",
+      "ref": "AC/2025-26/09",
+      "date": "2025-07-15",
+      "by": "Audit committee"
+    }
+  ],
+  "ledger": [
+    {
+      "date": "2025-04-05",
+      "voucher": "JV/0001",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-04-18",
+      "voucher": "JV/0002",
+      "party": "Indus Petrochem Ltd",
+      "nature": "Purchase of goods",
+      "amount": 4718000
+    },
+    {
+      "date": "2025-05-05",
+      "voucher": "JV/0003",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-05-07",
+      "voucher": "JV/0004",
+      "party": "Pune Industrial Gases",
+      "nature": "Consumables",
+      "amount": 274600
+    },
+    {
+      "date": "2025-05-20",
+      "voucher": "JV/0005",
+      "party": "Sunrise Resins Pvt. Ltd.",
+      "nature": "Purchase of goods",
+      "amount": 1840000
+    },
+    {
+      "date": "2025-06-05",
+      "voucher": "JV/0006",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-06-11",
+      "voucher": "JV/0007",
+      "party": "Konark Masterbatches Pvt Ltd",
+      "nature": "Purchase of goods",
+      "amount": 906000
+    },
+    {
+      "date": "2025-06-30",
+      "voucher": "JV/0008",
+      "party": "Deshpande Polymers LLP",
+      "nature": "Job work charges",
+      "amount": 420000
+    },
+    {
+      "date": "2025-07-05",
+      "voucher": "JV/0009",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-07-14",
+      "voucher": "JV/0010",
+      "party": "Sunrise Packaging Industries",
+      "nature": "Purchase of goods",
+      "amount": 318000
+    },
+    {
+      "date": "2025-07-31",
+      "voucher": "JV/0011",
+      "party": "Mahalakshmi Warehousing Co",
+      "nature": "Warehousing charges",
+      "amount": 85000
+    },
+    {
+      "date": "2025-08-05",
+      "voucher": "JV/0012",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-08-18",
+      "voucher": "JV/0013",
+      "party": "Sunrise Resins Pvt. Ltd.",
+      "nature": "Purchase of goods",
+      "amount": 1925000
+    },
+    {
+      "date": "2025-08-29",
+      "voucher": "JV/0014",
+      "party": "Deshpande Transport Co",
+      "nature": "Freight",
+      "amount": 96000
+    },
+    {
+      "date": "2025-09-05",
+      "voucher": "JV/0015",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-09-22",
+      "voucher": "JV/0016",
+      "party": "Indus Petrochem Ltd",
+      "nature": "Purchase of goods",
+      "amount": 5240000
+    },
+    {
+      "date": "2025-10-05",
+      "voucher": "JV/0017",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-10-10",
+      "voucher": "JV/0018",
+      "party": "Shivneri Corrugators",
+      "nature": "Packing material",
+      "amount": 645000
+    },
+    {
+      "date": "2025-10-31",
+      "voucher": "JV/0019",
+      "party": "Deshpande Polymers LLP",
+      "nature": "Job work charges",
+      "amount": 415000
+    },
+    {
+      "date": "2025-10-31",
+      "voucher": "JV/0020",
+      "party": "Mahalakshmi Warehousing Co",
+      "nature": "Warehousing charges",
+      "amount": 85000
+    },
+    {
+      "date": "2025-11-05",
+      "voucher": "JV/0021",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-11-05",
+      "voucher": "JV/0022",
+      "party": "Vardhman Labels",
+      "nature": "Packing material",
+      "amount": 273300
+    },
+    {
+      "date": "2025-11-17",
+      "voucher": "JV/0023",
+      "party": "Sunrise Resins Pvt. Ltd.",
+      "nature": "Purchase of goods",
+      "amount": 1760000
+    },
+    {
+      "date": "2025-12-05",
+      "voucher": "JV/0024",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2025-12-19",
+      "voucher": "JV/0025",
+      "party": "Kapoor Logistics",
+      "nature": "Freight",
+      "amount": 142000
+    },
+    {
+      "date": "2026-01-05",
+      "voucher": "JV/0026",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2026-01-15",
+      "voucher": "JV/0027",
+      "party": "A K Rao & Co",
+      "nature": "Audit fees",
+      "amount": 1450000
+    },
+    {
+      "date": "2026-01-31",
+      "voucher": "JV/0028",
+      "party": "Deshpande Polymers LLP",
+      "nature": "Job work charges",
+      "amount": 438000
+    },
+    {
+      "date": "2026-01-31",
+      "voucher": "JV/0029",
+      "party": "Mahalakshmi Warehousing Co",
+      "nature": "Warehousing charges",
+      "amount": 85000
+    },
+    {
+      "date": "2026-02-05",
+      "voucher": "JV/0030",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2026-02-09",
+      "voucher": "JV/0031",
+      "party": "Konark Masterbatches Pvt Ltd",
+      "nature": "Purchase of goods",
+      "amount": 1185000
+    },
+    {
+      "date": "2026-02-16",
+      "voucher": "JV/0032",
+      "party": "Sunrise Resins Pvt. Ltd.",
+      "nature": "Purchase of goods",
+      "amount": 2010000
+    },
+    {
+      "date": "2026-03-05",
+      "voucher": "JV/0033",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 150000
+    },
+    {
+      "date": "2026-03-12",
+      "voucher": "JV/0034",
+      "party": "Indus Petrochem Ltd",
+      "nature": "Purchase of goods",
+      "amount": 4980000
+    },
+    {
+      "date": "2026-03-30",
+      "voucher": "JV/0035",
+      "party": "Maharashtra State Electricity Distribution Co Ltd",
+      "nature": "Power and fuel",
+      "amount": 2860000
+    },
+    {
+      "date": "2026-03-31",
+      "voucher": "JV/0036",
+      "party": "Mahalakshmi Warehousing Co",
+      "nature": "Warehousing charges",
+      "amount": 85000
+    },
+    {
+      "date": "2026-04-05",
+      "voucher": "JV/0037",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 165000
+    },
+    {
+      "date": "2026-04-21",
+      "voucher": "JV/0038",
+      "party": "Sunrise Packaging Industries",
+      "nature": "Purchase of goods",
+      "amount": 342000
+    },
+    {
+      "date": "2026-05-05",
+      "voucher": "JV/0039",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 165000
+    },
+    {
+      "date": "2026-05-19",
+      "voucher": "JV/0040",
+      "party": "Sunrise Resins Pvt. Ltd.",
+      "nature": "Purchase of goods",
+      "amount": 2085000
+    },
+    {
+      "date": "2026-05-31",
+      "voucher": "JV/0041",
+      "party": "Mahalakshmi Warehousing Co",
+      "nature": "Warehousing charges",
+      "amount": 92000
+    },
+    {
+      "date": "2026-06-05",
+      "voucher": "JV/0042",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 165000
+    },
+    {
+      "date": "2026-06-09",
+      "voucher": "JV/0043",
+      "party": "Pune Industrial Gases",
+      "nature": "Consumables",
+      "amount": 223500
+    },
+    {
+      "date": "2026-06-12",
+      "voucher": "JV/0044",
+      "party": "Arjun Deshpande",
+      "nature": "Unsecured loan received",
+      "amount": 2500000
+    },
+    {
+      "date": "2026-06-30",
+      "voucher": "JV/0045",
+      "party": "Deshpande Polymers LLP",
+      "nature": "Job work charges",
+      "amount": 452000
+    },
+    {
+      "date": "2026-07-05",
+      "voucher": "JV/0046",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 165000
+    },
+    {
+      "date": "2026-07-09",
+      "voucher": "JV/0047",
+      "party": "A. Deshpande & Sons",
+      "nature": "Purchase of goods",
+      "amount": 214000
+    },
+    {
+      "date": "2026-07-28",
+      "voucher": "JV/0048",
+      "party": "Deshpande Transport Co",
+      "nature": "Freight",
+      "amount": 104000
+    },
+    {
+      "date": "2026-07-31",
+      "voucher": "JV/0049",
+      "party": "Mahalakshmi Warehousing Co",
+      "nature": "Warehousing charges",
+      "amount": 92000
+    },
+    {
+      "date": "2026-08-05",
+      "voucher": "JV/0050",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 165000
+    },
+    {
+      "date": "2026-08-08",
+      "voucher": "JV/0051",
+      "party": "Indus Petrochem Ltd",
+      "nature": "Purchase of goods",
+      "amount": 5310000
+    },
+    {
+      "date": "2026-08-14",
+      "voucher": "JV/0052",
+      "party": "S. Deshpande",
+      "nature": "Expense reimbursement",
+      "amount": 38400
+    },
+    {
+      "date": "2026-08-21",
+      "voucher": "JV/0053",
+      "party": "Sunrise Resin Private Limited",
+      "nature": "Purchase of goods",
+      "amount": 2140000
+    },
+    {
+      "date": "2026-08-30",
+      "voucher": "JV/0054",
+      "party": "Maharashtra State Electricity Distribution Co Ltd",
+      "nature": "Power and fuel",
+      "amount": 3015000
+    },
+    {
+      "date": "2026-09-02",
+      "voucher": "JV/0055",
+      "party": "Konark Masterbatches Pvt Ltd",
+      "nature": "Purchase of goods",
+      "amount": 1850000
+    },
+    {
+      "date": "2026-09-05",
+      "voucher": "JV/0056",
+      "party": "Meena Deshpande",
+      "nature": "Rent",
+      "amount": 165000
+    },
+    {
+      "date": "2026-09-17",
+      "voucher": "JV/0057",
+      "party": "Vardhman Labels",
+      "nature": "Packing material",
+      "amount": 119900
+    },
+    {
+      "date": "2026-09-19",
+      "voucher": "JV/0058",
+      "party": "Kapoor Logistics",
+      "nature": "Freight",
+      "amount": 151000
+    },
+    {
+      "date": "2026-09-30",
+      "voucher": "JV/0059",
+      "party": "Deshpande Polymers LLP",
+      "nature": "Job work charges",
+      "amount": 461000
+    },
+    {
+      "date": "2026-09-30",
+      "voucher": "JV/0060",
+      "party": "Mahalakshmi Warehousing Co",
+      "nature": "Warehousing charges",
+      "amount": 92000
+    },
+    {
+      "date": "2026-09-30",
+      "voucher": "JV/0061",
+      "party": "Arjun Deshpande",
+      "nature": "Interest on unsecured loan",
+      "amount": 56250
+    }
+  ],
+  "sample": true
+};
+const C = globalThis.Credit;
+const TODAY = DATA.today;
+const lakh = (v) => '₹' + (Number(v) / 1e5).toFixed(2) + ' L';
+const inr = (v) => '₹' + Math.round(Number(v)).toLocaleString('en-IN');
+const amt = (v) => (Math.abs(v) >= 1e5 ? lakh(v) : inr(v));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtDate = (iso) => new Date(iso.slice(0, 10) + 'T00:00:00Z').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const daysLate = (iso) => Math.round((Date.parse(TODAY) - Date.parse(iso)) / 864e5);
+const P = Object.fromEntries(DATA.people.map((p) => [p.id, p]));
+const ROLES = ['fc', 'cs', 'cfo'];
+const BY_ROLE = Object.fromEntries(DATA.people.filter((p) => ROLES.includes(p.role)).map((p) => [p.role, p]));
+const ROLE_IN_TEXT = { cs: 'company secretary', cfo: 'CFO', fc: 'finance controller' };
+const VIEWS = [['readiness', 'Readiness'], ['requests', 'Requests'], ['parties', 'Related parties'], ['audit', 'Audit log'], ['connections', 'Connections']];
+const WS = Object.fromEntries(C.WORKSTREAMS.map((w) => [w.id, w.label]));
+const STATE = {
+  accepted: { label: 'Accepted', chip: 'good', col: 'var(--st-acc)' },
+  needsFix: { label: 'Needs a fix', chip: 'bad', col: 'var(--st-fix)' },
+  needsReview: { label: 'Needs review', chip: 'warn', col: 'var(--st-rev)' },
+  overdue: { label: 'Overdue', chip: 'bad', col: 'var(--st-over)' },
+  dueSoon: { label: 'Due in 3 days', chip: 'teal', col: 'var(--st-soon)' },
+  open: { label: 'Open', chip: '', col: 'var(--st-open)' },
+};
+const ORDER = ['accepted', 'needsReview', 'needsFix', 'overdue', 'dueSoon', 'open'];
+const chip = (s) => `<span class="chip ${STATE[s].chip}">${STATE[s].label}</span>`;
+
+const S = {
+  role: 'fc', view: 'readiness', guide: true, filter: 'mine', sel: 'FIN-01', form: null, auditFilter: 'all', audit: [],
+  reqs: DATA.requests.map((r) => ({ ...r, history: r.file ? [{ ...r.file, check: r.check }] : [] })),
+  decisions: {},
+};
+try { const r = localStorage.getItem('ipoRoomRole'); if (r && BY_ROLE[r]) S.role = r; if (localStorage.getItem('ipoRoomGuide') === 'hidden') S.guide = false; } catch (e) {}
+const me = () => BY_ROLE[S.role];
+const state = (r) => C.requestState(r, TODAY);
+const RPT = C.rptScan(DATA.ledger, DATA.parties, DATA.approvals);
+const reviewerOf = (r) => r.reviewer;
+const stamp = () => TODAY + 'T' + new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(11, 19) + '+05:30';
+
+function log(actor, actorType, action, record, detail, evidence, at) { S.audit.unshift({ at: at || stamp(), actor, actorType, action, record, detail, evidence }); }
+(function seedAudit() {
+  const seed = [['2026-10-12T10:00:00+05:30', 'IPO room', 'system', 'Request list loaded', 'DRHP requests', DATA.requests.length + ' requests from the lead managers and their counsel', 'Request list upload · flow 1']];
+  for (const r of DATA.requests.filter((x) => x.file)) {
+    seed.push([r.file.uploadedAt, P[r.file.uploadedBy].name, 'person', 'File uploaded', r.ref, r.file.name, 'Data-room form · flow 2']);
+    seed.push([r.file.uploadedAt.replace('11:20', '11:21'), 'Upload check', 'system', STATE[r.check.verdict].label, r.ref, r.check.reasons.join(' '), 'Rules check' + (r.reviewer ? ' · sent to ' + P[r.reviewer].name : '')]);
+  }
+  seed.push(['2026-10-26T07:00:00+05:30', 'Related-party watch', 'system', 'Ledger scanned', 'Related parties', DATA.ledger.length + ' lines, ' + RPT.flags.length + ' flagged, ' + RPT.register.filter((g) => !g.approval).length + ' groups without an approval on file', 'Tally day book (CSV in demo) · flow 3']);
+  const rem = C.reminders(DATA.requests, TODAY);
+  for (const x of rem) seed.push(['2026-10-31T09:00:00+05:30', 'IPO room', 'system', 'Reminder sent', P[x.owner].name, x.items.length + ' requests: ' + x.items.map((i) => i.ref).join(', '), 'Gmail · flow 1']);
+  seed.sort((a, b) => b[0].localeCompare(a[0])).forEach((r) => S.audit.push({ at: r[0], actor: r[1], actorType: r[2], action: r[3], record: r[4], detail: r[5], evidence: r[6] }));
+})();
+
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 4200); }
+
+function waiting() {
+  const items = [];
+  const id = me().id;
+  const mineOpen = S.reqs.filter((r) => r.owner === id && ['needsFix', 'overdue', 'dueSoon'].includes(state(r)));
+  if (mineOpen.length) items.push(['requests', 'mine', mineOpen.length + ' of your requests need a file', mineOpen.slice(0, 3).map((r) => r.ref).join(', ') + (mineOpen.length > 3 ? '…' : '')]);
+  const toReview = S.reqs.filter((r) => state(r) === 'needsReview' && r.reviewer === id);
+  if (toReview.length) items.push(['requests', 'review', 'Review ' + toReview.length + ' file' + (toReview.length > 1 ? 's' : ''), toReview.map((r) => r.ref + ' · uploaded by ' + P[r.history[r.history.length - 1].uploadedBy].name).join('; ')]);
+  if (S.role === 'cs') {
+    const open = RPT.register.filter((g) => !S.decisions[g.key]);
+    if (open.length) items.push(['parties', '', 'Decide ' + open.length + ' related-party groups', open.filter((g) => !g.approval).length + ' have no approval on file']);
+  }
+  return items;
+}
+
+// ---------- views ----------
+function viewReadiness() {
+  const rd = C.readiness(S.reqs, TODAY);
+  const n = (k) => S.reqs.filter((r) => state(r) === k).length;
+  const acc = n('accepted'), total = S.reqs.length;
+  const noAppr = RPT.register.filter((g) => !g.approval && !S.decisions[g.key]).length;
+  const items = waiting();
+  return `
+  ${S.guide ? `<section class="panel pad guide">
+    <div class="pagehead"><h3 class="label">Try this: three minutes, three roles</h3><div class="actions"><button class="btn link" data-act="restart">Start the demo again</button><button class="btn link" data-act="hideGuide">Hide</button></div></div>
+    <ol>
+      <li>As <b>Rohan Mehta</b>, open <a href="#requests" data-act="open" data-id="FIN-01">FIN-01</a> and upload the draft accounts. The check sends them back: not signed. Upload the signed copy: accepted.</li>
+      <li>Switch to <b>Anita Kapoor</b> and review <a href="#requests" data-act="open" data-id="CS-03">Kavya's scanned board minutes</a>. Kavya uploaded them, so she cannot accept them herself.</li>
+      <li>As <b>Kavya Rao</b>, open <a href="#parties" data-act="goto" data-view="parties">Related parties</a>. Take this year's rent to the audit committee, and mark A. Deshpande &amp; Sons not related, with a reason.</li>
+    </ol>
+  </section>` : ''}
+  <div class="pagehead"><h2>Readiness</h2><span class="muted small">${fmtDate(TODAY)} · ${DATA.requests.length} requests from the lead managers and their counsel · viewing as ${esc(me().name)}, ${ROLE_IN_TEXT[S.role]}</span></div>
+  <div class="kpis">
+    <div class="panel kpi"><span class="label">Accepted</span><span class="big num">${Math.round((acc / total) * 100)}%</span><span class="sub">${acc} of ${total} requests</span></div>
+    <div class="panel kpi"><span class="label">Overdue</span><span class="big num">${n('overdue')}</span><span class="sub">no file yet, past the date</span></div>
+    <div class="panel kpi"><span class="label">Sent back</span><span class="big num">${n('needsFix')}</span><span class="sub">wrong year, unsigned or wrong type · ${n('needsReview')} with a reviewer</span></div>
+    <div class="panel kpi"><span class="label">Related parties</span><span class="big num">${RPT.register.length - Object.keys(S.decisions).length}</span><span class="sub">groups to decide · ${noAppr} with no approval on file</span></div>
+  </div>
+  <div class="grid2">
+    <section class="panel pad">
+      <div class="pagehead"><h3 class="label">By workstream</h3><span class="muted small">share of requests accepted</span></div>
+      <div class="board">${rd.map((w) => `<div class="ws"><span><b>${w.label}</b><span class="src">${w.counts.accepted} of ${w.total}${w.counts.overdue ? ' · ' + w.counts.overdue + ' overdue' : ''}${w.counts.needsFix ? ' · ' + w.counts.needsFix + ' to fix' : ''}</span></span>
+        <div class="bar" role="img" aria-label="${w.label}: ${w.counts.accepted} of ${w.total} accepted">${ORDER.map((k) => w.counts[k] ? `<span style="width:${(w.counts[k] / w.total) * 100}%;background:${STATE[k].col}" title="${STATE[k].label}: ${w.counts[k]}"></span>` : '').join('')}</div>
+        <span class="pct num">${w.pct}%</span></div>`).join('')}</div>
+      <div class="keys">${ORDER.map((k) => `<span><i style="background:${STATE[k].col}"></i>${STATE[k].label}</span>`).join('')}</div>
+    </section>
+    <section class="panel pad">
+      <div class="pagehead"><h3 class="label">Needs you</h3><span class="legend-gold"><i></i>a person decides</span></div>
+      <div class="decide">${items.length ? items.map(([v, f, t, s]) => `<a href="#${v}" data-act="goto" data-view="${v}" data-filter="${f}"><span><b>${esc(t)}</b><br><span class="muted small">${esc(s)}</span></span><span class="go">Open</span></a>`).join('') : '<p class="empty">Nothing waiting for ' + esc(me().name) + '. Switch role at the top to see what the others do.</p>'}</div>
+    </section>
+  </div>
+  <section>
+    <h3 class="label" style="margin-bottom:10px">How every file and flag on this desk is handled</h3>
+    <div class="how">
+      <div><b>The flows chase and check</b><span class="muted small">Each owner gets one email a morning. Every upload is checked the moment it arrives: document, year, signature. The ledger is scanned for related parties every Monday.</span></div>
+      <div><b>Rules decide what is clear</b><span class="muted small">A wrong year or a missing signature goes straight back with the reason. Anything the rules cannot settle goes to a person.</span></div>
+      <div class="person"><b>A person decides</b><span class="muted small">The uploader never accepts their own file. The company secretary decides every related-party flag. We flag; we do not give legal conclusions.</span></div>
+    </div>
+  </section>`;
+}
+
+function viewRequests() {
+  const id = me().id;
+  const filters = [['mine', 'Mine'], ['review', 'To review'], ['all', 'All'], ['overdue', 'Overdue'], ['needsFix', 'Needs a fix'], ['accepted', 'Accepted']];
+  const f = S.filter;
+  const shown = S.reqs.filter((r) => f === 'all' || (f === 'mine' ? r.owner === id : f === 'review' ? state(r) === 'needsReview' && r.reviewer === id : state(r) === f));
+  if (!shown.find((r) => r.ref === S.sel)) S.sel = shown[0] ? shown[0].ref : S.sel;
+  const r = S.reqs.find((x) => x.ref === S.sel);
+  return `
+  <div class="pagehead"><h2>Requests</h2><span class="muted small">Owners upload through the data-room form · every file is checked on arrival by flow 2</span></div>
+  <div class="filters" role="group" aria-label="Filter requests">${filters.map(([k, l]) => `<button aria-pressed="${f === k}" data-act="filter" data-k="${k}">${l}</button>`).join('')}</div>
+  <div class="split">
+    <div class="panel list" aria-label="Requests">${shown.map((x) => `
+      <button class="row" aria-selected="${x.ref === S.sel}" data-act="sel" data-id="${x.ref}">
+        <span class="r1"><span class="name">${esc(x.title)}</span></span>
+        <span class="r1"><span class="muted small num">${x.ref} · ${esc(P[x.owner].name.split(' ')[0])} · due ${fmtDate(x.due).slice(0, -5)}</span>${chip(state(x))}</span>
+      </button>`).join('') || `<p class="empty">${f === 'mine' ? 'You own no requests. Switch to Rohan Mehta to upload files.' : f === 'review' ? 'Nothing to review.' : 'Nothing here.'}</p>`}</div>
+    <article class="panel">${r ? requestDetail(r) : '<p class="empty">Pick a request.</p>'}</article>
+  </div>`;
+}
+
+function requestDetail(r) {
+  const st = state(r), id = me().id;
+  const last = r.history[r.history.length - 1];
+  const checks = [r.keywords.length ? 'Mentions: ' + r.keywords.join(' or ') : 'No document check set', /^FY \d{4}-\d{2}$/.test(r.period) ? 'Covers ' + r.period : r.period ? 'Period: ' + r.period + ' (read by a person)' : 'No year asked for', r.signed ? 'Signed copy' : 'Signature not needed'];
+  let act = '';
+  if (st === 'accepted') act = `<div class="gate">Accepted${last && last.acceptedBy ? ' by ' + esc(P[last.acceptedBy].name) : ' by the check'} · ${esc(last.name)}</div>`;
+  else if (st === 'needsReview') {
+    if (r.reviewer === id) act = S.form && S.form.ref === r.ref
+      ? `<form class="form" data-act="submitSendback" data-id="${r.ref}"><b>Send back to ${esc(P[r.owner].name)}</b><label>What needs to change (goes to the owner and the audit log)<textarea id="f-reason" rows="2" placeholder="e.g. upload the signed minutes, not a scan of the draft">${esc(S.form.reason || '')}</textarea></label>${S.form.error ? `<span class="err">${esc(S.form.error)}</span>` : ''}<div class="actions"><button class="btn teal" type="submit">Send back</button><button class="btn link" type="button" data-act="closeForm">Cancel</button></div></form>`
+      : `<div class="actions"><button class="btn gold" data-act="accept" data-id="${r.ref}">Accept the file</button><button class="btn" data-act="openSendback" data-id="${r.ref}">Send back</button><span class="muted small">Uploaded by ${esc(P[last.uploadedBy].name)}</span></div>`;
+    else act = `<div class="gate">${last.uploadedBy === id ? 'You uploaded this, so you cannot accept it.' : 'Outside your role.'} Waiting for ${esc(P[r.reviewer].name)} to review.</div>`;
+  }
+  if (st !== 'accepted' && st !== 'needsReview') {
+    if (r.owner === id) {
+      const demo = r.ref === 'FIN-01' ? DATA.demoFiles : [{ name: r.ref + ' corrected.pdf', text: fileFor(r), corrected: true }];
+      act += `<section><h4 class="label" style="margin-bottom:8px">Upload a file (demo: pick one)</h4><div class="files">${demo.map((d, i) => `<button class="btn" data-act="upload" data-id="${r.ref}" data-i="${i}">⇪ ${esc(d.name)} <span class="small">${r.ref === 'FIN-01' ? ['signed by the auditor', 'last year\'s accounts', 'draft, unsigned'][i] : 'the right document'}</span></button>`).join('')}</div></section>`;
+    } else act += `<div class="gate">${esc(P[r.owner].name)} owns this request and gets a reminder each morning.${S.role === 'fc' ? '' : ' Switch to Rohan Mehta to try an upload.'}</div>`;
+  }
+  return `<div class="detail">
+    <div class="dhead"><div><span class="label">${r.ref} · ${WS[r.workstream]} · owner ${esc(P[r.owner].name)}</span><h3>${esc(r.title)}</h3></div>${chip(st)}</div>
+    <div class="facts">
+      <div><span class="label">Due</span><span class="num">${fmtDate(r.due)}${st === 'overdue' ? ' · ' + daysLate(r.due) + ' days late' : ''}</span></div>
+      <div><span class="label">Checked for</span><span class="small">${checks.map(esc).join('<br>')}</span></div>
+      <div><span class="label">Latest file</span><span class="small">${last ? esc(last.name) + '<br><span class="muted">' + esc(P[last.uploadedBy].name) + ' · ' + fmtDate(last.uploadedAt) + '</span>' : '<span class="muted">Nothing uploaded yet</span>'}</span></div>
+    </div>
+    ${last && last.check ? `<section><h4 class="label" style="margin-bottom:8px">What the check found</h4><ul class="reasons">${last.check.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>${last.check.verdict === 'needsReview' ? '<p class="muted small" style="margin-top:6px">The rules could not settle it, so a person reviews it. Once a model key is added, an AI read sits beside the rules; it can only send a file to review, never accept one.</p>' : ''}</section>` : ''}
+    ${act}
+    ${r.history.length > 1 ? `<section><h4 class="label" style="margin-bottom:8px">Earlier files</h4><div class="tablewrap"><table><thead><tr><th>File</th><th>By</th><th>Result</th></tr></thead><tbody>${r.history.slice(0, -1).reverse().map((h) => `<tr><td class="small">${esc(h.name)}</td><td class="small">${esc(P[h.uploadedBy].name)}</td><td>${chip(h.check.verdict)}<span class="src">${esc(h.check.reasons[0])}</span></td></tr>`).join('')}</tbody></table></div></section>` : ''}
+  </div>`;
+}
+// The demo's stand-in for a corrected document: one that mentions what was asked for.
+function fileFor(r) {
+  return 'Sarvam Polymers Private Limited\n' + (r.keywords[0] || r.title) + '\n' + (/^FY/.test(r.period) ? r.period + '\n' : '') + (r.signed ? 'Digitally signed by ' + P[r.owner].name : '');
+}
+
+function viewParties() {
+  const isCS = S.role === 'cs';
+  const groups = RPT.register;
+  const flagsFor = (g) => RPT.flags.filter((f) => f.partyId === g.partyId && f.nature === g.nature && f.fy === g.fy);
+  const decided = (g) => S.decisions[g.key];
+  const DEC = { approved: ['Related · approval on file', 'good'], committee: ['To the audit committee', 'warn'], notRelated: ['Not related', ''] };
+  const cell = (g) => {
+    const d = decided(g);
+    if (d) return `<span class="chip ${DEC[d.kind][1]}">${DEC[d.kind][0]}</span><span class="src">${esc(d.by)}${d.reason ? ' · ' + esc(d.reason) : ''}</span>`;
+    if (!isCS) return `<span class="chip">To decide</span><span class="src">${esc(BY_ROLE.cs.name)} decides</span>`;
+    if (S.form && S.form.key === g.key) return `<form class="form" data-act="submitNotRelated" data-id="${esc(g.key)}"><label>Why it is not related (goes into the audit log)<textarea id="f-reason" rows="2" placeholder="e.g. separate firm, no common partner (MCA check)">${esc(S.form.reason || '')}</textarea></label>${S.form.error ? `<span class="err">${esc(S.form.error)}</span>` : ''}<div class="actions"><button class="btn gold" type="submit">Not related</button><button class="btn link" type="button" data-act="closeForm">Cancel</button></div></form>`;
+    return `<div class="rowacts">${g.approval ? `<button class="btn gold" data-act="decide" data-k="approved" data-id="${esc(g.key)}">Related, approval on file</button>` : `<button class="btn gold" data-act="decide" data-k="committee" data-id="${esc(g.key)}">Take to audit committee</button>`}<button class="btn" data-act="openNotRelated" data-id="${esc(g.key)}">Not related</button></div>`;
+  };
+  return `
+  <div class="pagehead"><h2>Related parties</h2><span class="muted small">Ledger scanned ${fmtDate('2026-10-26')} by flow 3 · ${DATA.ledger.length} lines · ${RPT.flags.length} with a listed or close name</span></div>
+  <section class="panel pad pagehead"><span class="small">Totals by party, nature and financial year, the shape the DRHP disclosure needs, with the approval on file. <b>We flag; ${esc(BY_ROLE.cs.name)} decides.</b> Nothing here is a legal conclusion.</span>${isCS ? '' : `<span class="gate">${esc(BY_ROLE.cs.name)} decides each group.</span>`}</section>
+  <section class="panel"><div class="tablewrap"><table class="reg">
+    <thead><tr><th>Party</th><th>Nature · year</th><th class="r">Lines</th><th class="r">Total</th><th>Approval on file</th><th>Decision</th></tr></thead>
+    <tbody>${groups.map((g) => { const fl = flagsFor(g); const close = fl.filter((f) => f.kind === 'close'); return `<tr>
+      <td><b>${esc(g.partyName)}</b><span class="src">${esc(g.relation)}</span>${close.length ? `<div class="names">${[...new Set(close.map((f) => f.party))].map((n) => `<span class="chip warn" title="${esc(close.find((f) => f.party === n).why)}">“${esc(n)}”</span>`).join('')}</div><span class="src">${esc(close[0].why)}</span>` : ''}</td>
+      <td>${esc(g.nature)}<span class="src">${g.fy}</span></td>
+      <td class="r num">${g.count}</td><td class="r num">${amt(g.total)}</td>
+      <td>${g.approval ? `<span class="chip good">${esc(g.approval.ref)}</span><span class="src">${esc(g.approval.by)} · ${fmtDate(g.approval.date)}</span>` : '<span class="chip bad">None on file</span>'}</td>
+      <td style="min-width:230px">${cell(g)}</td></tr>`; }).join('')}</tbody>
+  </table></div></section>
+  <section class="panel">
+    <div class="pad" style="padding-bottom:6px"><h3 class="label">The related-party list the scan uses</h3></div>
+    <div class="tablewrap"><table><thead><tr><th>Name</th><th>Relation</th></tr></thead><tbody>${DATA.parties.map((p) => `<tr><td><b>${esc(p.name)}</b><span class="src">${p.kind === 'entity' ? 'Entity' : 'Person'}</span></td><td class="small">${esc(p.relation)}</td></tr>`).join('')}</tbody></table></div>
+    <p class="pad muted small" style="padding-top:8px">Kept by the company secretary in the Related parties tab. Close names are caught by spelling and initials; look-alikes such as Sunrise Packaging Industries and Deshpande Transport Co are not flagged.</p>
+  </section>`;
+}
+
+function viewAudit() {
+  const f = S.auditFilter;
+  const rows = S.audit.filter((r) => f === 'all' || (f === 'people' ? r.actorType === 'person' : r.actorType !== 'person'));
+  return `
+  <div class="pagehead"><h2>Audit log</h2><span class="muted small">Every file, check, reminder and decision · ${S.audit.length} entries</span></div>
+  <section class="panel">
+    <div class="pad pagehead"><span class="muted small">Newest first. In a live install this is the n8n audit table, kept with you.</span><div class="filters" role="group" aria-label="Filter log">${[['all', 'All'], ['people', 'People'], ['machine', 'System']].map(([k, l]) => `<button aria-pressed="${f === k}" data-act="auditFilter" data-k="${k}">${l}</button>`).join('')}</div></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>When</th><th>Who</th><th>What</th><th>Record</th><th>Detail and evidence</th></tr></thead>
+      <tbody>${rows.map((r) => `<tr><td class="num small" style="white-space:nowrap">${new Date(r.at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}</td><td><b>${esc(r.actor)}</b><span class="src">${r.actorType === 'person' ? 'Person' : 'System'}</span></td><td>${esc(r.action)}</td><td class="num small">${esc(r.record)}</td><td class="small">${esc(r.detail)}<span class="src">${esc(r.evidence)}</span></td></tr>`).join('')}</tbody>
+    </table></div>
+  </section>`;
+}
+
+function viewConnections() {
+  const rows = [
+    ['Request list upload (Excel or CSV)', 'Live in demo', 'The bankers\' and lawyers\' list; columns matched by name', 'Nothing', 'One row per request with owner and date'],
+    ['Data-room upload form', 'Live in demo', 'Each document, its text read on arrival', 'Nothing', 'The check result on the request'],
+    ['Google Sheet', 'Live in demo', 'Requests, related-party list, approvals on file', 'Nothing', 'Requests, related-party register'],
+    ['Gmail or Microsoft 365', 'Live in demo', 'Nothing', 'A mailbox the flows can send from', 'Reminders, fix requests, review requests, the CFO summary'],
+    ['Virtual data room (Box, SharePoint, Google Drive)', 'Configured', 'New files in the request folders', 'A service account with read access to the room', 'Nothing: files stay where your bankers expect them'],
+    ['TallyPrime', 'Configured', 'Day book for the related-party watch (XML on port 9000)', 'A small agent inside your network; the Tally port is never exposed', 'Nothing'],
+    ['SAP Business One or Zoho Books', 'Configured', 'Journal and vendor ledgers', 'An API user with read access', 'Nothing'],
+    ['AI read of documents', 'Needs a model key', 'The text of files the rules cannot settle', 'A model key added in n8n by you', 'A note to the reviewer; it never accepts a file'],
+  ];
+  return `
+  <div class="pagehead"><h2>Connections</h2><span class="muted small">What this room reads, what it writes back, and what we need from your IT team</span></div>
+  <section class="panel"><div class="tablewrap"><table class="conn">
+    <thead><tr><th>System</th><th>Status</th><th>What we read</th><th>What we write back</th><th>What we need from you</th></tr></thead>
+    <tbody>${rows.map(([n, s, r, need, w]) => `<tr><td>${n}</td><td class="${s === 'Live in demo' ? 'ok' : 'cfg'} small">${s}</td><td class="small">${r}</td><td class="small">${w}</td><td class="small">${need}</td></tr>`).join('')}</tbody>
+  </table></div></section>
+  <div class="grid2">
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">How it runs</h3>
+      <div class="ceil">
+        <div><span>1 · Document requests</span><span class="muted">list → owners → 09:00 reminders → Monday summary</span></div>
+        <div><span>2 · Check an upload</span><span class="muted">file → text → document, year, signature → owner or reviewer</span></div>
+        <div><span>3 · Related-party watch</span><span class="muted">Monday 07:00 → ledger → names → register → company secretary</span></div>
+      </div>
+      <p class="muted small" style="margin-top:10px">Three n8n workflows: visual, readable by your IT team, and running in your own cloud account.</p>
+    </section>
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">Controls</h3>
+      <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">
+        <li>The person who uploads a file never accepts it. Files the company secretary uploads go to the CFO.</li>
+        <li>Rules send a file back only for a reason they can show: wrong year, no signature, wrong file type.</li>
+        <li>Related-party flags are decided by the company secretary, with a reason when marked not related. We do not give legal conclusions.</li>
+        <li>Every file, check, reminder and decision is in the audit log.</li>
+        <li>Documents stay in your data room and your cloud account.</li>
+      </ul>
+    </section>
+  </div>`;
+}
+
+// ---------- render ----------
+function render() {
+  document.getElementById('roles').innerHTML = '<span class="as">Viewing as</span>' + ROLES.map((r) => `<button aria-pressed="${S.role === r}" data-act="role" data-role="${r}">${esc(BY_ROLE[r].name)}<span>${BY_ROLE[r].title}</span></button>`).join('');
+  const w = waiting();
+  const counts = { requests: w.filter(([v]) => v === 'requests').length ? S.reqs.filter((r) => (r.owner === me().id && ['needsFix', 'overdue', 'dueSoon'].includes(state(r))) || (state(r) === 'needsReview' && r.reviewer === me().id)).length : 0, parties: S.role === 'cs' ? RPT.register.filter((g) => !S.decisions[g.key]).length : 0 };
+  document.getElementById('tabs').innerHTML = VIEWS.map(([k, l]) => `<a href="#${k}" data-act="goto" data-view="${k}" ${S.view === k ? 'aria-current="page"' : ''}>${l}${counts[k] ? `<span class="count num">${counts[k]}</span>` : ''}</a>`).join('');
+  const v = { readiness: viewReadiness, requests: viewRequests, parties: viewParties, audit: viewAudit, connections: viewConnections }[S.view];
+  document.getElementById('main').innerHTML = v();
+}
+
+// ---------- actions ----------
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (!t || t.tagName === 'FORM') return;
+  const act = t.dataset.act, id = t.dataset.id;
+  if (act === 'goto') { e.preventDefault(); S.view = t.dataset.view; S.form = null; if (t.dataset.filter) S.filter = t.dataset.filter; history.replaceState(null, '', '#' + S.view); render(); window.scrollTo({ top: 0 }); return; }
+  if (act === 'open') { e.preventDefault(); S.view = 'requests'; S.filter = 'all'; S.sel = id; S.form = null; history.replaceState(null, '', '#requests'); render(); window.scrollTo({ top: 0 }); return; }
+  if (act === 'role') { S.role = t.dataset.role; S.form = null; try { localStorage.setItem('ipoRoomRole', S.role); } catch (err) {} render(); return; }
+  if (act === 'filter') { S.filter = t.dataset.k; S.form = null; render(); return; }
+  if (act === 'auditFilter') { S.auditFilter = t.dataset.k; render(); return; }
+  if (act === 'sel') { S.sel = id; S.form = null; render(); if (innerWidth <= 980) document.querySelector('main article')?.scrollIntoView({ block: 'start' }); return; }
+  if (act === 'hideGuide') { S.guide = false; try { localStorage.setItem('ipoRoomGuide', 'hidden'); } catch (err) {} render(); return; }
+  if (act === 'restart') { try { localStorage.removeItem('ipoRoomRole'); localStorage.removeItem('ipoRoomGuide'); } catch (err) {} location.hash = 'readiness'; location.reload(); return; }
+  if (act === 'closeForm') { S.form = null; render(); return; }
+  if (act === 'upload') {
+    const r = S.reqs.find((x) => x.ref === id);
+    const f = r.ref === 'FIN-01' ? DATA.demoFiles[Number(t.dataset.i)] : { name: r.ref + ' corrected.pdf', text: fileFor(r) };
+    const check = C.checkUpload(r, f);
+    const at = stamp();
+    r.check = check; r.reviewer = check.verdict === 'needsReview' ? (me().id === 'kavya' ? 'anita' : 'kavya') : '';
+    r.history.push({ name: f.name, uploadedBy: me().id, uploadedAt: at, check });
+    log(me().name, 'person', 'File uploaded', r.ref, f.name, 'Data-room form · flow 2', at);
+    log('Upload check', 'system', STATE[check.verdict].label, r.ref, check.reasons.join(' '), 'Rules check' + (r.reviewer ? ' · sent to ' + P[r.reviewer].name : check.verdict === 'needsFix' ? ' · ' + P[r.owner].name + ' emailed the reason' : ''));
+    toast(check.verdict === 'accepted' ? r.ref + ' accepted: ' + check.reasons[0] : check.verdict === 'needsFix' ? 'Sent back: ' + check.reasons[0] : 'A person needs to look at it. Sent to ' + P[r.reviewer].name + '.');
+    render(); return;
+  }
+  if (act === 'accept') {
+    const r = S.reqs.find((x) => x.ref === id);
+    const last = r.history[r.history.length - 1];
+    r.check = { verdict: 'accepted', reasons: ['Accepted on review by ' + me().name + '.'] };
+    last.acceptedBy = me().id; r.history[r.history.length - 1] = { ...last, check: last.check };
+    log(me().name, 'person', 'Accepted on review', r.ref, last.name + ' · uploaded by ' + P[last.uploadedBy].name, 'Review in the IPO room');
+    toast(r.ref + ' accepted.'); render(); return;
+  }
+  if (act === 'openSendback') { S.form = { ref: id }; render(); document.getElementById('f-reason')?.focus(); return; }
+  if (act === 'openNotRelated') { S.form = { key: id }; render(); document.getElementById('f-reason')?.focus(); return; }
+  if (act === 'decide') {
+    const g = RPT.register.find((x) => x.key === id);
+    S.decisions[id] = { kind: t.dataset.k, by: me().name };
+    log(me().name, 'person', t.dataset.k === 'approved' ? 'Related: approval on file' : 'Taken to the audit committee', g.partyName, g.nature + ' · ' + g.fy + ' · ' + amt(g.total) + (g.approval ? ' · ' + g.approval.ref : ''), 'Related-party register');
+    toast(t.dataset.k === 'approved' ? 'Marked related, approval ' + g.approval.ref + ' on file.' : 'Added to the audit committee agenda: ' + g.partyName + ', ' + g.nature + '.');
+    render(); return;
+  }
+});
+
+document.addEventListener('input', (e) => { if (S.form && e.target.id === 'f-reason') S.form.reason = e.target.value; });
+
+document.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const act = e.target.dataset.act, id = e.target.dataset.id;
+  const reason = (S.form.reason || '').trim();
+  if (!reason) { S.form.error = 'Add a reason. It goes into the audit log.'; render(); return; }
+  if (act === 'submitSendback') {
+    const r = S.reqs.find((x) => x.ref === id);
+    r.check = { verdict: 'needsFix', reasons: [reason] };
+    r.history[r.history.length - 1].check = r.check;
+    r.reviewer = '';
+    log(me().name, 'person', 'Sent back on review', r.ref, reason, P[r.owner].name + ' emailed the reason');
+    S.form = null; toast('Sent back to ' + P[r.owner].name + '.'); render(); return;
+  }
+  if (act === 'submitNotRelated') {
+    const g = RPT.register.find((x) => x.key === id);
+    S.decisions[id] = { kind: 'notRelated', by: me().name, reason };
+    log(me().name, 'person', 'Not related', g.names.join(', '), reason, 'Related-party register');
+    S.form = null; toast('Marked not related. The reason is in the audit log.'); render();
+  }
+});
+
+const fromHash = () => { const h = location.hash.slice(1); if (VIEWS.some(([k]) => k === h)) S.view = h; };
+window.addEventListener('hashchange', () => { fromHash(); S.form = null; render(); });
+fromHash();
+render();
+</script>

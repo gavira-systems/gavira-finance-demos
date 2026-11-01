@@ -1,0 +1,1949 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap">
+<style>
+/* Layout: a working desk — header with role switch, tab bar, then list-and-detail panes. Gold marks only buttons where a person decides. */
+:root {
+  --bg: #f3f5f1; --surface: #ffffff; --surface-2: #eef2ee; --line: #d9e1db; --line-2: #c6d0c9;
+  --ink: #111a19; --ink-2: #45524f; --ink-3: #66746f;
+  --teal: #006d77; --teal-ink: #005c65; --teal-soft: #e0eeee; --on-teal: #ffffff;
+  --sage: #899670; --sage-soft: #a3b18a;
+  --gold: #ffd166; --gold-ink: #2b2100; --gold-line: #e9b53a;
+  --good: #2e7744; --good-soft: #e2f0e5; --warn: #8f5600; --warn-soft: #f7ead3; --bad: #a93224; --bad-soft: #f7e0dc;
+  --age0: #a3b18a; --age1: #6fa6ab; --age2: #e0ad45; --age3: #d4774e; --age4: #a93224;
+  --shadow: 0 1px 2px rgb(17 26 25 / .06), 0 4px 16px rgb(17 26 25 / .05);
+  --f-display: 'Playfair Display', Georgia, serif;
+  --f-body: 'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0b1517; --surface: #101e21; --surface-2: #162a2e; --line: #22383c; --line-2: #2d4549;
+  --ink: #f1f4ee; --ink-2: #b9c6c3; --ink-3: #8c9fa1;
+  --teal: #0c7c86; --teal-ink: #5cc4cb; --teal-soft: #12353a; --on-teal: #ffffff;
+  --good: #7cc493; --good-soft: #163128; --warn: #e6ad55; --warn-soft: #33290f; --bad: #f08c7e; --bad-soft: #3a1d19;
+  --age0: #7f8c69; --age1: #4f8f95; --age2: #c9973a; --age3: #c86b44; --age4: #d65a48;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 4px 16px rgb(0 0 0 / .25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-body); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--teal-ink); outline-offset: 2px; border-radius: 6px; }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.muted { color: var(--ink-3); }
+.small { font-size: 13px; }
+.label { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+
+.demo { margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 8px max(16px, env(safe-area-inset-left, 0px)); background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--ink-2); text-align: center; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-block: 18px 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-right: auto; }
+.brand h1 { font-family: var(--f-display); font-weight: 600; font-size: 26px; letter-spacing: -.01em; }
+.brand .co { color: var(--ink-2); font-size: 13.5px; }
+.roles { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); padding: 4px; border-radius: 12px; flex-wrap: wrap; }
+.roles button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; text-align: left; line-height: 1.25; }
+.roles button span { display: block; font-size: 11px; color: var(--ink-3); }
+.roles button[aria-pressed="true"] { background: var(--surface); box-shadow: var(--shadow); }
+.roles .as { align-self: center; padding: 0 6px 0 8px; font-size: 11.5px; color: var(--ink-3); }
+nav.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+nav.tabs a { padding: 10px 14px; text-decoration: none; color: var(--ink-2); border-bottom: 2px solid transparent; white-space: nowrap; font-weight: 700; font-size: 14px; }
+nav.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--teal); }
+nav.tabs .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 10px; background: var(--teal-soft); color: var(--teal-ink); font-size: 12px; text-align: center; }
+main { padding-top: 22px; display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+main > *, .panel, .split > *, .grid2 > * { min-width: 0; }
+.pagehead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.pagehead h2 { font-family: var(--f-display); font-weight: 600; font-size: 24px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.pad { padding: 18px 20px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kpi .big { font-size: 26px; font-weight: 500; }
+.kpi .sub { font-size: 13px; color: var(--ink-2); }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; }
+.split { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
+
+.ageing { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin: 12px 0 10px; background: var(--surface-2); }
+.ageing span { display: block; height: 100%; }
+.legend { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.legend div { display: grid; gap: 2px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
+.legend b { font-weight: 500; color: var(--ink); font-size: 14px; }
+
+.list { display: grid; }
+.row { display: grid; gap: 4px; padding: 12px 16px; border-top: 1px solid var(--line); text-align: left; background: transparent; border-left: 3px solid transparent; border-right: 0; border-bottom: 0; cursor: pointer; width: 100%; }
+.row:first-child { border-top: 0; }
+.row:hover { background: var(--surface-2); }
+.row[aria-selected="true"] { background: var(--teal-soft); border-left-color: var(--teal); }
+.row .r1 { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.row .name { font-weight: 700; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+.chip.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.chip.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.chip.teal { background: var(--teal-soft); color: var(--teal-ink); border-color: transparent; }
+.grade { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; font-weight: 900; font-size: 13px; }
+.grade.A { background: var(--good-soft); color: var(--good); } .grade.B { background: var(--teal-soft); color: var(--teal-ink); }
+.grade.C { background: var(--warn-soft); color: var(--warn); } .grade.D { background: var(--bad-soft); color: var(--bad); }
+
+.btn { border: 1px solid var(--line-2); background: var(--surface); padding: 9px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { background: var(--surface-2); }
+.btn.teal { background: var(--teal); color: var(--on-teal); border-color: var(--teal); }
+.btn.teal:hover { filter: brightness(1.08); }
+.btn.gold { background: var(--gold); color: var(--gold-ink); border-color: var(--gold-line); }
+.btn.gold:hover { filter: brightness(.97); }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.btn.link { border: 0; background: transparent; padding: 4px 2px; color: var(--teal-ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gate { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 8px; background: var(--surface-2); color: var(--ink-2); font-size: 13.5px; }
+
+.detail { display: grid; gap: 18px; padding: 20px 22px; }
+.dhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: start; }
+.dhead h3 { font-size: 20px; font-weight: 900; }
+.amounts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.amounts div { padding: 12px 14px; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.amounts div:first-child { border-left: 0; }
+.amounts .v { font-size: 20px; font-weight: 500; }
+.amounts .hl { background: var(--teal-soft); }
+.steps { display: flex; flex-wrap: wrap; gap: 6px 4px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; }
+.steps li { display: flex; align-items: center; gap: 6px; color: var(--ink-3); }
+.steps li::after { content: ''; width: 18px; height: 1px; background: var(--line-2); margin-left: 4px; }
+.steps li:last-child::after { display: none; }
+.steps li.done { color: var(--ink-2); }
+.steps li.now { color: var(--ink); font-weight: 700; }
+.steps .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); }
+.steps .done .dot { background: var(--sage); }
+.steps .now .dot { background: var(--gold); box-shadow: 0 0 0 3px rgb(255 209 102 / .35); }
+
+table { border-collapse: collapse; width: 100%; }
+.tablewrap { overflow-x: auto; }
+th { text-align: left; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; }
+.pts { font-family: var(--f-mono); font-weight: 500; }
+.pts.pos { color: var(--good); } .pts.neg { color: var(--bad); }
+.src { display: block; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.ceil { display: grid; gap: 6px; font-size: 13.5px; }
+.ceil div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: 6px; }
+.ceil .bind { background: var(--teal-soft); font-weight: 700; }
+.note { white-space: pre-wrap; font-size: 13.5px; line-height: 1.55; background: var(--surface-2); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--line); }
+.usage { position: relative; height: 8px; border-radius: 4px; background: var(--surface-2); min-width: 90px; overflow: hidden; }
+.usage span { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.usage::after { content: ''; position: absolute; top: -2px; bottom: -2px; left: calc(100% / 1.2); width: 2px; background: var(--ink-3); opacity: .5; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 13px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.form { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface-2); }
+.form label { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+.form input, .form textarea { border: 1px solid var(--line-2); background: var(--surface); border-radius: 6px; padding: 8px 10px; font-weight: 400; }
+.form .err { color: var(--bad); font-size: 13px; }
+textarea.draft { width: 100%; min-height: 180px; border: 1px solid var(--line-2); border-radius: 8px; padding: 12px 14px; background: var(--surface); line-height: 1.55; resize: vertical; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 6px 12px; cursor: pointer; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--teal-soft); color: var(--teal-ink); font-weight: 700; }
+.wa { background: #e7f1e4; color: #0b141a; border-radius: 10px; padding: 14px; display: grid; gap: 8px; }
+.wa .bubble { background: #ffffff; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; font-size: 14px; box-shadow: 0 1px 1px rgb(0 0 0 / .08); max-width: 520px; }
+.wa .meta { font-size: 11.5px; color: #54656f; }
+
+.decide { display: grid; gap: 2px; }
+.decide a { display: flex; justify-content: space-between; gap: 12px; padding: 12px 4px; border-top: 1px solid var(--line); text-decoration: none; color: inherit; align-items: center; }
+.decide a:first-child { border-top: 0; }
+.decide a:hover .go { text-decoration: underline; }
+.decide .go { color: var(--teal-ink); font-weight: 700; font-size: 13px; white-space: nowrap; }
+.guide { border-color: var(--gold-line); }
+.guide ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+.guide a { color: var(--teal-ink); font-weight: 700; }
+.how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.how div { padding: 14px 16px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); display: grid; gap: 6px; align-content: start; }
+.how div.person { border-color: var(--gold-line); background: color-mix(in srgb, var(--gold) 14%, var(--surface)); }
+.how b { font-size: 15px; }
+.spark { width: 100%; height: 64px; display: block; }
+.months { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+.months span { display: grid; justify-items: center; gap: 1px; }
+.months b { font-size: 12px; color: var(--ink-2); font-weight: 500; }
+.conn td:first-child { font-weight: 700; }
+.ok { color: var(--good); font-weight: 700; } .cfg { color: var(--warn); font-weight: 700; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow); z-index: 20; max-width: min(560px, calc(100vw - 32px)); }
+.legend-gold { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+.legend-gold i { width: 12px; height: 12px; border-radius: 3px; background: var(--gold); border: 1px solid var(--gold-line); }
+.empty { padding: 28px; text-align: center; color: var(--ink-3); }
+@media (max-width: 980px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid2, .split { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .roles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; } .roles .as { grid-column: 1 / -1; padding: 2px 6px; } .roles button { padding: 6px 8px; font-size: 13.5px; } .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); } .how { grid-template-columns: minmax(0, 1fr); } .amounts { grid-template-columns: minmax(0, 1fr); } .amounts div { border-left: 0; border-top: 1px solid var(--line); } .amounts div:first-child { border-top: 0; } .brand h1 { font-size: 22px; } .detail { padding: 16px; } }
+@media (prefers-reduced-motion: no-preference) { .row, .btn, nav.tabs a { transition: background-color .15s, border-color .15s, filter .15s; } }
+</style>
+
+<div class="wrap">
+  <div class="demo">Demo · Sarvam Polymers is a fictional company · sample data · nothing here sends a real message or changes a real ledger</div>
+  <header class="top">
+    <div class="brand"><h1>Credit Desk</h1><span class="co">Sarvam Polymers Pvt Ltd · FY 2026-27 · GaVira Systems</span></div>
+    <div class="roles" role="group" aria-label="Viewing as" id="roles"></div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// PAN and GSTIN checks. Self-contained so it can be pasted into an n8n Code node
+// or inlined into a page; exposes itself on globalThis.Credit and module.exports.
+(function (root) {
+  const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const PAN_RE = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+  const GSTIN_RE = /^[0-9]{2}[A-Z0-9]{10}[0-9A-Z]Z[0-9A-Z]$/;
+
+  function normalizeId(s) {
+    return String(s == null ? '' : s).replace(/\s+/g, '').toUpperCase();
+  }
+
+  function validatePAN(pan) {
+    return PAN_RE.test(normalizeId(pan)) ? { ok: true } : { ok: false, reason: 'format' };
+  }
+
+  // Check digit: base-36 values, factors alternate 1,2 over the first 14 characters.
+  function gstinCheckDigit(first14) {
+    let sum = 0;
+    for (let i = 0; i < 14; i++) {
+      const p = CHARS.indexOf(first14[i]) * (i % 2 === 0 ? 1 : 2);
+      sum += Math.floor(p / 36) + (p % 36);
+    }
+    return CHARS[(36 - (sum % 36)) % 36];
+  }
+
+  function validateGSTIN(gstin, pan) {
+    const g = normalizeId(gstin);
+    if (!GSTIN_RE.test(g)) return { ok: false, reason: 'format' };
+    const state = Number(g.slice(0, 2));
+    if (state < 1 || state > 38) return { ok: false, reason: 'state' };
+    const embedded = g.slice(2, 12);
+    if (!PAN_RE.test(embedded)) return { ok: false, reason: 'format' };
+    if (pan != null && normalizeId(pan) !== embedded) return { ok: false, reason: 'pan-mismatch' };
+    if (gstinCheckDigit(g.slice(0, 14)) !== g[14]) return { ok: false, reason: 'checksum' };
+    return { ok: true, stateCode: g.slice(0, 2), pan: embedded };
+  }
+
+  const api = { normalizeId, validatePAN, validateGSTIN, gstinCheckDigit };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// Reading amounts and dates as Indian ledgers and Excel exports write them.
+(function (root) {
+  const MONTHS = { JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8, SEP: 9, OCT: 10, NOV: 11, DEC: 12 };
+
+  function parseAmount(v) {
+    if (typeof v === 'number') return v;
+    let s = String(v == null ? '' : v).trim();
+    const negative = /^\(.*\)$/.test(s) || /^-/.test(s);
+    s = s.replace(/[()₹\s-]/g, '').replace(/^Rs\.?/i, '');
+    let mult = 1;
+    if (/cr(ore)?s?$/i.test(s)) { mult = 1e7; s = s.replace(/cr(ore)?s?$/i, ''); }
+    else if (/(l|lakh|lakhs|lac|lacs)$/i.test(s)) { mult = 1e5; s = s.replace(/(lakhs|lakh|lacs|lac|l)$/i, ''); }
+    const n = Number(s.replace(/,/g, ''));
+    if (!Number.isFinite(n)) return NaN;
+    return Math.round(n * mult * 100) / 100 * (negative ? -1 : 1);
+  }
+
+  function iso(y, m, d) {
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) return null;
+    return dt.toISOString().slice(0, 10);
+  }
+
+  // Excel serial 25569 = 1970-01-01.
+  function fromSerial(n) {
+    return new Date(Math.round((n - 25569) * 86400000)).toISOString().slice(0, 10);
+  }
+
+  function parseDate(v) {
+    if (typeof v === 'number') return fromSerial(v);
+    const s = String(v == null ? '' : v).trim();
+    if (/^\d{5}(\.\d+)?$/.test(s)) return fromSerial(Number(s));
+    let m;
+    if ((m = s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return iso(+m[1], +m[2], +m[3]);
+    if ((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/))) return iso(+m[3], +m[2], +m[1]);
+    if ((m = s.match(/^(\d{1,2})[\s\-]([A-Za-z]{3})[A-Za-z]*[\s\-,]+(\d{4})$/))) {
+      const mon = MONTHS[m[2].toUpperCase()];
+      return mon ? iso(+m[3], mon, +m[1]) : null;
+    }
+    return null;
+  }
+
+  const api = { parseAmount, parseDate };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// Sarvam Polymers' credit policy as rules. The AI drafts; these rules set the ceiling;
+// a person approves. Pure functions only, so n8n and the Credit Desk compute the same numbers.
+(function (root) {
+  const L = 1e5;
+  const POLICY = {
+    newCustomerCap: 25 * L,
+    gradeCeilingPct: { A: 0.12, B: 0.10, C: 0.06, D: 0 },
+    stepUpMax: 0.60,
+    fcAuthority: 50 * L,
+    releaseCfoOverPct: 20,
+    autoReleaseMaxDaysOverdue: 30,
+    hardHoldDaysOverdue: 90,
+  };
+  const DAY = 86400000;
+
+  function daysBetween(fromIso, toIso) {
+    return Math.round((Date.parse(toIso) - Date.parse(fromIso)) / DAY);
+  }
+
+  function ageBuckets(invoices, today) {
+    const b = { notDue: 0, d1_30: 0, d31_60: 0, d61_90: 0, d90p: 0 };
+    for (const inv of invoices) {
+      const late = daysBetween(inv.dueDate, today);
+      if (late <= 0) b.notDue += inv.amount;
+      else if (late <= 30) b.d1_30 += inv.amount;
+      else if (late <= 60) b.d31_60 += inv.amount;
+      else if (late <= 90) b.d61_90 += inv.amount;
+      else b.d90p += inv.amount;
+    }
+    return b;
+  }
+
+  function maxDaysOverdue(invoices, today) {
+    return invoices.reduce((m, inv) => Math.max(m, daysBetween(inv.dueDate, today)), 0);
+  }
+
+  function gradeFor({ gstOnTime12, avgDaysToPay, terms, brokenPromises, bureauRank, currentRatio }) {
+    const parts = [];
+    const add = (factor, points, value) => parts.push({ factor, points, value });
+
+    add('gstFilings', gstOnTime12 === 12 ? 2 : gstOnTime12 >= 10 ? 1 : -1, gstOnTime12);
+    if (avgDaysToPay == null) add('paymentHistory', 0, null);
+    else add('paymentHistory', avgDaysToPay <= terms + 5 ? 2 : avgDaysToPay <= terms + 20 ? 0 : -2, avgDaysToPay);
+    if (brokenPromises == null) add('promises', 0, null);
+    else add('promises', brokenPromises === 0 ? 1 : brokenPromises === 1 ? 0 : -2, brokenPromises);
+    if (bureauRank == null) add('bureau', 0, null);
+    else add('bureau', bureauRank <= 3 ? 2 : bureauRank <= 5 ? 1 : bureauRank <= 7 ? -1 : -3, bureauRank);
+    if (currentRatio == null) add('currentRatio', 0, null);
+    else add('currentRatio', currentRatio >= 1.5 ? 1 : currentRatio >= 1.0 ? 0 : -2, currentRatio);
+
+    const points = parts.reduce((s, p) => s + p.points, 0);
+    const grade = points >= 6 ? 'A' : points >= 3 ? 'B' : points >= 0 ? 'C' : 'D';
+    return { grade, points, parts };
+  }
+
+  function classifyApplication(gstin, customers) {
+    const g = String(gstin || '').replace(/\s+/g, '').toUpperCase();
+    const hit = customers.find((c) => String(c.gstin).toUpperCase() === g);
+    return hit ? { kind: 'change', customerId: hit.id } : { kind: 'new' };
+  }
+
+  function recommendLimit({ requested, turnover, grade, isNew, currentLimit }) {
+    const gradeCeiling = Math.floor((turnover * POLICY.gradeCeilingPct[grade]) / L) * L;
+    if (grade === 'D') {
+      const amount = isNew ? 0 : currentLimit;
+      return { amount, binding: 'gradeD', ceilings: { grade: 0 } };
+    }
+    const options = [
+      ['requested', requested],
+      ['grade', gradeCeiling],
+    ];
+    const ceilings = { grade: gradeCeiling };
+    if (isNew) {
+      options.push(['newCap', POLICY.newCustomerCap]);
+      ceilings.newCap = POLICY.newCustomerCap;
+    } else if (currentLimit > 0) {
+      const stepUp = Math.floor((currentLimit * (1 + POLICY.stepUpMax)) / L) * L;
+      options.push(['stepUp', stepUp]);
+      ceilings.stepUp = stepUp;
+    }
+    // Lowest ceiling wins; on a tie the requested amount is the reason.
+    let [binding, amount] = options[0];
+    for (const [name, value] of options) if (value < amount) { binding = name; amount = value; }
+    return { amount: Math.floor(amount / L) * L, binding, ceilings };
+  }
+
+  function approverFor({ kind, amount, overLimitPct }) {
+    if (kind === 'release') return overLimitPct > POLICY.releaseCfoOverPct ? 'cfo' : 'fc';
+    return amount > POLICY.fcAuthority ? 'cfo' : 'fc';
+  }
+
+  const RANK = { analyst: 0, fc: 1, cfo: 2 };
+  function canApprove(role, preparedByRole, required) {
+    if (role === 'analyst' || role === preparedByRole) return false;
+    return RANK[role] >= RANK[required];
+  }
+
+  function releaseDecision({ limit, outstanding, openOrders, orderValue, maxDaysOverdue: late }) {
+    const after = outstanding + openOrders + orderValue;
+    if (!(limit > 0)) {
+      return { action: 'hold', reason: 'No credit limit set for this customer', usagePctAfter: 0, overLimitPct: 0, approver: 'cfo' };
+    }
+    const usagePctAfter = (after / limit) * 100;
+    const overLimitPct = Math.max(0, usagePctAfter - 100);
+    const reasons = [];
+    if (late > POLICY.hardHoldDaysOverdue) reasons.push(`Account on hold: an invoice is ${late} days overdue`);
+    else if (late > POLICY.autoReleaseMaxDaysOverdue) reasons.push(`An invoice is ${late} days overdue`);
+    if (overLimitPct > 0) reasons.push(`Order takes the account to ${usagePctAfter.toFixed(1)}% of its limit`);
+    if (!reasons.length) return { action: 'release', reason: 'Within limit and nothing over 30 days overdue', usagePctAfter, overLimitPct: 0 };
+    return { action: 'hold', reason: reasons.join('; '), usagePctAfter, overLimitPct, approver: approverFor({ kind: 'release', overLimitPct }) };
+  }
+
+  function stageFor(late) {
+    if (late <= 30) return 'friendly';
+    if (late <= 60) return 'firm';
+    if (late <= 90) return 'escalation';
+    return 'final';
+  }
+
+  const AGE_WEIGHT = (late) => (late <= 0 ? 0 : late <= 30 ? 1 : late <= 60 ? 1.6 : late <= 90 ? 2.3 : 3);
+  const GRADE_WEIGHT = { A: 1, B: 1.1, C: 1.3, D: 1.6 };
+  function chaseScore({ invoices, grade, brokenPromises }, today) {
+    const base = invoices.reduce((s, inv) => s + inv.amount * AGE_WEIGHT(daysBetween(inv.dueDate, today)), 0);
+    return base * GRADE_WEIGHT[grade] * (1 + 0.15 * (brokenPromises || 0));
+  }
+
+  const api = {
+    POLICY, daysBetween, ageBuckets, maxDaysOverdue, gradeFor, classifyApplication,
+    recommendLimit, approverFor, canApprove, releaseDecision, stageFor, chaseScore,
+  };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// Collections: ageing per customer, the 90-day hold rule, the ranked chase list and one drafted
+// reminder per customer. Needs policy.js loaded first (uses globalThis.Credit).
+(function (root) {
+  const lakh = (v) => '₹' + (Number(v) / 1e5).toFixed(1) + ' L';
+  const norm = (s) => String(s || '').toUpperCase().replace(/\b(PVT|PRIVATE|LTD|LIMITED|LLP|CO|COMPANY|AND)\b|&/g, '').replace(/[^A-Z0-9]/g, '');
+  const num = (v) => (v === '' || v == null ? null : Number(v));
+  const fmtDate = (iso) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  const plusDays = (today, n) => fmtDate(new Date(Date.parse(today) + n * 86400000).toISOString().slice(0, 10));
+
+  // rows: { customerId?, customerName?, invoiceNo, amount, dueDate } already mapped and not skipped.
+  function buildAccounts(rows, customers, today) {
+    const C = root.Credit;
+    const byId = Object.fromEntries(customers.map((c) => [c.id, c]));
+    const byName = Object.fromEntries(customers.map((c) => [norm(c.name), c]));
+    const per = {};
+    const unmatched = [];
+    for (const r of rows) {
+      const c = (r.customerId && byId[r.customerId]) || byName[norm(r.customerName)];
+      if (!c) { unmatched.push(r); continue; }
+      (per[c.id] = per[c.id] || { c, inv: [] }).inv.push({ amount: r.amount, dueDate: r.dueDate, invoiceNo: r.invoiceNo });
+    }
+    const accounts = Object.values(per).map(({ c, inv }) => {
+      const b = C.ageBuckets(inv, today);
+      const outstanding = inv.reduce((s, i) => s + i.amount, 0);
+      const late = C.maxDaysOverdue(inv, today);
+      const brokenPromises = num(c.brokenPromises) || 0;
+      const grade = C.gradeFor({ gstOnTime12: num(c.gstOnTime12), avgDaysToPay: num(c.avgDaysToPay), terms: num(c.terms) || 45, brokenPromises: num(c.brokenPromises), bureauRank: num(c.bureauRank), currentRatio: num(c.currentRatio) }).grade;
+      const limit = num(c.limit) || 0;
+      const overdueInv = inv.filter((i) => C.daysBetween(i.dueDate, today) > 0).sort((x, y) => x.dueDate.localeCompare(y.dueDate));
+      return { id: c.id, name: c.name, contact: c.contact || 'Accounts team', email: c.contactEmail, status: c.status, terms: num(c.terms) || 45,
+        limit, outstanding, overdue: outstanding - b.notDue, buckets: b, oldestDays: late,
+        usagePct: limit ? Math.round((outstanding / limit) * 1000) / 10 : null, grade, brokenPromises, overdueInv,
+        score: Math.round(C.chaseScore({ invoices: inv, grade, brokenPromises }, today)) };
+    });
+    return { accounts, unmatched };
+  }
+
+  function draftReminder(a, today) {
+    const stage = root.Credit.stageFor(a.oldestDays);
+    const o = a.overdueInv[0];
+    const n = a.overdueInv.length;
+    const first = a.contact.split(' ')[0];
+    const sign = '\n\nAccounts team, Sarvam Polymers (demo)';
+    const text = {
+      friendly: 'Hello ' + first + ', ' + n + ' invoice' + (n > 1 ? 's' : '') + ' totalling ' + lakh(a.overdue) + (n > 1 ? ' are' : ' is') + ' now past due. The oldest, ' + o.invoiceNo + ', was due on ' + fmtDate(o.dueDate) + '. Could you share the payment date? If it is already paid, send us the UTR and we will match it today. Thank you.',
+      firm: 'Dear ' + a.contact + ', ' + lakh(a.overdue) + ' is overdue' + (n > 1 ? ' across ' + n + ' invoices, the oldest by ' + a.oldestDays + ' days (' + o.invoiceNo + ', due ' + fmtDate(o.dueDate) + ')' : ' on invoice ' + o.invoiceNo + ', by ' + a.oldestDays + ' days (due ' + fmtDate(o.dueDate) + ')') + '. Your terms with us are ' + a.terms + ' days. Please confirm a payment date by ' + plusDays(today, 3) + '. If a part payment helps, reply and our accounts team will call you.',
+      escalation: 'Dear ' + a.contact + ', ' + lakh(a.overdue) + ' is overdue, the oldest invoice by ' + a.oldestDays + ' days (' + o.invoiceNo + '). Under our credit terms, new orders above your available limit will be held until this is cleared. Please pay ' + lakh(a.buckets.d61_90 + a.buckets.d90p) + ' by ' + plusDays(today, 5) + ', or call us this week to agree a schedule.',
+      final: 'Dear ' + a.contact + ', your account with Sarvam Polymers is on hold for new orders. ' + lakh(a.overdue) + ' is overdue; the oldest invoice, ' + o.invoiceNo + ' for ' + lakh(o.amount) + ', is ' + a.oldestDays + ' days past due. To release the account, please pay the amount overdue beyond 90 days, ' + lakh(a.buckets.d90p) + ', by ' + plusDays(today, 7) + '. If we do not hear from you by then, the account moves to our recovery process.',
+    }[stage];
+    const subject = { friendly: 'Payment reminder', firm: 'Overdue invoices', escalation: 'Overdue: orders will be held', final: 'Final notice: account on hold' }[stage] + ' · ' + a.name;
+    const why = [lakh(a.overdue) + ' overdue', 'oldest ' + a.oldestDays + ' days', 'grade ' + a.grade].concat(a.brokenPromises ? [a.brokenPromises + ' broken promise' + (a.brokenPromises > 1 ? 's' : '')] : []).join(', ');
+    return { customerId: a.id, name: a.name, contact: a.contact, email: a.email, stage, overdue: a.overdue, oldestDays: a.oldestDays, score: a.score, why, subject, message: text + sign, invoices: a.overdueInv };
+  }
+
+  function collections(rows, customers, today) {
+    const { accounts, unmatched } = buildAccounts(rows, customers, today);
+    const chase = accounts.filter((a) => a.overdue > 0).sort((x, y) => y.score - x.score).map((a) => draftReminder(a, today));
+    const onHold = accounts.filter((a) => a.oldestDays > root.Credit.POLICY.hardHoldDaysOverdue).map((a) => ({ id: a.id, name: a.name, oldestDays: a.oldestDays, isNew: a.status !== 'hold' }));
+    const newHolds = onHold.filter((h) => h.isNew).map((h) => ({ id: h.id, name: h.name, status: 'hold', reason: 'Invoice ' + h.oldestDays + ' days overdue (hold rule: over 90 days)' }));
+    const totals = { outstanding: accounts.reduce((s, a) => s + a.outstanding, 0), overdue: accounts.reduce((s, a) => s + a.overdue, 0), customers: accounts.length };
+    return { accounts, chase, onHold, newHolds, totals, unmatched };
+  }
+
+  const api = { collections, draftReminder, buildAccounts, fmtDate };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+// The credit note, written from the policy result. The numbers come from the rules; this only words them.
+(function (root) {
+  const lakh = (v) => '₹' + (Number(v) / 1e5).toFixed(1) + ' L';
+  const crore = (v) => '₹' + (Number(v) / 1e7).toFixed(2) + ' Cr';
+  const money = (v) => (Math.abs(Number(v)) >= 1e7 ? crore(v) : lakh(v));
+  const LABEL = { gstFilings: 'GST filings', paymentHistory: 'Payment history with us', promises: 'Promises to pay', bureau: 'Bureau rank', currentRatio: 'Current ratio' };
+
+  // a: { legalName, kind, requested, terms, recommended, currentLimit, grade, points, parts, binding, ceilings,
+  //      turnover, approverRole, checks[], gstSource, ratioPage }
+  function factorText(a, p) {
+    if (p.factor === 'gstFilings') return p.value + ' of last 12 GSTR-3B returns filed on time · ' + a.gstSource;
+    if (p.factor === 'paymentHistory') return p.value == null ? 'None yet (new customer)' : 'Pays in ' + p.value + ' days on ' + a.terms + '-day terms · Tally ledger';
+    if (p.factor === 'promises') return p.value == null ? 'None on record' : p.value + ' broken in the last 12 months · collections log';
+    if (p.factor === 'bureau') return p.value == null ? 'No bureau report' : p.value + ' of 10 (1 is best) · bureau report uploaded';
+    return p.value == null ? 'Could not read from the balance sheet' : p.value + ' · balance sheet, page ' + (a.ratioPage || '?');
+  }
+
+  function bindingText(a) {
+    return {
+      requested: 'the full amount asked for is within every policy ceiling.',
+      grade: 'grade ' + a.grade + ' allows up to ' + money(a.ceilings.grade) + ' (a share of annual revenue of ' + money(a.turnover) + ').',
+      newCap: 'policy caps new customers at ' + lakh(a.ceilings.newCap) + ' for their first 90 days.',
+      stepUp: 'policy limits one increase to 60% above the current limit of ' + lakh(a.currentLimit) + '.',
+      gradeD: 'grade D gets no new credit; ' + (a.currentLimit ? 'the current limit stays at ' + lakh(a.currentLimit) + ' until a review in 90 days.' : 'the application is declined.'),
+    }[a.binding];
+  }
+
+  function creditNote(a) {
+    const approver = a.approverRole === 'cfo' ? 'CFO (above ₹50 L)' : 'Finance controller (up to ₹50 L)';
+    const lines = [
+      a.legalName + (a.kind === 'new' ? ' (new customer)' : ' (existing customer, current limit ' + lakh(a.currentLimit) + ')') + ' asked for ' + lakh(a.requested) + ' on ' + a.terms + '-day terms.',
+      'Recommended: ' + lakh(a.recommended) + '. Grade ' + a.grade + ' (' + a.points + ' points).',
+      'Why this amount: ' + bindingText(a),
+      '',
+      'What we checked:',
+      ...a.parts.map((p) => '· ' + LABEL[p.factor] + ': ' + factorText(a, p) + ' (' + (p.points > 0 ? '+' : '') + p.points + ')'),
+      '',
+      'KYC:',
+      ...a.checks.map((c) => '· ' + c.check + ': ' + c.detail),
+      '',
+      'Approver: ' + approver + '.',
+    ];
+    return { note: lines.join('\n'), approverLabel: approver };
+  }
+
+  const api = { creditNote, factorText, bindingText, FACTOR_LABEL: LABEL };
+  root.Credit = Object.assign(root.Credit || {}, api);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+const DATA = {
+  "company": {
+    "name": "Sarvam Polymers Pvt Ltd",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "pan": "AAXCS4571A",
+    "revenueCr": 180,
+    "ledger": "TallyPrime",
+    "plannedLedger": "SAP Business One",
+    "ipoTarget": "2028",
+    "fy": "FY 2026-27",
+    "gstin": "27AAXCS4571A1Z1"
+  },
+  "today": "2026-10-31",
+  "people": [
+    {
+      "id": "meera",
+      "name": "Meera Iyer",
+      "role": "analyst",
+      "title": "Credit analyst",
+      "email": "meera@example.com"
+    },
+    {
+      "id": "rohan",
+      "name": "Rohan Mehta",
+      "role": "fc",
+      "title": "Finance controller",
+      "email": "rohan@example.com",
+      "authority": 5000000
+    },
+    {
+      "id": "anita",
+      "name": "Anita Kapoor",
+      "role": "cfo",
+      "title": "CFO",
+      "email": "anita@example.com",
+      "authority": null
+    }
+  ],
+  "customers": [
+    {
+      "id": "C01",
+      "name": "Kaveri Agro Distributors",
+      "city": "Coimbatore",
+      "stateCode": "33",
+      "gstin": "33AAYFK4281B1Z8",
+      "pan": "AAYFK4281B",
+      "contact": "Senthil Kumar",
+      "contactEmail": "kaveri@example.com",
+      "since": 2019,
+      "terms": 45,
+      "limit": 4000000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 49,
+        "terms": 45,
+        "brokenPromises": 0,
+        "bureauRank": 4,
+        "currentRatio": 1.3
+      },
+      "turnover": 142000000,
+      "status": "active"
+    },
+    {
+      "id": "C02",
+      "name": "Shree Ganesh Plastics Traders",
+      "city": "Ahmedabad",
+      "stateCode": "24",
+      "gstin": "24AAFFS7852J1ZU",
+      "pan": "AAFFS7852J",
+      "contact": "Hetal Shah",
+      "contactEmail": "shree@example.com",
+      "since": 2020,
+      "terms": 45,
+      "limit": 2500000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 41,
+        "terms": 45,
+        "brokenPromises": 0,
+        "bureauRank": 3,
+        "currentRatio": 1.7
+      },
+      "turnover": 96000000,
+      "status": "active"
+    },
+    {
+      "id": "C03",
+      "name": "Northline Packaging LLP",
+      "city": "Ludhiana",
+      "stateCode": "03",
+      "gstin": "03AANFN2423S1ZW",
+      "pan": "AANFN2423S",
+      "contact": "Harpreet Gill",
+      "contactEmail": "northline@example.com",
+      "since": 2021,
+      "terms": 45,
+      "limit": 3000000,
+      "grade": {
+        "gstOnTime12": 10,
+        "avgDaysToPay": 63,
+        "terms": 45,
+        "brokenPromises": 1,
+        "bureauRank": 5,
+        "currentRatio": 1.1
+      },
+      "turnover": 79000000,
+      "status": "active"
+    },
+    {
+      "id": "C04",
+      "name": "Deccan Polymers & Co",
+      "city": "Hyderabad",
+      "stateCode": "36",
+      "gstin": "36AAWFD5994Z1ZK",
+      "pan": "AAWFD5994Z",
+      "contact": "Srinivas Rao",
+      "contactEmail": "deccan@example.com",
+      "since": 2018,
+      "terms": 60,
+      "limit": 5000000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 66,
+        "terms": 60,
+        "brokenPromises": 0,
+        "bureauRank": 4,
+        "currentRatio": 1.4
+      },
+      "turnover": 215000000,
+      "status": "active"
+    },
+    {
+      "id": "C05",
+      "name": "Brahmaputra Industrial Supplies",
+      "city": "Guwahati",
+      "stateCode": "18",
+      "gstin": "18AADFB9565G1Z7",
+      "pan": "AADFB9565G",
+      "contact": "Pranjal Bora",
+      "contactEmail": "brahmaputra@example.com",
+      "since": 2022,
+      "terms": 30,
+      "limit": 1500000,
+      "grade": {
+        "gstOnTime12": 8,
+        "avgDaysToPay": 88,
+        "terms": 30,
+        "brokenPromises": 3,
+        "bureauRank": 7,
+        "currentRatio": 0.9
+      },
+      "turnover": 41000000,
+      "status": "hold"
+    },
+    {
+      "id": "C06",
+      "name": "Malwa Containers Pvt Ltd",
+      "city": "Indore",
+      "stateCode": "23",
+      "gstin": "23AALCM4136P1Z3",
+      "pan": "AALCM4136P",
+      "contact": "Ankit Jain",
+      "contactEmail": "malwa@example.com",
+      "since": 2019,
+      "terms": 45,
+      "limit": 3500000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 38,
+        "terms": 45,
+        "brokenPromises": 0,
+        "bureauRank": 2,
+        "currentRatio": 1.8
+      },
+      "turnover": 128000000,
+      "status": "active"
+    },
+    {
+      "id": "C07",
+      "name": "Konkan Pipes & Fittings",
+      "city": "Pune",
+      "stateCode": "27",
+      "gstin": "27AAUFK7707X1ZV",
+      "pan": "AAUFK7707X",
+      "contact": "Sneha Patil",
+      "contactEmail": "konkan@example.com",
+      "since": 2021,
+      "terms": 45,
+      "limit": 3500000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 38,
+        "terms": 45,
+        "brokenPromises": 0,
+        "bureauRank": 3,
+        "currentRatio": 1.6
+      },
+      "turnover": 115000000,
+      "status": "active"
+    },
+    {
+      "id": "C08",
+      "name": "Vindhya Moulders",
+      "city": "Jabalpur",
+      "stateCode": "23",
+      "gstin": "23AABFV2278E1ZE",
+      "pan": "AABFV2278E",
+      "contact": "Alok Tiwari",
+      "contactEmail": "vindhya@example.com",
+      "since": 2022,
+      "terms": 45,
+      "limit": 2000000,
+      "grade": {
+        "gstOnTime12": 11,
+        "avgDaysToPay": 66,
+        "terms": 45,
+        "brokenPromises": 1,
+        "bureauRank": 5,
+        "currentRatio": 1.2
+      },
+      "turnover": 54000000,
+      "status": "active"
+    },
+    {
+      "id": "C09",
+      "name": "Coromandel Home Products",
+      "city": "Chennai",
+      "stateCode": "33",
+      "gstin": "33AAJCC5849M1Z6",
+      "pan": "AAJCC5849M",
+      "contact": "Lakshmi Narayanan",
+      "contactEmail": "coromandel@example.com",
+      "since": 2017,
+      "terms": 60,
+      "limit": 4500000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 58,
+        "terms": 60,
+        "brokenPromises": 0,
+        "bureauRank": 4,
+        "currentRatio": 1.4
+      },
+      "turnover": 193000000,
+      "status": "active"
+    },
+    {
+      "id": "C10",
+      "name": "Aravalli Trade Links",
+      "city": "Jaipur",
+      "stateCode": "08",
+      "gstin": "08AASFA9420V1ZD",
+      "pan": "AASFA9420V",
+      "contact": "Mahesh Sharma",
+      "contactEmail": "aravalli@example.com",
+      "since": 2020,
+      "terms": 45,
+      "limit": 3000000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 46,
+        "terms": 45,
+        "brokenPromises": 0,
+        "bureauRank": 3,
+        "currentRatio": 1.3
+      },
+      "turnover": 84000000,
+      "status": "active"
+    },
+    {
+      "id": "C11",
+      "name": "Ganga Polypack",
+      "city": "Kanpur",
+      "stateCode": "09",
+      "gstin": "09AAZFG3991C1ZT",
+      "pan": "AAZFG3991C",
+      "contact": "Neeraj Awasthi",
+      "contactEmail": "ganga@example.com",
+      "since": 2021,
+      "terms": 45,
+      "limit": 2000000,
+      "grade": {
+        "gstOnTime12": 9,
+        "avgDaysToPay": 71,
+        "terms": 45,
+        "brokenPromises": 2,
+        "bureauRank": 6,
+        "currentRatio": 1.1
+      },
+      "turnover": 62000000,
+      "status": "active"
+    },
+    {
+      "id": "C12",
+      "name": "Sahyadri Agencies",
+      "city": "Kolhapur",
+      "stateCode": "27",
+      "gstin": "27AAGFS7562K1ZM",
+      "pan": "AAGFS7562K",
+      "contact": "Vikram Desai",
+      "contactEmail": "sahyadri@example.com",
+      "since": 2023,
+      "terms": 30,
+      "limit": 1200000,
+      "grade": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 33,
+        "terms": 30,
+        "brokenPromises": 0,
+        "bureauRank": 3,
+        "currentRatio": 2
+      },
+      "turnover": 36000000,
+      "status": "active"
+    }
+  ],
+  "invoices": [
+    {
+      "id": "SP/26-27/2040",
+      "customerId": "C01",
+      "amount": 1320000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2041",
+      "customerId": "C01",
+      "amount": 880000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2042",
+      "customerId": "C01",
+      "amount": 390000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2043",
+      "customerId": "C01",
+      "amount": 260000,
+      "invoiceDate": "2026-08-24",
+      "dueDate": "2026-10-08"
+    },
+    {
+      "id": "SP/26-27/2044",
+      "customerId": "C01",
+      "amount": 270000,
+      "invoiceDate": "2026-08-03",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2045",
+      "customerId": "C02",
+      "amount": 840000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2046",
+      "customerId": "C02",
+      "amount": 560000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2047",
+      "customerId": "C02",
+      "amount": 420000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2048",
+      "customerId": "C03",
+      "amount": 750000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2049",
+      "customerId": "C03",
+      "amount": 500000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2050",
+      "customerId": "C03",
+      "amount": 480000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2051",
+      "customerId": "C03",
+      "amount": 320000,
+      "invoiceDate": "2026-08-24",
+      "dueDate": "2026-10-08"
+    },
+    {
+      "id": "SP/26-27/2052",
+      "customerId": "C03",
+      "amount": 340000,
+      "invoiceDate": "2026-08-03",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2053",
+      "customerId": "C03",
+      "amount": 220000,
+      "invoiceDate": "2026-07-25",
+      "dueDate": "2026-09-08"
+    },
+    {
+      "id": "SP/26-27/2054",
+      "customerId": "C03",
+      "amount": 310000,
+      "invoiceDate": "2026-07-02",
+      "dueDate": "2026-08-16"
+    },
+    {
+      "id": "SP/26-27/2055",
+      "customerId": "C04",
+      "amount": 1680000,
+      "invoiceDate": "2026-09-13",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2056",
+      "customerId": "C04",
+      "amount": 1120000,
+      "invoiceDate": "2026-09-21",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2057",
+      "customerId": "C04",
+      "amount": 620000,
+      "invoiceDate": "2026-08-18",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2058",
+      "customerId": "C04",
+      "amount": 420000,
+      "invoiceDate": "2026-08-09",
+      "dueDate": "2026-10-08"
+    },
+    {
+      "id": "SP/26-27/2059",
+      "customerId": "C04",
+      "amount": 400000,
+      "invoiceDate": "2026-07-19",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2060",
+      "customerId": "C04",
+      "amount": 260000,
+      "invoiceDate": "2026-07-10",
+      "dueDate": "2026-09-08"
+    },
+    {
+      "id": "SP/26-27/2061",
+      "customerId": "C05",
+      "amount": 300000,
+      "invoiceDate": "2026-10-13",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2062",
+      "customerId": "C05",
+      "amount": 220000,
+      "invoiceDate": "2026-09-17",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2063",
+      "customerId": "C05",
+      "amount": 340000,
+      "invoiceDate": "2026-08-18",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2064",
+      "customerId": "C05",
+      "amount": 290000,
+      "invoiceDate": "2026-07-17",
+      "dueDate": "2026-08-16"
+    },
+    {
+      "id": "SP/26-27/2065",
+      "customerId": "C05",
+      "amount": 460000,
+      "invoiceDate": "2026-06-02",
+      "dueDate": "2026-07-02"
+    },
+    {
+      "id": "SP/26-27/2066",
+      "customerId": "C06",
+      "amount": 1200000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2067",
+      "customerId": "C06",
+      "amount": 800000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2068",
+      "customerId": "C06",
+      "amount": 350000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2069",
+      "customerId": "C07",
+      "amount": 1650000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2070",
+      "customerId": "C07",
+      "amount": 1100000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2071",
+      "customerId": "C07",
+      "amount": 480000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2072",
+      "customerId": "C08",
+      "amount": 360000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2073",
+      "customerId": "C08",
+      "amount": 240000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2074",
+      "customerId": "C08",
+      "amount": 390000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2075",
+      "customerId": "C08",
+      "amount": 440000,
+      "invoiceDate": "2026-08-03",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2076",
+      "customerId": "C08",
+      "amount": 180000,
+      "invoiceDate": "2026-07-02",
+      "dueDate": "2026-08-16"
+    },
+    {
+      "id": "SP/26-27/2077",
+      "customerId": "C09",
+      "amount": 1810000,
+      "invoiceDate": "2026-09-13",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2078",
+      "customerId": "C09",
+      "amount": 1210000,
+      "invoiceDate": "2026-09-21",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2079",
+      "customerId": "C09",
+      "amount": 330000,
+      "invoiceDate": "2026-08-18",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2080",
+      "customerId": "C09",
+      "amount": 220000,
+      "invoiceDate": "2026-08-09",
+      "dueDate": "2026-10-08"
+    },
+    {
+      "id": "SP/26-27/2081",
+      "customerId": "C09",
+      "amount": 120000,
+      "invoiceDate": "2026-07-19",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2082",
+      "customerId": "C10",
+      "amount": 900000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2083",
+      "customerId": "C10",
+      "amount": 600000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2084",
+      "customerId": "C10",
+      "amount": 400000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2085",
+      "customerId": "C10",
+      "amount": 100000,
+      "invoiceDate": "2026-08-03",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2086",
+      "customerId": "C11",
+      "amount": 310000,
+      "invoiceDate": "2026-09-28",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2087",
+      "customerId": "C11",
+      "amount": 210000,
+      "invoiceDate": "2026-10-06",
+      "dueDate": "2026-11-20"
+    },
+    {
+      "id": "SP/26-27/2088",
+      "customerId": "C11",
+      "amount": 460000,
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-17"
+    },
+    {
+      "id": "SP/26-27/2089",
+      "customerId": "C11",
+      "amount": 490000,
+      "invoiceDate": "2026-08-03",
+      "dueDate": "2026-09-17"
+    },
+    {
+      "id": "SP/26-27/2090",
+      "customerId": "C11",
+      "amount": 330000,
+      "invoiceDate": "2026-07-02",
+      "dueDate": "2026-08-16"
+    },
+    {
+      "id": "SP/26-27/2091",
+      "customerId": "C12",
+      "amount": 400000,
+      "invoiceDate": "2026-10-13",
+      "dueDate": "2026-11-12"
+    },
+    {
+      "id": "SP/26-27/2092",
+      "customerId": "C12",
+      "amount": 120000,
+      "invoiceDate": "2026-09-17",
+      "dueDate": "2026-10-17"
+    }
+  ],
+  "applications": [
+    {
+      "id": "APP-1041",
+      "kind": "new",
+      "customerId": null,
+      "applicant": "Tapti Irrigation Systems",
+      "city": "Surat",
+      "gstin": "24AABFT3411E1ZT",
+      "pan": "AABFT3411E",
+      "udyam": "UDYAM-GJ-22-0048213",
+      "requested": 4000000,
+      "terms": 45,
+      "currentLimit": 0,
+      "turnover": 186000000,
+      "inputs": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": null,
+        "terms": 45,
+        "brokenPromises": null,
+        "bureauRank": 4,
+        "currentRatio": 1.42
+      },
+      "status": "awaiting_approval",
+      "preparedBy": "meera",
+      "requestedBy": "Sales · Western region",
+      "createdAt": "2026-10-27T10:40:00+05:30",
+      "documents": [
+        "Audited balance sheet FY 2025-26 (PDF, 14 pages)",
+        "Commercial bureau report, 28 Oct 2026 (PDF)",
+        "Cancelled cheque (image)"
+      ],
+      "tradeRefs": [
+        {
+          "from": "Narmada Drip Components",
+          "note": "Pays on time, 2 years"
+        },
+        {
+          "from": "Saurashtra Pumps",
+          "note": "Good account, occasional 10 to 15 day delays"
+        },
+        {
+          "from": "Gujarat Resin House",
+          "note": "Pays on time"
+        }
+      ]
+    },
+    {
+      "id": "APP-1039",
+      "kind": "change",
+      "customerId": "C07",
+      "applicant": "Konkan Pipes & Fittings",
+      "requested": 6000000,
+      "terms": 45,
+      "currentLimit": 3500000,
+      "turnover": 115000000,
+      "inputs": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 38,
+        "terms": 45,
+        "brokenPromises": 0,
+        "bureauRank": 3,
+        "currentRatio": 1.6
+      },
+      "status": "awaiting_approval",
+      "preparedBy": "meera",
+      "requestedBy": "Sales · Pune",
+      "createdAt": "2026-10-28T15:05:00+05:30",
+      "documents": [
+        "Audited balance sheet FY 2025-26 (PDF, 18 pages)"
+      ],
+      "note": "Limit used above 85% for 5 of the last 6 months; 3 orders held in September."
+    },
+    {
+      "id": "APP-1037",
+      "kind": "change",
+      "customerId": "C11",
+      "applicant": "Ganga Polypack",
+      "requested": 3500000,
+      "terms": 45,
+      "currentLimit": 2000000,
+      "turnover": 62000000,
+      "inputs": {
+        "gstOnTime12": 9,
+        "avgDaysToPay": 71,
+        "terms": 45,
+        "brokenPromises": 2,
+        "bureauRank": 6,
+        "currentRatio": 1.1
+      },
+      "status": "awaiting_approval",
+      "preparedBy": "meera",
+      "requestedBy": "Sales · North",
+      "createdAt": "2026-10-26T12:20:00+05:30",
+      "documents": [
+        "Provisional balance sheet FY 2025-26 (PDF, 9 pages)"
+      ],
+      "note": "One cheque returned in Aug 2026 (₹3.1 L), re-presented and cleared."
+    },
+    {
+      "id": "APP-1035",
+      "kind": "change",
+      "customerId": "C10",
+      "applicant": "Aravalli Trade Links",
+      "requested": 3000000,
+      "terms": 45,
+      "currentLimit": 3000000,
+      "turnover": 84000000,
+      "inputs": {
+        "gstOnTime12": 12,
+        "avgDaysToPay": 46,
+        "terms": 45,
+        "brokenPromises": 0,
+        "bureauRank": 3,
+        "currentRatio": 1.3
+      },
+      "status": "draft",
+      "preparedBy": "ai",
+      "requestedBy": "Annual renewal",
+      "createdAt": "2026-10-30T06:00:00+05:30",
+      "documents": [
+        "Audited balance sheet FY 2025-26 (PDF, 12 pages)"
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "id": "SO-88213",
+      "customerId": "C04",
+      "amount": 680000,
+      "placedAt": "2026-10-31T09:12:00+05:30",
+      "placedBy": "Sales · Hyderabad"
+    },
+    {
+      "id": "SO-88220",
+      "customerId": "C05",
+      "amount": 240000,
+      "placedAt": "2026-10-31T10:03:00+05:30",
+      "placedBy": "Sales · East"
+    },
+    {
+      "id": "SO-88224",
+      "customerId": "C06",
+      "amount": 410000,
+      "placedAt": "2026-10-31T10:41:00+05:30",
+      "placedBy": "Sales · Central"
+    }
+  ],
+  "payments": [
+    {
+      "date": "2026-10-29",
+      "customerId": "C09",
+      "amount": 480000,
+      "utr": "HDFCR52026102912841",
+      "matched": true
+    },
+    {
+      "date": "2026-10-29",
+      "customerId": "C02",
+      "amount": 310000,
+      "utr": "ICICR42026102907715",
+      "matched": true
+    },
+    {
+      "date": "2026-10-30",
+      "customerId": "C01",
+      "amount": 550000,
+      "utr": "SBINR12026103044102",
+      "matched": true
+    },
+    {
+      "date": "2026-10-30",
+      "customerId": "C06",
+      "amount": 220000,
+      "utr": "UTIBR72026103018230",
+      "matched": true
+    },
+    {
+      "date": "2026-10-31",
+      "customerId": null,
+      "amount": 175000,
+      "utr": "KKBKR32026103100492",
+      "matched": false,
+      "narration": "NEFT/VINDHYA MOULD"
+    }
+  ],
+  "dsoTrend": [
+    {
+      "month": "May",
+      "dso": 61
+    },
+    {
+      "month": "Jun",
+      "dso": 59
+    },
+    {
+      "month": "Jul",
+      "dso": 58
+    },
+    {
+      "month": "Aug",
+      "dso": 56
+    },
+    {
+      "month": "Sep",
+      "dso": 54
+    },
+    {
+      "month": "Oct",
+      "dso": 52
+    }
+  ],
+  "sample": true
+};
+const C = globalThis.Credit;
+const TODAY = DATA.today;
+const L = 1e5;
+const lakh = (v) => '₹' + (Number(v) / L).toFixed(1) + ' L';
+const crore = (v) => '₹' + (Number(v) / 1e7).toFixed(2) + ' Cr';
+const money = (v) => (Math.abs(v) >= 1e7 ? crore(v) : lakh(v));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtDate = C.fmtDate;
+const PEOPLE = Object.fromEntries(DATA.people.map((p) => [p.role, p]));
+const ROLE_LABEL = { analyst: 'Credit analyst', fc: 'Finance controller', cfo: 'CFO' };
+const ROLE_IN_TEXT = { analyst: 'credit analyst', fc: 'finance controller', cfo: 'CFO' };
+const VIEWS = [['overview', 'Overview'], ['applications', 'Applications'], ['exposure', 'Exposure'], ['collections', 'Collections'], ['audit', 'Audit log'], ['connections', 'Connections']];
+
+// ---------- state, all derived from the sample dataset ----------
+const S = {
+  role: 'fc', view: 'overview', guide: true, selApp: null, selChase: null, filter: 'all', auditFilter: 'all', channel: 'email', form: null,
+  customers: DATA.customers.map((c) => ({ ...c })),
+  invoices: DATA.invoices.map((i) => ({ ...i })),
+  apps: [], orders: {}, chase: {}, edits: {}, audit: [],
+};
+try { const r = localStorage.getItem('creditDeskRole'); if (r && ROLE_LABEL[r]) S.role = r; if (localStorage.getItem('creditDeskGuide') === 'hidden') S.guide = false; } catch (e) {}
+
+function kycChecks(a) {
+  const g = C.validateGSTIN(a.gstin, a.pan);
+  const checks = [
+    { check: 'PAN', detail: a.pan + ' is a valid PAN', ok: C.validatePAN(a.pan).ok },
+    { check: 'GSTIN', detail: a.gstin + (g.ok ? ' is valid and carries the PAN given' : ' failed: ' + g.reason), ok: g.ok },
+    { check: 'Bank account name', detail: 'Matches the legal name', ok: true },
+  ];
+  if (a.udyam) checks.push({ check: 'Udyam number', detail: a.udyam, ok: true });
+  return checks;
+}
+function buildApp(raw) {
+  const cust = raw.customerId ? S.customers.find((c) => c.id === raw.customerId) : null;
+  const gstin = raw.gstin || cust.gstin, pan = raw.pan || cust.pan;
+  const g = C.gradeFor(raw.inputs);
+  const r = C.recommendLimit({ requested: raw.requested, turnover: raw.turnover, grade: g.grade, isNew: raw.kind === 'new', currentLimit: raw.currentLimit });
+  const a = {
+    ...raw, gstin, pan, legalName: raw.applicant, grade: g.grade, points: g.points, parts: g.parts,
+    recommended: r.amount, binding: r.binding, ceilings: r.ceilings,
+    approverRole: C.approverFor({ kind: 'limit', amount: r.amount }),
+    status: raw.status === 'draft' ? 'ready_for_review' : raw.status,
+    preparedByRole: raw.preparedBy === 'ai' ? 'ai' : 'analyst', gstSource: 'GST portal via GSP (sample response)', ratioPage: 4,
+  };
+  a.checks = kycChecks(a);
+  Object.assign(a, C.creditNote(a));
+  return a;
+}
+S.apps = DATA.applications.map(buildApp);
+S.selApp = S.apps.find((a) => a.status === 'awaiting_approval')?.id || S.apps[0].id;
+
+const invoicesOf = (id) => S.invoices.filter((i) => i.customerId === id);
+function account(c) {
+  const inv = invoicesOf(c.id);
+  const b = C.ageBuckets(inv, TODAY);
+  const outstanding = inv.reduce((s, i) => s + i.amount, 0);
+  return { ...c, inv, buckets: b, outstanding, overdue: outstanding - b.notDue, late: C.maxDaysOverdue(inv, TODAY),
+    usage: c.limit ? (outstanding / c.limit) * 100 : null, gradeNow: C.gradeFor(c.grade).grade };
+}
+function orderView(o) {
+  const c = S.customers.find((x) => x.id === o.customerId);
+  const a = account(c);
+  const d = C.releaseDecision({ limit: c.limit, outstanding: a.outstanding, openOrders: 0, orderValue: o.amount, maxDaysOverdue: a.late });
+  const st = S.orders[o.id] || { status: d.action === 'release' ? 'released' : 'held', by: d.action === 'release' ? 'Credit Desk (automatic)' : '', reason: d.reason };
+  return { ...o, customer: c, decision: d, ...st };
+}
+function collectionsNow() {
+  const rows = S.invoices.map((i) => ({ customerId: i.customerId, invoiceNo: i.id, amount: i.amount, dueDate: i.dueDate }));
+  const cs = S.customers.map((c) => ({ ...c, contact: c.contact, contactEmail: c.contactEmail, ...c.grade }));
+  return C.collections(rows, cs, TODAY);
+}
+
+function log(actor, actorType, action, record, detail, evidence, at) {
+  S.audit.unshift({ at: at || new Date().toISOString(), actor, actorType, action, record, detail, evidence });
+}
+// Seed the audit log with what the n8n flows did before today's session.
+(function seedAudit() {
+  const t = (h, m) => '2026-10-31T' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':00+05:30';
+  const seed = [];
+  for (const a of S.apps) {
+    seed.push([a.createdAt, a.requestedBy.startsWith('Sales') ? a.requestedBy : 'Credit Desk', a.requestedBy.startsWith('Sales') ? 'person' : 'system', 'Application received', a.id, a.legalName + ' asked for ' + lakh(a.requested), 'n8n form · flow 1']);
+    seed.push([a.createdAt, 'Credit Desk', 'system', 'GST filing record fetched', a.id, a.inputs.gstOnTime12 + ' of 12 GSTR-3B on time', 'GST portal via GSP (sample response)']);
+    seed.push([a.createdAt, 'Credit policy', 'system', 'Policy applied', a.id, 'Grade ' + a.grade + ', recommended ' + lakh(a.recommended) + ' (' + a.binding + ')', 'Policy rules v2026-10']);
+    seed.push([a.createdAt, 'AI', 'ai', 'Credit note drafted', a.id, 'Note written for analyst review', 'Numbers from policy rules']);
+    if (a.status === 'awaiting_approval') seed.push([a.createdAt, PEOPLE.analyst.name, 'person', 'Submitted for approval', a.id, 'Sent to ' + PEOPLE[a.approverRole].name, 'Credit Desk · flow 2']);
+  }
+  seed.push([t(6, 0), 'Credit Desk', 'system', 'Daily ledger check', 'Ledger', '53 open invoices read, ageing rebuilt', 'Tally ledger (Google Sheet in demo) · flow 4']);
+  seed.push([t(6, 0), 'Credit Desk', 'system', 'Account on hold', 'C05', 'Brahmaputra Industrial Supplies: invoice 121 days overdue', 'Hold rule: over 90 days']);
+  seed.push([t(6, 1), 'AI', 'ai', 'Reminders drafted', 'Collections', '12 reminders drafted for approval', 'Templates by age · flow 4']);
+  for (const o of DATA.orders) {
+    const v = orderView(o);
+    seed.push([o.placedAt, o.placedBy, 'person', 'Order placed', o.id, v.customer.name + ' · ' + lakh(o.amount), 'ERP · flow 3']);
+    seed.push([o.placedAt, 'Credit Desk', 'system', v.status === 'released' ? 'Order released automatically' : 'Order held', o.id, v.decision.reason, 'Credit policy order check']);
+  }
+  seed.sort((a, b) => b[0].localeCompare(a[0])).forEach((r) => S.audit.push({ at: r[0], actor: r[1], actorType: r[2], action: r[3], record: r[4], detail: r[5], evidence: r[6] }));
+})();
+
+// ---------- small helpers ----------
+const statusChip = {
+  ready_for_review: '<span class="chip teal">Ready for review</span>', awaiting_approval: '<span class="chip warn">Awaiting approval</span>',
+  approved: '<span class="chip good">Approved</span>', declined: '<span class="chip bad">Declined</span>', returned: '<span class="chip">Sent back</span>',
+};
+const stageChip = { friendly: '<span class="chip teal">Friendly</span>', firm: '<span class="chip warn">Firm</span>', escalation: '<span class="chip bad">Escalation</span>', final: '<span class="chip bad">Final notice</span>' };
+const usageColour = (u) => (u == null ? 'var(--line-2)' : u > 100 ? 'var(--bad)' : u >= 85 ? 'var(--warn)' : 'var(--teal)');
+const me = () => PEOPLE[S.role];
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 4200); }
+function decisionsWaiting() {
+  const apps = S.apps.filter((a) => (a.status === 'awaiting_approval' && C.canApprove(S.role, 'analyst', a.approverRole)) || (a.status === 'ready_for_review' && S.role === 'analyst'));
+  const orders = DATA.orders.map(orderView).filter((o) => o.status === 'held' && C.canApprove(S.role, 'analyst', o.decision.approver || 'fc'));
+  const col = collectionsNow().chase.filter((c) => !S.chase[c.customerId]);
+  return { apps, orders, reminders: S.role === 'analyst' ? [] : col };
+}
+
+// ---------- views ----------
+function viewOverview() {
+  const accts = S.customers.map(account);
+  const totalLimit = S.customers.reduce((s, c) => s + c.limit, 0);
+  const owed = accts.reduce((s, a) => s + a.outstanding, 0);
+  const b = accts.reduce((t, a) => { for (const k in a.buckets) t[k] += a.buckets[k]; return t; }, { notDue: 0, d1_30: 0, d31_60: 0, d61_90: 0, d90p: 0 });
+  const overdue = owed - b.notDue;
+  const w = decisionsWaiting();
+  const nWait = w.apps.length + w.orders.length + (w.reminders.length ? 1 : 0);
+  const segs = [['notDue', 'Not yet due', 'var(--age0)'], ['d1_30', '1–30 days', 'var(--age1)'], ['d31_60', '31–60 days', 'var(--age2)'], ['d61_90', '61–90 days', 'var(--age3)'], ['d90p', 'Over 90 days', 'var(--age4)']];
+  const dso = DATA.dsoTrend;
+  const maxD = 64, minD = 48, W = 300, H = 64, px = (i) => 8 + (i * (W - 16)) / (dso.length - 1), py = (v) => 6 + ((maxD - v) * (H - 12)) / (maxD - minD);
+  const path = dso.map((d, i) => (i ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(d.dso).toFixed(1)).join(' ');
+  const area = path + ' L' + px(dso.length - 1) + ' ' + H + ' L' + px(0) + ' ' + H + ' Z';
+  const items = [
+    ...w.apps.map((a) => ['applications', a.id, a.status === 'ready_for_review' ? 'Review and submit: ' + a.legalName : 'Approve ' + lakh(a.recommended) + ' for ' + a.legalName, a.status === 'ready_for_review' ? 'Prepared by the AI · ' + a.id : 'Credit limit · ' + a.id]),
+    ...w.orders.map((o) => ['exposure', o.id, 'Release or hold order ' + o.id + ' · ' + o.customer.name, lakh(o.amount) + ' · ' + o.decision.reason]),
+    ...(w.reminders.length ? [['collections', '', 'Approve today\'s ' + w.reminders.length + ' reminders', 'Most urgent: ' + w.reminders[0].name]] : []),
+  ];
+  return `
+  ${S.guide ? `<section class="panel pad guide">
+    <div class="pagehead"><h3 class="label">Try this: three minutes, three roles</h3><div class="actions"><button class="btn link" data-act="restart">Start the demo again</button><button class="btn link" data-act="hideGuide">Hide</button></div></div>
+    <ol>
+      <li>As <b>Rohan Mehta</b>, open <a href="#applications" data-act="goto" data-view="applications" data-id="APP-1039">Konkan's ₹56 L limit</a>. You cannot approve it: above ₹50 L needs the CFO.</li>
+      <li>Switch to <b>Anita Kapoor</b> at the top and approve it. The new limit is written to the ledger and logged.</li>
+      <li>Back as Rohan, open <a href="#exposure" data-act="goto" data-view="exposure">Exposure</a> and release Deccan's held order. It will not go without a reason. Then see it in the <a href="#audit" data-act="goto" data-view="audit">Audit log</a>.</li>
+    </ol>
+  </section>` : ''}
+  <div class="pagehead"><h2>Overview</h2><span class="muted small">${fmtDate(TODAY)} · ledger read at 06:00 · viewing as ${esc(me().name)}, ${ROLE_IN_TEXT[S.role]}</span></div>
+  <div class="kpis">
+    <div class="panel kpi"><span class="label">Owed to us</span><span class="big num">${crore(owed)}</span><span class="sub">of ${crore(totalLimit)} in limits · ${Math.round((owed / totalLimit) * 100)}% used</span></div>
+    <div class="panel kpi"><span class="label">Overdue</span><span class="big num">${money(overdue)}</span><span class="sub">${Math.round((overdue / owed) * 100)}% of what is owed · ${lakh(b.d90p)} over 90 days</span></div>
+    <div class="panel kpi"><span class="label">Days to collect (DSO)</span><span class="big num">${dso[dso.length - 1].dso} days</span><span class="sub">down from ${dso[0].dso} in ${dso[0].month} (sample trend)</span></div>
+    <div class="panel kpi"><span class="label">Waiting on you</span><span class="big num">${nWait}</span><span class="sub">${nWait ? 'decisions only you can make' : 'nothing needs you right now'}</span></div>
+  </div>
+  <div class="grid2">
+    <section class="panel pad">
+      <div class="pagehead"><h3 class="label">What customers owe, by age</h3><span class="muted small num">${crore(owed)} across ${accts.length} customers</span></div>
+      <div class="ageing" role="img" aria-label="Ageing of receivables">${segs.map(([k, , col]) => `<span style="width:${(b[k] / owed) * 100}%;background:${col}" title="${lakh(b[k])}"></span>`).join('')}</div>
+      <div class="legend">${segs.map(([k, label, col]) => `<div><span><i style="background:${col}"></i>${label}</span><b class="num">${lakh(b[k])}</b></div>`).join('')}</div>
+      <div style="margin-top:18px" class="pagehead"><h3 class="label">Days to collect, last six months</h3><span class="muted small">sample</span></div>
+      <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="DSO fell from 61 to 52 days">
+        <path d="${area}" fill="var(--teal-soft)" stroke="none"></path>
+        <path d="${path}" fill="none" stroke="var(--teal)" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+      </svg>
+      <div class="months">${dso.map((d) => `<span>${d.month}<b class="num">${d.dso}</b></span>`).join('')}</div>
+    </section>
+    <section class="panel pad">
+      <div class="pagehead"><h3 class="label">Needs a decision</h3><span class="legend-gold"><i></i>a person decides</span></div>
+      <div class="decide">${items.length ? items.map(([v, id, t, s]) => `<a href="#${v}" data-act="goto" data-view="${v}" data-id="${esc(id)}"><span><b>${esc(t)}</b><br><span class="muted small">${esc(s)}</span></span><span class="go">Open</span></a>`).join('') : '<p class="empty">Nothing waiting for ' + esc(me().name) + '. Switch role at the top to see what others decide.</p>'}</div>
+    </section>
+  </div>
+  <section>
+    <h3 class="label" style="margin-bottom:10px">How every decision on this desk is made</h3>
+    <div class="how">
+      <div><b>The AI reads and drafts</b><span class="muted small">Reads the balance sheet, GST filing record and payment history. Drafts the credit note and every reminder.</span></div>
+      <div><b>Your credit policy sets the ceiling</b><span class="muted small">Written rules: grade ceilings, a ₹25 L cap for new customers, holds after 90 days, the approval matrix.</span></div>
+      <div class="person"><b>A person decides</b><span class="muted small">Up to ₹50 L the finance controller, above that the CFO. Never the person who prepared it. Every step is logged.</span></div>
+    </div>
+  </section>`;
+}
+
+function viewApplications() {
+  const a = S.apps.find((x) => x.id === S.selApp);
+  return `
+  <div class="pagehead"><h2>Applications</h2><span class="muted small">New customers and limit changes · prepared by flow 1, approved in flow 2</span></div>
+  <div class="split">
+    <div class="panel list" aria-label="Applications">${S.apps.map((x) => `
+      <button class="row" aria-current="${x.id === S.selApp}" aria-selected="${x.id === S.selApp}" data-act="selApp" data-id="${x.id}">
+        <span class="r1"><span class="name">${esc(x.legalName)}</span><span class="num">${lakh(x.recommended)}</span></span>
+        <span class="r1"><span class="muted small">${x.id} · ${x.kind === 'new' ? 'New customer' : 'Limit change'}</span>${statusChip[x.status]}</span>
+      </button>`).join('')}
+    </div>
+    <article class="panel">${appDetail(a)}</article>
+  </div>`;
+}
+
+function appDetail(a) {
+  const stepsList = [['Received', true], ['AI credit read', true], ['Analyst review', a.status !== 'ready_for_review'], ['Approval', ['approved', 'declined'].includes(a.status)], ['Written to ledger', a.status === 'approved']];
+  const nowIdx = stepsList.findIndex(([, d]) => !d);
+  const required = a.approverRole;
+  const approver = PEOPLE[required];
+  const can = C.canApprove(S.role, 'analyst', required);
+  const ceilRows = [['Amount asked for', a.requested, 'requested'], ['Grade ' + a.grade + ' ceiling (' + Math.round(C.POLICY.gradeCeilingPct[a.grade] * 100) + '% of revenue)', a.ceilings.grade, 'grade']]
+    .concat(a.ceilings.newCap ? [['New-customer cap, first 90 days', a.ceilings.newCap, 'newCap']] : [])
+    .concat(a.ceilings.stepUp ? [['Largest step up (60% above ' + lakh(a.currentLimit) + ')', a.ceilings.stepUp, 'stepUp']] : []);
+  let act = '';
+  if (a.status === 'ready_for_review') {
+    act = S.role === 'analyst'
+      ? `<div class="actions"><button class="btn teal" data-act="submitApp" data-id="${a.id}">Submit for approval</button><span class="muted small">Goes to ${esc(approver.name)}, ${ROLE_IN_TEXT[required]}</span></div>`
+      : `<div class="gate">Waiting for ${esc(PEOPLE.analyst.name)} to review the AI's draft and submit it. Switch to Credit analyst to do that.</div>`;
+  } else if (a.status === 'awaiting_approval') {
+    if (S.form && S.form.id === a.id) act = decisionForm(a);
+    else if (can) act = `<div class="actions"><button class="btn gold" data-act="approve" data-id="${a.id}">Approve ${lakh(a.recommended)}</button><button class="btn" data-act="openForm" data-kind="different" data-id="${a.id}">Approve a different amount</button><button class="btn" data-act="openForm" data-kind="decline" data-id="${a.id}">Decline</button><button class="btn link" data-act="openForm" data-kind="sendback" data-id="${a.id}">Send back</button></div>`;
+    else act = `<div class="gate">${S.role === 'analyst' ? 'You prepared this, so you cannot approve it.' : required === 'cfo' ? 'Above ₹50 L. Needs the CFO.' : 'Outside your role.'} Waiting for ${esc(approver.name)}, ${ROLE_IN_TEXT[required]}.</div>`;
+  } else {
+    const d = a.decision;
+    act = `<div class="gate">${a.status === 'approved' ? 'Approved' : a.status === 'declined' ? 'Declined' : 'Sent back'} by ${esc(d.by)} · ${fmtDate(d.at.slice(0, 10))}${d.amount ? ' · <span class="num">' + lakh(d.amount) + '</span>' : ''}${d.reason ? ' · ' + esc(d.reason) : ''}</div>`;
+  }
+  return `<div class="detail">
+    <div class="dhead"><div><span class="label">${a.id} · ${a.kind === 'new' ? 'New customer' : 'Limit change'} · ${esc(a.requestedBy)}</span><h3>${esc(a.legalName)}</h3><span class="muted small num">${a.gstin} · ${a.terms}-day terms</span></div>${statusChip[a.status]}</div>
+    <ol class="steps">${stepsList.map(([l, d], i) => `<li class="${d ? 'done' : i === nowIdx ? 'now' : ''}"><span class="dot"></span>${l}</li>`).join('')}</ol>
+    <div class="amounts">
+      <div><span class="label">Asked for</span><span class="v num">${lakh(a.requested)}</span></div>
+      <div class="hl"><span class="label">Recommended</span><span class="v num">${lakh(a.recommended)}</span></div>
+      <div><span class="label">Grade</span><span class="v"><span class="grade ${a.grade}">${a.grade}</span> <span class="muted small">${a.points} points</span></span></div>
+    </div>
+    ${act}
+    <section><h4 class="label" style="margin-bottom:8px">What was checked</h4><div class="tablewrap"><table>
+      <thead><tr><th>Factor</th><th>Finding and source</th><th class="r">Points</th></tr></thead>
+      <tbody>${a.parts.map((p) => `<tr><td>${C.FACTOR_LABEL[p.factor]}</td><td>${esc(C.factorText(a, p).split(' · ')[0])}<span class="src">${esc(C.factorText(a, p).split(' · ').slice(1).join(' · ') || 'no data')}</span></td><td class="r"><span class="pts ${p.points > 0 ? 'pos' : p.points < 0 ? 'neg' : ''}">${p.points > 0 ? '+' : ''}${p.points}</span></td></tr>`).join('')}</tbody>
+    </table></div></section>
+    <section><h4 class="label" style="margin-bottom:8px">How the limit was set: the lowest ceiling wins</h4><div class="ceil">${ceilRows.map(([l, v, k]) => `<div class="${k === a.binding ? 'bind' : ''}"><span>${l}</span><span class="num">${lakh(v)}</span></div>`).join('')}${a.binding === 'gradeD' ? '<div class="bind"><span>Grade D: no new credit, current limit kept</span><span class="num">' + lakh(a.recommended) + '</span></div>' : ''}</div></section>
+    <section><h4 class="label" style="margin-bottom:8px">KYC</h4><div class="actions">${a.checks.map((c) => `<span class="chip ${c.ok ? 'good' : 'bad'}">${c.ok ? '✓' : '✕'} ${esc(c.check)}</span>`).join('')}</div></section>
+    <section><h4 class="label" style="margin-bottom:8px">Credit note (drafted by AI from the policy result)</h4><div class="note">${esc(a.note)}</div><p class="muted small" style="margin-top:6px">Documents: ${a.documents.map(esc).join(' · ')}${a.note && a.tradeRefs ? ' · ' + a.tradeRefs.length + ' trade references' : ''}</p></section>
+  </div>`;
+}
+
+function decisionForm(a) {
+  const f = S.form;
+  const title = { different: 'Approve a different amount', decline: 'Decline this application', sendback: 'Send back to the analyst' }[f.kind];
+  return `<form class="form" data-act="submitDecision" data-id="${a.id}">
+    <b>${title}</b>
+    ${f.kind === 'different' ? `<label>Amount (₹ lakh)<input id="f-amount" type="number" min="1" step="0.5" inputmode="decimal" value="${esc(f.amount || '')}" placeholder="${(a.recommended / L).toFixed(1)}"></label>` : ''}
+    <label>Reason (goes into the audit log)<textarea id="f-reason" rows="2" placeholder="${f.kind === 'decline' ? 'e.g. two cheques returned this quarter' : 'Required'}">${esc(f.reason || '')}</textarea></label>
+    ${f.error ? `<span class="err">${esc(f.error)}</span>` : ''}
+    <div class="actions"><button type="submit" class="btn ${f.kind === 'sendback' ? 'teal' : 'gold'}">${f.kind === 'different' ? 'Approve this amount' : f.kind === 'decline' ? 'Decline' : 'Send back'}</button><button type="button" class="btn link" data-act="closeForm">Cancel</button></div>
+  </form>`;
+}
+
+function viewExposure() {
+  const accts = S.customers.map(account).sort((x, y) => (y.usage || 0) - (x.usage || 0));
+  const filters = [['all', 'All'], ['over', 'Over limit'], ['near', 'Above 85%'], ['hold', 'On hold']];
+  const shown = accts.filter((a) => S.filter === 'all' || (S.filter === 'over' && a.usage > 100) || (S.filter === 'near' && a.usage >= 85) || (S.filter === 'hold' && a.status === 'hold'));
+  const orders = DATA.orders.map(orderView);
+  return `
+  <div class="pagehead"><h2>Exposure</h2><span class="muted small">Limits, what is owed and today's orders · checked by flow 3</span></div>
+  <section class="panel">
+    <div class="pad" style="padding-bottom:6px"><h3 class="label">Today's orders, checked before they ship</h3></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Order</th><th>Customer</th><th class="r">Value</th><th class="r">After order</th><th>Credit check</th><th>Decision</th></tr></thead>
+      <tbody>${orders.map((o) => orderRow(o)).join('')}</tbody>
+    </table></div>
+  </section>
+  <section class="panel">
+    <div class="pad pagehead"><h3 class="label">Customers</h3><div class="filters" role="group" aria-label="Filter customers">${filters.map(([k, l]) => `<button aria-pressed="${S.filter === k}" data-act="filter" data-k="${k}">${l}</button>`).join('')}</div></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Customer</th><th>Grade</th><th class="r">Limit</th><th class="r">Owed</th><th>Limit used</th><th class="r">Overdue</th><th class="r">Oldest</th><th>Status</th></tr></thead>
+      <tbody>${shown.map((a) => `<tr>
+        <td><b>${esc(a.name)}</b><span class="src">${esc(a.city)} · ${a.terms}-day terms</span></td>
+        <td><span class="grade ${a.gradeNow}">${a.gradeNow}</span></td>
+        <td class="r num">${lakh(a.limit)}</td><td class="r num">${lakh(a.outstanding)}</td>
+        <td><div style="display:flex;gap:8px;align-items:center"><div class="usage" style="flex:1"><span style="width:${Math.min(a.usage || 0, 120) / 1.2}%;background:${usageColour(a.usage)}"></span></div><span class="num small">${a.usage == null ? '—' : Math.round(a.usage) + '%'}</span></div></td>
+        <td class="r num">${lakh(a.overdue)}</td><td class="r num">${a.late > 0 ? a.late + ' d' : '—'}</td>
+        <td>${a.status === 'hold' ? '<span class="chip bad">On hold</span>' : a.usage > 100 ? '<span class="chip bad">Over limit</span>' : a.usage >= 85 ? '<span class="chip warn">Near limit</span>' : '<span class="chip good">Within limit</span>'}</td>
+      </tr>`).join('') || '<tr><td colspan="8" class="empty">No customers match this filter.</td></tr>'}</tbody>
+    </table></div>
+    <p class="pad muted small" style="padding-top:8px">The mark on each bar is the limit. Bars run past it when a customer owes more than their limit.</p>
+  </section>`;
+}
+
+function orderRow(o) {
+  const after = o.decision.usagePctAfter ? o.decision.usagePctAfter.toFixed(1) + '%' : '—';
+  const need = o.decision.approver || 'fc';
+  let cell;
+  if (o.status === 'released') cell = `<span class="chip good">Released</span><span class="src">${esc(o.by)}</span>`;
+  else if (o.status === 'released_by_approver') cell = `<span class="chip good">Released once</span><span class="src">${esc(o.by)} · ${esc(o.reason)}</span>`;
+  else if (o.status === 'held_confirmed') cell = `<span class="chip bad">Kept on hold</span><span class="src">${esc(o.by)}</span>`;
+  else if (S.form && S.form.id === o.id) cell = `<form class="form" data-act="submitRelease" data-id="${o.id}"><label>Reason to release (required)<textarea id="f-reason" rows="2" placeholder="e.g. part payment received, UTR …">${esc(S.form.reason || '')}</textarea></label>${S.form.error ? `<span class="err">${esc(S.form.error)}</span>` : ''}<div class="actions"><button class="btn gold" type="submit">Release once</button><button class="btn link" type="button" data-act="closeForm">Cancel</button></div></form>`;
+  else if (C.canApprove(S.role, 'analyst', need)) cell = `<div class="actions"><button class="btn gold" data-act="openRelease" data-id="${o.id}">Release once</button><button class="btn" data-act="keepHold" data-id="${o.id}">Keep on hold</button></div>`;
+  else cell = `<span class="chip warn">Held</span><span class="src">Waiting for ${esc(PEOPLE[need].name)}${need === 'cfo' ? ' (over 20% above limit)' : ''}</span>`;
+  return `<tr><td class="num">${o.id}<span class="src">${esc(o.placedBy)}</span></td><td><b>${esc(o.customer.name)}</b></td><td class="r num">${lakh(o.amount)}</td><td class="r num">${after}</td><td class="small">${esc(o.decision.reason)}</td><td style="min-width:220px">${cell}</td></tr>`;
+}
+
+function viewCollections() {
+  const col = collectionsNow();
+  if (!S.selChase || !col.chase.find((c) => c.customerId === S.selChase)) S.selChase = col.chase[0]?.customerId;
+  const c = col.chase.find((x) => x.customerId === S.selChase);
+  const pending = col.chase.filter((x) => !S.chase[x.customerId]);
+  const canSend = S.role !== 'analyst';
+  const st = (id) => S.chase[id];
+  const stChip = (id) => { const s = st(id); return !s ? '' : s.status === 'sent' ? '<span class="chip good">Sent</span>' : s.status === 'promise' ? '<span class="chip teal">Promise logged</span>' : '<span class="chip">Skipped today</span>'; };
+  return `
+  <div class="pagehead"><h2>Collections</h2><span class="muted small">Drafted at 06:00 by flow 4 · ${money(col.totals.overdue)} overdue across ${col.chase.length} customers</span></div>
+  <section class="panel pad pagehead">
+    <span>${pending.length ? `<b>${pending.length} reminders</b> drafted and waiting. Most urgent first, ranked by amount, age, grade and broken promises.` : '<b>All reminders handled for today.</b>'}</span>
+    ${canSend ? `<button class="btn gold" data-act="sendAll" ${pending.length ? '' : 'disabled'}>Approve and send all ${pending.length || ''}</button>` : `<span class="gate">${esc(PEOPLE.fc.name)} approves reminders. You can edit drafts and log promises.</span>`}
+  </section>
+  <div class="split">
+    <div class="panel list" aria-label="Customers to chase">${col.chase.map((x, i) => `
+      <button class="row" aria-current="${x.customerId === S.selChase}" aria-selected="${x.customerId === S.selChase}" data-act="selChase" data-id="${x.customerId}">
+        <span class="r1"><span class="name"><span class="muted num">${i + 1}.</span> ${esc(x.name)}</span><span class="num">${lakh(x.overdue)}</span></span>
+        <span class="r1"><span class="muted small">oldest ${x.oldestDays} days</span><span style="display:flex;gap:4px">${stChip(x.customerId) || stageChip[x.stage]}</span></span>
+      </button>`).join('')}</div>
+    <article class="panel">${c ? chaseDetail(c, canSend) : '<p class="empty">No one to chase.</p>'}</article>
+  </div>`;
+}
+
+function chaseDetail(c, canSend) {
+  const s = S.chase[c.customerId];
+  const text = S.edits[c.customerId] ?? c.message;
+  const edited = S.edits[c.customerId] != null && S.edits[c.customerId] !== c.message;
+  const preview = S.channel === 'email'
+    ? `<label class="label" for="draft">Email to ${esc(c.contact)} · ${esc(c.email)}</label><p class="small" style="margin:6px 0"><b>Subject:</b> ${esc(c.subject)}</p><textarea class="draft" id="draft" data-id="${c.customerId}" ${s ? 'readonly' : ''}>${esc(text)}</textarea>`
+    : `<div class="wa"><span class="meta">WhatsApp Business · utility template (pre-approved by Meta) · set up at install</span><div class="bubble">${esc(text.split('\n\n')[0])}</div><span class="meta">Sarvam Polymers accounts · ${esc(c.contact)}</span></div>`;
+  let act;
+  if (s) act = `<div class="gate">${s.status === 'sent' ? 'Sent by ' + esc(s.by) + (s.edited ? ' (edited)' : '') : s.status === 'promise' ? 'Promise to pay <span class="num">' + lakh(s.amount) + '</span> by ' + fmtDate(s.date) + ', logged by ' + esc(s.by) : 'Skipped today by ' + esc(s.by)}</div>`;
+  else if (S.form && S.form.id === c.customerId) act = `<form class="form" data-act="submitPromise" data-id="${c.customerId}"><b>Log a promise to pay</b><label>Amount (₹ lakh)<input id="f-amount" type="number" min="0.1" step="0.1" inputmode="decimal" value="${esc(S.form.amount || '')}"></label><label>By date<input id="f-date" type="date" min="${TODAY}" value="${esc(S.form.date || '')}"></label>${S.form.error ? `<span class="err">${esc(S.form.error)}</span>` : ''}<div class="actions"><button class="btn teal" type="submit">Log promise</button><button class="btn link" type="button" data-act="closeForm">Cancel</button></div></form>`;
+  else act = `<div class="actions">${canSend ? `<button class="btn gold" data-act="sendOne" data-id="${c.customerId}">Approve and send</button>` : ''}<button class="btn" data-act="openPromise" data-id="${c.customerId}">Log promise to pay</button><button class="btn link" data-act="skip" data-id="${c.customerId}">Skip today</button>${edited ? '<span class="chip teal">Edited</span>' : ''}</div>`;
+  return `<div class="detail">
+    <div class="dhead"><div><span class="label">${stageChip[c.stage].replace(/<[^>]+>/g, '')} · ${esc(c.why)}</span><h3>${esc(c.name)}</h3></div><div class="seg" role="group" aria-label="Channel"><button aria-pressed="${S.channel === 'email'}" data-act="channel" data-k="email">Email</button><button aria-pressed="${S.channel === 'whatsapp'}" data-act="channel" data-k="whatsapp">WhatsApp</button></div></div>
+    <div>${preview}</div>
+    ${act}
+    <section><h4 class="label" style="margin-bottom:8px">Overdue invoices</h4><div class="tablewrap"><table><thead><tr><th>Invoice</th><th>Due</th><th class="r">Days late</th><th class="r">Amount</th></tr></thead><tbody>${c.invoices.map((i) => `<tr><td class="num">${i.invoiceNo}</td><td>${fmtDate(i.dueDate)}</td><td class="r num">${C.daysBetween(i.dueDate, TODAY)}</td><td class="r num">${lakh(i.amount)}</td></tr>`).join('')}</tbody></table></div></section>
+  </div>`;
+}
+
+function viewAudit() {
+  const f = S.auditFilter;
+  const rows = S.audit.filter((r) => f === 'all' || (f === 'people' ? r.actorType === 'person' : r.actorType !== 'person'));
+  return `
+  <div class="pagehead"><h2>Audit log</h2><span class="muted small">Every step, who or what did it, and the evidence · ${S.audit.length} entries</span></div>
+  <section class="panel">
+    <div class="pad pagehead"><span class="muted small">Newest first. In a live install this is the n8n audit table, kept with the client.</span><div class="filters" role="group" aria-label="Filter log">${[['all', 'All'], ['people', 'People'], ['machine', 'AI and system']].map(([k, l]) => `<button aria-pressed="${f === k}" data-act="auditFilter" data-k="${k}">${l}</button>`).join('')}</div></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>When</th><th>Who</th><th>What</th><th>Record</th><th>Detail and evidence</th></tr></thead>
+      <tbody>${rows.map((r) => `<tr><td class="num small" style="white-space:nowrap">${new Date(r.at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}</td><td><b>${esc(r.actor)}</b><span class="src">${r.actorType === 'ai' ? 'AI' : r.actorType === 'person' ? 'Person' : 'System'}</span></td><td>${esc(r.action)}</td><td class="num small">${esc(r.record)}</td><td class="small">${esc(r.detail)}<span class="src">${esc(r.evidence)}</span></td></tr>`).join('')}</tbody>
+    </table></div>
+  </section>`;
+}
+
+function viewConnections() {
+  const rows = [
+    ['Excel / CSV upload', 'Live in demo', 'Ageing reports from any accounting system, columns matched by name', 'Nothing: drop a file into the upload form', 'A file of approved limits to import'],
+    ['Google Sheet (stands in for the ledger)', 'Live in demo', 'Customers, invoices, orders, payments', 'Nothing', 'Limits, holds, order decisions'],
+    ['Gmail or Microsoft 365', 'Live in demo', 'Approve and decline answers', 'A mailbox the flows can send from', 'Approval requests, reminders'],
+    ['TallyPrime', 'Configured', 'Bills receivable, party masters (XML on port 9000)', 'A small agent inside your network; the Tally port is never exposed', 'Nothing: limits stay in the Credit Desk'],
+    ['Zoho Books', 'Configured', 'Invoices, payments (REST API, India data centre)', 'An API connection and the organisation ID', 'Customer credit limit'],
+    ['SAP S/4HANA or Business One', 'Configured', 'Open items, credit master data (OData / Service Layer)', 'API user; credit role assigned to each business partner', 'Credit limit via API_CRDTMBUSINESSPARTNER'],
+    ['GST data via a GSP', 'Configured', 'Customer filing record, GSTIN status', 'An account with a GST Suvidha Provider (billed per call)', 'Nothing'],
+    ['Credit bureau report', 'Upload', 'Company credit report and rank', 'Your bureau membership; otherwise upload the PDF', 'Nothing'],
+    ['WhatsApp Business', 'Configured', 'Delivery status', 'A WhatsApp Business account and approved utility templates', 'Payment reminders'],
+  ];
+  return `
+  <div class="pagehead"><h2>Connections</h2><span class="muted small">What this desk reads, what it writes back, and what we need from your IT team</span></div>
+  <section class="panel"><div class="tablewrap"><table class="conn">
+    <thead><tr><th>System</th><th>Status</th><th>What we read</th><th>What we write back</th><th>What we need from you</th></tr></thead>
+    <tbody>${rows.map(([n, s, r, need, w]) => `<tr><td>${n}</td><td class="${s === 'Live in demo' ? 'ok' : 'cfg'} small">${s}</td><td class="small">${r}</td><td class="small">${w}</td><td class="small">${need}</td></tr>`).join('')}</tbody>
+  </table></div></section>
+  <div class="grid2">
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">How it runs</h3>
+      <div class="ceil">
+        <div><span>1 · Application and credit read</span><span class="muted">form → KYC → GST → policy → note</span></div>
+        <div><span>2 · Approval and write-back</span><span class="muted">approval matrix → email → ledger</span></div>
+        <div><span>3 · Order release check</span><span class="muted">every order → release or hold</span></div>
+        <div><span>4 · Daily monitoring and collections</span><span class="muted">06:00 → ageing → holds → reminders</span></div>
+      </div>
+      <p class="muted small" style="margin-top:10px">Built as n8n workflows: visual, readable by your IT team, and running in your own cloud account.</p>
+    </section>
+    <section class="panel pad"><h3 class="label" style="margin-bottom:10px">Controls</h3>
+      <ul class="small" style="margin:0;padding-left:18px;display:grid;gap:6px">
+        <li>The AI drafts; written rules set every limit; a person approves.</li>
+        <li>Approval matrix: up to ₹50 L the finance controller, above that the CFO. The preparer never approves.</li>
+        <li>Every number shows its source and time; every step is in the audit log.</li>
+        <li>Data stays in your systems and your cloud account. Nothing is exposed to the internet.</li>
+        <li>We do not pull customers' bank or GST data through the Account Aggregator network: only regulated lenders can.</li>
+      </ul>
+    </section>
+  </div>`;
+}
+
+// ---------- render ----------
+function render() {
+  document.getElementById('roles').innerHTML = '<span class="as">Viewing as</span>' + ['analyst', 'fc', 'cfo'].map((r) => `<button aria-pressed="${S.role === r}" data-act="role" data-role="${r}">${esc(PEOPLE[r].name)}<span>${ROLE_LABEL[r]}</span></button>`).join('');
+  const w = decisionsWaiting();
+  const counts = { applications: w.apps.length, exposure: w.orders.length, collections: w.reminders.length };
+  document.getElementById('tabs').innerHTML = VIEWS.map(([k, l]) => `<a href="#${k}" data-act="goto" data-view="${k}" ${S.view === k ? 'aria-current="page"' : ''}>${l}${counts[k] ? `<span class="count num">${counts[k]}</span>` : ''}</a>`).join('');
+  const v = { overview: viewOverview, applications: viewApplications, exposure: viewExposure, collections: viewCollections, audit: viewAudit, connections: viewConnections }[S.view];
+  document.getElementById('main').innerHTML = v();
+}
+
+// ---------- actions ----------
+function approveApp(a, amount, reason) {
+  const who = me();
+  a.status = 'approved';
+  a.decision = { by: who.name, role: S.role, amount, reason, at: new Date().toISOString() };
+  if (a.kind === 'new') {
+    const next = 'C' + String(Math.max(...S.customers.map((c) => Number(c.id.slice(1)))) + 1).padStart(2, '0');
+    S.customers.push({ id: next, name: a.legalName, city: a.city, gstin: a.gstin, pan: a.pan, contact: 'Accounts team', contactEmail: 'tapti@example.com', terms: a.terms, limit: amount, status: 'active', since: 2026, grade: a.inputs, turnover: a.turnover });
+    a.customerId = next;
+  } else {
+    S.customers.find((c) => c.id === a.customerId).limit = amount;
+  }
+  log(who.name, 'person', 'Approved', a.id, lakh(amount) + ' for ' + a.legalName + (reason ? ' · ' + reason : ''), 'Approve button · Credit Desk');
+  log('Credit Desk', 'system', 'Limit written to ledger', a.id, (a.kind === 'new' ? 'New customer ' + a.customerId + ' created' : 'Limit updated') + ' at ' + lakh(amount), 'Ledger write-back · flow 2');
+  toast('Approved ' + lakh(amount) + ' for ' + a.legalName + '. Written to the ledger.');
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]');
+  if (!t || t.tagName === 'FORM') return;
+  const act = t.dataset.act, id = t.dataset.id;
+  if (act === 'goto') { e.preventDefault(); S.view = t.dataset.view; S.form = null; if (id && S.view === 'applications') S.selApp = id; history.replaceState(null, '', '#' + S.view); render(); window.scrollTo({ top: 0 }); return; }
+  if (act === 'role') { S.role = t.dataset.role; S.form = null; try { localStorage.setItem('creditDeskRole', S.role); } catch (err) {} render(); return; }
+  if (act === 'selApp') { S.selApp = id; S.form = null; render(); return; }
+  if (act === 'selChase') { S.selChase = id; S.form = null; render(); return; }
+  if (act === 'filter') { S.filter = t.dataset.k; render(); return; }
+  if (act === 'auditFilter') { S.auditFilter = t.dataset.k; render(); return; }
+  if (act === 'channel') { S.channel = t.dataset.k; render(); return; }
+  if (act === 'hideGuide') { S.guide = false; try { localStorage.setItem('creditDeskGuide', 'hidden'); } catch (err) {} render(); return; }
+  if (act === 'restart') { try { localStorage.removeItem('creditDeskRole'); } catch (err) {} location.hash = 'overview'; location.reload(); return; }
+  if (act === 'closeForm') { S.form = null; render(); return; }
+  if (act === 'openForm') { S.form = { id, kind: t.dataset.kind }; render(); document.getElementById(t.dataset.kind === 'different' ? 'f-amount' : 'f-reason')?.focus(); return; }
+  if (act === 'openRelease') { S.form = { id }; render(); document.getElementById('f-reason')?.focus(); return; }
+  if (act === 'openPromise') { S.form = { id }; render(); document.getElementById('f-amount')?.focus(); return; }
+  if (act === 'submitApp') {
+    const a = S.apps.find((x) => x.id === id);
+    a.status = 'awaiting_approval'; a.preparedByRole = 'analyst';
+    log(me().name, 'person', 'Submitted for approval', a.id, 'Sent to ' + PEOPLE[a.approverRole].name, 'Credit Desk · flow 2');
+    toast('Submitted. ' + PEOPLE[a.approverRole].name + ' has been asked to approve it.'); render(); return;
+  }
+  if (act === 'approve') { const a = S.apps.find((x) => x.id === id); approveApp(a, a.recommended, ''); render(); return; }
+  if (act === 'keepHold') { S.orders[id] = { status: 'held_confirmed', by: me().name, reason: 'Kept on hold' }; log(me().name, 'person', 'Order kept on hold', id, 'Order stays held', 'Credit Desk · flow 3'); toast('Order ' + id + ' stays on hold. Sales has been told.'); render(); return; }
+  if (act === 'sendOne' || act === 'skip') {
+    const c = collectionsNow().chase.find((x) => x.customerId === id);
+    const edited = S.edits[id] != null && S.edits[id] !== c.message;
+    S.chase[id] = { status: act === 'sendOne' ? 'sent' : 'skipped', by: me().name, edited };
+    log(me().name, 'person', act === 'sendOne' ? 'Reminder sent' : 'Reminder skipped', id, c.subject + (edited ? ' (edited)' : ''), act === 'sendOne' ? 'Approved on the Credit Desk' : 'Skipped for today');
+    toast(act === 'sendOne' ? 'Reminder to ' + c.name + ' approved and sent (demo: nothing leaves this page).' : c.name + ' skipped for today.'); render(); return;
+  }
+  if (act === 'sendAll') {
+    const list = collectionsNow().chase.filter((x) => !S.chase[x.customerId]);
+    for (const c of list) S.chase[c.customerId] = { status: 'sent', by: me().name, edited: S.edits[c.customerId] != null && S.edits[c.customerId] !== c.message };
+    log(me().name, 'person', 'Reminders approved and sent', 'Collections', list.length + ' reminders', 'One approval on the Credit Desk');
+    toast(list.length + ' reminders approved and sent (demo: nothing leaves this page).'); render(); return;
+  }
+});
+
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'draft') S.edits[e.target.dataset.id] = e.target.value;
+  if (S.form && e.target.id === 'f-reason') S.form.reason = e.target.value;
+  if (S.form && e.target.id === 'f-amount') S.form.amount = e.target.value;
+  if (S.form && e.target.id === 'f-date') S.form.date = e.target.value;
+});
+
+document.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target, act = f.dataset.act, id = f.dataset.id;
+  const reason = (S.form.reason || '').trim();
+  if (act === 'submitDecision') {
+    const a = S.apps.find((x) => x.id === id);
+    if (!reason) { S.form.error = 'Add a reason. It goes into the audit log.'; render(); return; }
+    if (S.form.kind === 'different') {
+      const amt = Math.round(Number(S.form.amount) * L);
+      if (!(amt > 0)) { S.form.error = 'Enter an amount in lakh, for example 20 for ₹20 L.'; render(); return; }
+      if (C.approverFor({ kind: 'limit', amount: amt }) === 'cfo' && S.role !== 'cfo') { S.form.error = 'Above ₹50 L needs the CFO. Enter ₹50 L or less, or ask Anita Kapoor.'; render(); return; }
+      S.form = null; approveApp(a, amt, reason); render(); return;
+    }
+    a.status = S.form.kind === 'decline' ? 'declined' : 'returned';
+    a.decision = { by: me().name, role: S.role, amount: 0, reason, at: new Date().toISOString() };
+    log(me().name, 'person', S.form.kind === 'decline' ? 'Declined' : 'Sent back', a.id, reason, 'Credit Desk · flow 2');
+    toast(S.form.kind === 'decline' ? 'Declined. Sales and the analyst have been told.' : 'Sent back to ' + PEOPLE.analyst.name + '.');
+    S.form = null; render(); return;
+  }
+  if (act === 'submitRelease') {
+    if (!reason) { S.form.error = 'A reason is required to release a held order.'; render(); return; }
+    S.orders[id] = { status: 'released_by_approver', by: me().name, reason };
+    log(me().name, 'person', 'Order released once', id, reason, 'Release form · flow 3');
+    S.form = null; toast('Order ' + id + ' released once. Sales has been told.'); render(); return;
+  }
+  if (act === 'submitPromise') {
+    const amt = Math.round(Number(S.form.amount) * L);
+    if (!(amt > 0) || !S.form.date) { S.form.error = 'Enter the amount and the date they promised.'; render(); return; }
+    S.chase[id] = { status: 'promise', by: me().name, amount: amt, date: S.form.date };
+    log(me().name, 'person', 'Promise to pay logged', id, lakh(amt) + ' by ' + fmtDate(S.form.date), 'Phone call');
+    S.form = null; toast('Promise logged. Tomorrow\'s run will check it against payments.'); render(); return;
+  }
+});
+
+const fromHash = () => { const h = location.hash.slice(1); if (VIEWS.some(([k]) => k === h)) S.view = h; };
+window.addEventListener('hashchange', () => { fromHash(); S.form = null; render(); });
+fromHash();
+render();
+</script>
